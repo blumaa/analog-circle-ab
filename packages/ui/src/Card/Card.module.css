@@ -1,0 +1,38 @@
+.card {
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-card);
+  box-shadow: var(--elevation-card);
+  overflow: hidden;
+  transition:
+    border-color var(--motion-fast) var(--motion-ease),
+    box-shadow var(--motion-fast) var(--motion-ease);
+}
+
+/* active — highlighted with gold border */
+.card[data-variant="active"] {
+  border-color: var(--color-accent);
+}
+
+/* accent — green-tinted border with subtle glow */
+.card[data-variant="accent"] {
+  border-color: var(--color-success);
+  box-shadow:
+    var(--elevation-card),
+    0 0 0 1px var(--color-success);
+}
+
+/* ── Sections ── */
+.header {
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-hairline);
+}
+
+.body {
+  padding: var(--space-5);
+}
+
+.footer {
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--color-hairline);
+}

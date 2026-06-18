@@ -1,0 +1,33 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: var(--color-bg);
+}
+
+.topWrap {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--color-bg);
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+main.container {
+  flex: 1;
+  padding-top: var(--space-5);
+  padding-bottom: var(--space-7);
+}
+
+.navWrap {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  background: var(--color-bg-deep);
+}

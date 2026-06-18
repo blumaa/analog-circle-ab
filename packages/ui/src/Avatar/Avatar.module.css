@@ -1,0 +1,68 @@
+.avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* ── Circle shape (default): fixed sizes + gold ring ── */
+.avatar[data-shape="circle"] {
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-accent);
+}
+
+.avatar[data-shape="circle"][data-size="sm"] {
+  width: 32px;
+  height: 32px;
+}
+
+.avatar[data-shape="circle"][data-size="md"] {
+  width: 40px;
+  height: 40px;
+}
+
+.avatar[data-shape="circle"][data-size="lg"] {
+  width: 56px;
+  height: 56px;
+}
+
+/* ── Rounded shape: portrait that fills its container width ── */
+.avatar[data-shape="rounded"] {
+  display: flex;
+  width: 100%;
+  border-radius: var(--radius-card);
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.initials {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: var(--color-surface-card);
+  color: var(--color-accent);
+  font-family: var(--text-body-family);
+  font-weight: var(--weight-bold);
+  font-size: var(--font-xs);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.avatar[data-size="lg"] .initials {
+  font-size: var(--font-sm);
+}
+
+/* Larger initials for the rounded portrait fallback */
+.avatar[data-shape="rounded"] .initials {
+  background: var(--color-accent-glow);
+  font-size: var(--font-2xl);
+}

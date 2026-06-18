@@ -1,0 +1,57 @@
+import { describe, expect, it, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { Calendar, type CalendarEvent } from "./Calendar";
+
+const date = new Date(2026, 6, 1); // July 2026
+
+const events: CalendarEvent[] = [
+  {
+    id: "e1",
+    title: "Summer picnic",
+    start: new Date(2026, 6, 4, 16, 0),
+    end: new Date(2026, 6, 4, 19, 0),
+  },
+  {
+    id: "e2",
+    title: "Photography walk",
+    start: new Date(2026, 6, 12, 10, 0),
+    end: new Date(2026, 6, 12, 12, 0),
+  },
+];
+
+describe("Calendar", () => {
+  it("renders events on the grid", () => {
+    render(<Calendar events={events} view="month" date={date} />);
+    expect(screen.getByText("Summer picnic")).toBeInTheDocument();
+    expect(screen.getByText("Photography walk")).toBeInTheDocument();
+  });
+
+  it("fires onSelectEvent with the event id when a pill is clicked", async () => {
+    const onSelectEvent = vi.fn();
+    render(
+      <Calendar
+        events={events}
+        view="month"
+        date={date}
+        onSelectEvent={onSelectEvent}
+      />,
+    );
+    await userEvent.click(screen.getByText("Summer picnic"));
+    expect(onSelectEvent).toHaveBeenCalledWith("e1");
+  });
+
+  it("renders the month toolbar label", () => {
+    render(<Calendar events={events} view="month" date={date} />);
+    expect(screen.getByText(/July 2026/)).toBeInTheDocument();
+  });
+
+  it("calls onView when a view toolbar button is pressed", async () => {
+    const onView = vi.fn();
+    render(
+      <Calendar events={events} view="month" date={date} onView={onView} />,
+    );
+    await userEvent.click(screen.getByRole("button", { name: /week/i }));
+    expect(onView).toHaveBeenCalledWith("week");
+  });
+});

@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function uid() { return request.auth.uid; }
+
+    match /members/{memberId} {
+      allow read: if signedIn();
+      allow create, update: if signedIn() && memberId == uid();
+      allow delete: if false;
+    }
+    match /groups/{groupId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+    match /memberships/{id} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+    match /events/{eventId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.creatorId == uid();
+      allow update, delete: if signedIn() && (resource.data.creatorId == uid() || resource.data.hostId == uid());
+    }
+    match /rsvps/{rsvpId} {
+      allow read: if signedIn();
+      allow create, update, delete: if signedIn() && request.resource.data.memberId == uid();
+    }
+    match /loopPosts/{postId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.authorId == uid();
+      // Any member can add a "note"/helped-by (addLoopNote); author can archive.
+      allow update: if signedIn();
+      allow delete: if signedIn() && resource.data.authorId == uid();
+    }
+    match /wallPosts/{postId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.authorId == uid();
+      allow delete: if signedIn() && (resource.data.authorId == uid() || resource.data.ownerId == uid());
+      allow update: if false;
+    }
+    match /activity/{id} {
+      allow read: if signedIn();
+      // Appended on actions (wall/event/loop) + seeded via Admin SDK.
+      allow create: if signedIn();
+      // markActivityRead toggles readBy for the current user.
+      allow update: if signedIn();
+      allow delete: if false;
+    }
+  }
+}

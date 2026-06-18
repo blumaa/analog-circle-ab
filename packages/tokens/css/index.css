@@ -1,0 +1,5 @@
+/* Aggregate entry — import once at the app root. Order matters: primitives → semantic. */
+@import "./fonts.css";
+@import "./primitives.css";
+@import "./semantic.css";
+@import "./reset.css";

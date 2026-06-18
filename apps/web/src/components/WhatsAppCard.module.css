@@ -1,0 +1,39 @@
+.link {
+  display: block;
+  text-decoration: none;
+  margin-top: var(--space-4);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-success);
+}
+
+.title {
+  font-size: var(--font-lg);
+  color: var(--color-text);
+}
+
+.chevron {
+  color: var(--color-success);
+  flex-shrink: 0;
+}

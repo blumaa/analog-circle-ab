@@ -1,0 +1,21 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: var(--space-5) 0 var(--space-6);
+}
+
+.title {
+  font-family: var(--text-display-family);
+  font-weight: var(--weight-bold);
+  font-size: var(--font-xl);
+  line-height: 1.15;
+  color: var(--color-text-strong);
+}
+
+.description {
+  max-width: 60ch;
+  color: var(--color-text-muted-2);
+  font-size: var(--font-sm);
+  line-height: 1.5;
+}

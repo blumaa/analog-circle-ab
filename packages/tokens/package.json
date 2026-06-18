@@ -1,0 +1,20 @@
+{
+  "name": "@analog/tokens",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./css": "./css/index.css",
+    "./primitives.css": "./css/primitives.css",
+    "./semantic.css": "./css/semantic.css",
+    "./fonts.css": "./css/fonts.css",
+    "./reset.css": "./css/reset.css"
+  },
+  "scripts": {
+    "test": "echo \"no tests\" && exit 0",
+    "lint": "echo \"no lint\" && exit 0",
+    "typecheck": "tsc --noEmit"
+  }
+}

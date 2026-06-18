@@ -1,0 +1,50 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  font-family: var(--text-body-family);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* danger — error-tinted */
+.badge[data-variant="danger"] {
+  background: var(--color-error-soft);
+  color: var(--color-error);
+}
+
+/* offer — info-tinted */
+.badge[data-variant="offer"] {
+  background: var(--color-accent-glow);
+  color: var(--color-info);
+}
+
+/* meeting — accent (gold) */
+.badge[data-variant="meeting"] {
+  background: var(--color-accent-glow);
+  color: var(--color-accent);
+}
+
+/* accent — accent (gold) */
+.badge[data-variant="accent"] {
+  background: var(--color-accent-glow);
+  color: var(--color-accent-bright);
+}
+
+/* success — green */
+.badge[data-variant="success"] {
+  background: var(--color-accent-glow);
+  color: var(--color-success);
+}
+
+/* neutral — muted */
+.badge[data-variant="neutral"] {
+  background: var(--color-surface-raised);
+  color: var(--color-text-muted);
+}

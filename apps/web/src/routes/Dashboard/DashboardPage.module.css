@@ -1,0 +1,54 @@
+.page {
+  display: flex;
+  flex-direction: column;
+}
+
+.welcomeSection {
+  margin: var(--space-6) 0 var(--space-7);
+}
+
+.welcome {
+  font-family: var(--text-display-family);
+  font-weight: var(--weight-bold);
+  font-size: var(--font-3xl);
+  line-height: 1.05;
+  color: var(--color-text-strong);
+  margin: 0;
+}
+
+.name {
+  font-style: italic;
+  color: var(--color-accent);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: var(--space-6);
+}
+
+.sectionHeading {
+  font-family: var(--text-body-family);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-3);
+}
+
+/* Community nav — arrangement only; NavCard owns its own look. */
+.communityList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+@media (max-width: 600px) {
+  .welcome {
+    font-size: var(--font-2xl);
+  }
+  .welcomeSection {
+    margin: var(--space-4) 0 var(--space-6);
+  }
+}

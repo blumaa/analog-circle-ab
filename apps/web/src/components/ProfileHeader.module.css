@@ -1,0 +1,29 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) 0 var(--space-4);
+  text-align: center;
+}
+
+.avatarRing {
+  border-radius: var(--radius-full);
+  padding: 3px;
+  background: var(--color-accent);
+  display: inline-flex;
+}
+
+.name {
+  font-family: var(--text-display-family);
+  font-size: var(--font-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-strong);
+  margin: 0;
+}
+
+.email {
+  font-size: var(--font-sm);
+  color: var(--color-text-muted-2);
+  margin: 0;
+}

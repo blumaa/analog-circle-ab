@@ -1,0 +1,177 @@
+/*
+ * Dark-theme overrides for react-big-calendar.
+ * All colors come from semantic tokens — no hardcoded values.
+ * Selectors are scoped under .calendar so they only affect our wrapper.
+ */
+.calendar {
+  font-family: var(--text-body-family);
+  color: var(--color-text);
+}
+
+.calendar :global(.rbc-calendar) {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--text-body-family);
+}
+
+/* Toolbar */
+.calendar :global(.rbc-toolbar) {
+  margin-bottom: var(--space-4);
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.calendar :global(.rbc-toolbar .rbc-toolbar-label) {
+  font-family: var(--text-display-family);
+  font-size: var(--font-lg);
+  color: var(--color-text-strong);
+}
+
+.calendar :global(.rbc-toolbar button) {
+  color: var(--color-text-soft);
+  background: var(--color-bg-deep);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-control);
+  padding: var(--space-1) var(--space-3);
+  font-family: var(--text-body-family);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  transition:
+    background-color var(--motion-fast) var(--motion-ease),
+    color var(--motion-fast) var(--motion-ease);
+}
+
+.calendar :global(.rbc-toolbar button:hover),
+.calendar :global(.rbc-toolbar button:focus-visible) {
+  color: var(--color-text);
+  background: var(--color-hairline-soft);
+  border-color: var(--color-hairline);
+}
+
+.calendar :global(.rbc-toolbar button.rbc-active),
+.calendar :global(.rbc-toolbar button.rbc-active:hover),
+.calendar :global(.rbc-toolbar button.rbc-active:focus) {
+  background: var(--color-accent-glow);
+  color: var(--color-accent);
+  border-color: var(--color-accent-soft);
+}
+
+/* Month grid + week/day frames */
+.calendar :global(.rbc-month-view),
+.calendar :global(.rbc-time-view),
+.calendar :global(.rbc-time-header),
+.calendar :global(.rbc-time-content) {
+  border-color: var(--color-hairline);
+  border-radius: var(--radius-card);
+}
+
+.calendar :global(.rbc-month-row + .rbc-month-row),
+.calendar :global(.rbc-day-bg + .rbc-day-bg),
+.calendar :global(.rbc-header + .rbc-header),
+.calendar :global(.rbc-time-content > * + * > *),
+.calendar :global(.rbc-timeslot-group),
+.calendar :global(.rbc-time-header-content),
+.calendar :global(.rbc-time-content) {
+  border-color: var(--color-hairline);
+}
+
+.calendar :global(.rbc-header) {
+  padding: var(--space-2) var(--space-1);
+  border-bottom-color: var(--color-hairline);
+  color: var(--color-text-muted);
+  font-weight: var(--weight-medium);
+  font-size: var(--font-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Day cells */
+.calendar :global(.rbc-day-bg) {
+  background: var(--color-bg);
+}
+
+.calendar :global(.rbc-off-range-bg) {
+  background: var(--color-bg-deep);
+}
+
+.calendar :global(.rbc-date-cell) {
+  padding: var(--space-1);
+  color: var(--color-text-soft);
+  font-size: var(--font-sm);
+}
+
+.calendar :global(.rbc-off-range) {
+  color: var(--color-text-muted-2);
+}
+
+.calendar :global(.rbc-button-link) {
+  color: inherit;
+}
+
+/* Today highlight */
+.calendar :global(.rbc-today) {
+  background: var(--color-accent-glow);
+}
+
+.calendar :global(.rbc-now) {
+  color: var(--color-accent);
+  font-weight: var(--weight-bold);
+}
+
+.calendar :global(.rbc-current-time-indicator) {
+  background: var(--color-accent);
+}
+
+/* Event pills */
+.calendar :global(.rbc-event) {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border: none;
+  border-radius: var(--radius-tile);
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-medium);
+}
+
+.calendar :global(.rbc-event:focus-visible) {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 1px;
+}
+
+.calendar :global(.rbc-event.rbc-selected),
+.calendar :global(.rbc-day-slot .rbc-selected.rbc-event) {
+  background: var(--color-accent-bright);
+  color: var(--color-on-accent);
+}
+
+.calendar :global(.rbc-event-label) {
+  color: var(--color-on-accent);
+}
+
+/* "+N more" link */
+.calendar :global(.rbc-show-more) {
+  color: var(--color-accent);
+  background: transparent;
+  font-size: var(--font-xs);
+  font-weight: var(--weight-medium);
+}
+
+/* Time gutter (week view) */
+.calendar :global(.rbc-time-gutter),
+.calendar :global(.rbc-label) {
+  color: var(--color-text-muted);
+  font-size: var(--font-xs);
+}
+
+/* Popup overlay (events overflow) */
+.calendar :global(.rbc-overlay) {
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-card);
+  box-shadow: var(--elevation-raised);
+}
+
+.calendar :global(.rbc-overlay-header) {
+  border-bottom-color: var(--color-hairline);
+  color: var(--color-text-strong);
+}

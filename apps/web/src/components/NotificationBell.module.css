@@ -1,0 +1,24 @@
+.trigger {
+  position: relative;
+  overflow: visible;
+}
+
+.badge {
+  position: absolute;
+  top: calc(-1 * var(--space-1));
+  right: calc(-1 * var(--space-1));
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.3rem;
+  border-radius: var(--radius-full);
+  background: var(--color-error);
+  color: var(--color-bg-deep);
+  font-family: var(--text-body-family);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  line-height: 1;
+}

@@ -1,0 +1,25 @@
+.nav {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-5);
+  padding: var(--space-4);
+  background: var(--color-bg-deep);
+  border-top: 1px solid var(--color-hairline-soft);
+}
+
+.link {
+  font-family: var(--text-body-family);
+  font-size: var(--font-md);
+  color: var(--color-text-muted-2);
+  text-decoration: none;
+  transition: color var(--motion-fast) var(--motion-ease);
+}
+
+.link:hover {
+  color: var(--color-text);
+}
+
+.active {
+  color: var(--color-accent);
+  font-weight: var(--weight-medium);
+}

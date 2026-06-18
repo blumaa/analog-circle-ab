@@ -1,0 +1,97 @@
+/**
+ * Tier 1 — Primitive tokens.
+ * Raw, context-free values. Derived from the live Analog Circle palette.
+ * Components MUST NOT use these directly — use semantic tokens instead.
+ */
+:root {
+  /* Navy / surface scale */
+  --navy-950: #14101a;
+  --navy-900: #1a1a24;
+  --navy-800: #1a1a2e;
+  --navy-700: #21213a;
+  --navy-600: #2a2a46;
+
+  /* Gold scale */
+  --gold-300: #e0c878;
+  --gold-400: #d4b06a;
+  --gold-500: #c9a84c;
+  --gold-600: #b3923f;
+  --gold-ink: #1a1505;
+
+  /* Ivory / text scale */
+  --ivory-50: #f5f0e8;
+  --ivory-100: #ececf4;
+  --ivory-200: #d8d8e8;
+  --ivory-300: #b8b8cc;
+
+  /* Muted / neutral */
+  --muted-400: #8f8fa8;
+  --muted-500: #6b6b80;
+
+  /* Status hues */
+  --green-300: #7aefaa;
+  --green-400: #5fe08d;
+  --green-500: #25d366;
+  --red-400: #f87171;
+  --red-300: #e88a8a;
+  --green-200: #aef5c9;
+  --blue-400: #60a5fa;
+
+  /* Alpha helpers (over navy) */
+  --alpha-glass: rgba(244, 232, 213, 0.035);
+  --alpha-hairline: rgba(201, 168, 118, 0.16);
+  --alpha-hairline-soft: rgba(201, 168, 118, 0.09);
+  --alpha-gold-glow: rgba(201, 168, 76, 0.1);
+
+  /* Radii */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-pill: 30px;
+  --radius-full: 9999px;
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 3.5rem;
+  --space-9: 4rem;
+
+  /* Control (tap-target) sizes */
+  --space-control-sm: 2.25rem; /* 36px */
+  --space-control: 2.75rem; /* 44px — matches live icon button */
+
+  /* Shadows */
+  --shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.35), 0 24px 64px rgba(0, 0, 0, 0.45);
+  --shadow-lift: 0 8px 24px rgba(0, 0, 0, 0.45), 0 32px 80px rgba(0, 0, 0, 0.55);
+
+  /* Typography families — match live: Playfair Display (headings), DM Sans (body) */
+  --family-display: "Playfair Display", ui-serif, Georgia, serif;
+  --family-wordmark: "Playfair Display", ui-serif, Georgia, serif;
+  --family-body: "DM Sans", -apple-system, system-ui, sans-serif;
+
+  /* Font sizes */
+  --font-xs: 0.75rem;
+  --font-sm: 0.875rem;
+  --font-md: 1rem;
+  --font-lg: 1.25rem;
+  --font-xl: 1.75rem;
+  --font-2xl: 2.5rem;
+  --font-3xl: 3.5rem;
+
+  /* Font weights */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-bold: 700;
+
+  /* Motion */
+  --ease-lux: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-quick: 0.15s;
+  --dur-fast: 0.25s;
+
+  /* Layout */
+  --container-max: 1180px;
+}

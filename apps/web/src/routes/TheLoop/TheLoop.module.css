@@ -1,0 +1,91 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.addRow {
+  display: flex;
+}
+
+.composer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-card);
+  box-shadow: var(--elevation-card);
+  padding: var(--space-5);
+}
+
+.composerField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.composerLabel {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-soft);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.textarea {
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--color-hairline-soft);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: var(--text-body-family);
+  font-size: var(--font-base);
+  line-height: var(--leading-body);
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.textarea:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+.textarea::placeholder {
+  color: var(--color-text-muted-2);
+}
+
+.composerActions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+}
+
+.search {
+  width: 100%;
+}
+
+.chips {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-bottom: var(--space-1);
+  scrollbar-width: none;
+}
+
+.chips::-webkit-scrollbar {
+  display: none;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.empty {
+  color: var(--color-text-muted-2);
+  text-align: center;
+  padding: var(--space-6) 0;
+}

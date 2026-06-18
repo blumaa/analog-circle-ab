@@ -1,0 +1,80 @@
+.shell {
+  min-height: 100dvh;
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-5) var(--space-4);
+  border-bottom: 1px solid var(--color-hairline-soft);
+}
+
+.brand {
+  font-family: var(--text-wordmark-family);
+  font-weight: var(--weight-bold);
+  font-size: var(--font-lg);
+  color: var(--color-accent);
+}
+
+.sub {
+  font-size: var(--font-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+.card {
+  width: 100%;
+  max-width: 520px;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.title {
+  font-family: var(--text-display-family);
+  font-size: var(--font-xl);
+  color: var(--color-text-strong);
+}
+
+.lede {
+  color: var(--color-text-soft);
+  line-height: 1.5;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.note {
+  color: var(--color-success);
+  font-size: var(--font-sm);
+}
+
+.dev {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-xs);
+  text-decoration: underline;
+  cursor: pointer;
+}

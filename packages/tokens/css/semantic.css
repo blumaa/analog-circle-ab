@@ -1,0 +1,66 @@
+/**
+ * Tier 2 — Semantic tokens.
+ * Role-based aliases that map primitives to UI intent.
+ * Components consume ONLY these. Swapping a theme = remapping this layer.
+ */
+:root {
+  /* Surfaces */
+  --color-bg: var(--navy-800);
+  --color-bg-deep: var(--navy-900);
+  --color-surface-card: var(--alpha-glass);
+  --color-surface-raised: var(--navy-700);
+
+  /* Text */
+  --color-text-strong: var(--ivory-100);
+  --color-text: var(--ivory-50);
+  --color-text-soft: var(--ivory-200);
+  --color-text-faint: var(--ivory-300);
+  --color-text-muted: var(--muted-500);
+  --color-text-muted-2: var(--muted-400);
+
+  /* Brand accent (gold) */
+  --color-accent: var(--gold-500);
+  --color-accent-bright: var(--gold-300);
+  --color-accent-soft: var(--gold-400);
+  --color-on-accent: var(--gold-ink);
+  --color-accent-glow: var(--alpha-gold-glow);
+
+  /* Lines & borders */
+  --color-hairline: var(--alpha-hairline);
+  --color-hairline-soft: var(--alpha-hairline-soft);
+
+  /* Status */
+  --color-whatsapp: var(--green-500);
+  --color-success: var(--green-400);
+  --color-success-bright: var(--green-300);
+  --color-success-soft: var(--green-200);
+  --color-error: var(--red-400);
+  --color-error-soft: var(--red-300);
+  --color-info: var(--blue-400);
+
+  /* Focus ring */
+  --color-focus-ring: var(--gold-300);
+
+  /* Component radii */
+  --radius-control: var(--radius-pill);
+  --radius-card: var(--radius-md);
+  --radius-tile: var(--radius-sm);
+
+  /* Control sizes */
+  --size-icon-button: var(--space-control);
+  --size-icon-button-sm: var(--space-control-sm);
+
+  /* Typography roles */
+  --text-display-family: var(--family-display);
+  --text-wordmark-family: var(--family-wordmark);
+  --text-body-family: var(--family-body);
+
+  /* Elevation */
+  --elevation-card: var(--shadow-soft);
+  --elevation-raised: var(--shadow-lift);
+
+  /* Motion */
+  --motion-ease: var(--ease-lux);
+  --motion-quick: var(--dur-quick);
+  --motion-fast: var(--dur-fast);
+}
