@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { Accordion, Avatar, Badge, Button, Card, Label, Modal } from "@analog/ui";
+import { Accordion, Badge, Button, Card, Label, Modal } from "@analog/ui";
 import type { EventItem, Member, RsvpStatus } from "../data";
 import { formatEventWhen } from "../lib/format";
 import styles from "./EventCard.module.css";
@@ -86,12 +86,11 @@ function AttendeeList({ attendees }: { attendees: EventAttendee[] }) {
     <ul className={styles.attendeeList} aria-label="Members not going">
       {nonGoing.map((a) => (
         <li key={a.member.id} className={styles.attendeeRow}>
-          <Avatar src={a.member.photoUrl} name={a.member.name} size="sm" />
-          <div className={styles.attendeeInfo}>
+          <p className={styles.attendeeHead}>
             <span className={styles.attendeeName}>{a.member.name}</span>
             <span className={styles.attendeeStatus}>{statusLabel(a.status)}</span>
-            {a.note && <span className={styles.attendeeNote}>&ldquo;{a.note}&rdquo;</span>}
-          </div>
+          </p>
+          {a.note && <p className={styles.attendeeNote}>&ldquo;{a.note}&rdquo;</p>}
         </li>
       ))}
     </ul>
@@ -125,9 +124,11 @@ function ProposeSwapButton({
 
   return (
     <>
-      <button type="button" className={styles.swapPill} onClick={() => setOpen(true)}>
-        Propose hosting swap
-      </button>
+      <div className={styles.swapBox}>
+        <Button variant="ghost" size="sm" onClick={() => setOpen(true)}>
+          Propose hosting swap
+        </Button>
+      </div>
 
       <Modal
         open={open}
@@ -208,13 +209,9 @@ function RsvpControl({
       <div className={styles.rsvpBody}>
         {going ? (
           <>
-            <button
-              type="button"
-              className={styles.swapPill}
-              onClick={() => onRsvp?.("declined", note || null)}
-            >
+            <Button variant="ghost" size="sm" onClick={() => onRsvp?.("declined", note || null)}>
               Can&apos;t make it
-            </button>
+            </Button>
             <label className={styles.swapField}>
               <Label as="span">Reason (optional)</Label>
               <textarea
@@ -227,13 +224,9 @@ function RsvpControl({
             </label>
           </>
         ) : (
-          <button
-            type="button"
-            className={styles.swapPill}
-            onClick={() => onRsvp?.("going", null)}
-          >
+          <Button variant="ghost" size="sm" onClick={() => onRsvp?.("going", null)}>
             I can make it after all
-          </button>
+          </Button>
         )}
       </div>
     </Accordion>

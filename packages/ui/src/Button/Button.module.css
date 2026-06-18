@@ -78,11 +78,11 @@
   background: var(--color-accent-glow);
 }
 
-/* ghost — subtle hairline */
+/* ghost — subtle hairline (white-alpha, matches live) */
 .button[data-variant="ghost"] {
   background: transparent;
-  border-color: var(--color-hairline);
-  color: var(--color-text-soft);
+  border-color: var(--color-control-line);
+  color: var(--color-control-ink);
 }
 .button[data-variant="ghost"]:hover:not(:disabled) {
   border-color: var(--color-accent);

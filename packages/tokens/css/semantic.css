@@ -24,10 +24,20 @@
   --color-accent-soft: var(--gold-400);
   --color-on-accent: var(--gold-ink);
   --color-accent-glow: var(--alpha-gold-glow);
+  --color-accent-line: var(--alpha-accent-55); /* card left accent */
+  --color-accent-surface: var(--alpha-accent-08); /* gold-tinted box bg */
+  --color-accent-border: var(--alpha-accent-25); /* gold-tinted box border */
 
   /* Lines & borders */
   --color-hairline: var(--alpha-hairline);
   --color-hairline-soft: var(--alpha-hairline-soft);
+
+  /* Ink-on-dark text (for content on dark card surfaces) */
+  --color-ink-strong: var(--alpha-ink-88);
+  --color-ink-muted: var(--alpha-ink-62);
+  --color-ink-faint: var(--alpha-ink-48);
+  --color-control-line: var(--alpha-ink-16);
+  --color-control-ink: var(--alpha-ink-78);
 
   /* Status */
   --color-whatsapp: var(--green-500);
@@ -43,7 +53,7 @@
 
   /* Component radii */
   --radius-control: var(--radius-pill);
-  --radius-card: var(--radius-md);
+  --radius-card: var(--radius-lg);
   --radius-tile: var(--radius-sm);
 
   /* Control sizes */

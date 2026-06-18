@@ -9,9 +9,10 @@
     box-shadow var(--motion-fast) var(--motion-ease);
 }
 
-/* active — highlighted with gold border */
+/* active — faint border with a gold left accent (matches live) */
 .card[data-variant="active"] {
-  border-color: var(--color-accent);
+  border-color: var(--color-hairline);
+  border-left: 3px solid var(--color-accent-line);
 }
 
 /* accent — green-tinted border with subtle glow */

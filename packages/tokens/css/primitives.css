@@ -37,15 +37,26 @@
   --green-200: #aef5c9;
   --blue-400: #60a5fa;
 
-  /* Alpha helpers (over navy) */
-  --alpha-glass: rgba(244, 232, 213, 0.035);
+  /* Alpha helpers (over navy) — match live (white over dark surfaces) */
+  --alpha-glass: rgba(255, 255, 255, 0.03);
   --alpha-hairline: rgba(201, 168, 118, 0.16);
   --alpha-hairline-soft: rgba(201, 168, 118, 0.09);
   --alpha-gold-glow: rgba(201, 168, 76, 0.1);
+  /* Gold (accent) alphas */
+  --alpha-accent-55: rgba(201, 168, 76, 0.55);
+  --alpha-accent-25: rgba(201, 168, 76, 0.25);
+  --alpha-accent-08: rgba(201, 168, 76, 0.06);
+  /* Ink (white over dark) alphas — for text/controls on dark cards */
+  --alpha-ink-88: rgba(255, 255, 255, 0.88);
+  --alpha-ink-78: rgba(255, 255, 255, 0.78);
+  --alpha-ink-62: rgba(255, 255, 255, 0.62);
+  --alpha-ink-48: rgba(255, 255, 255, 0.48);
+  --alpha-ink-16: rgba(255, 255, 255, 0.16);
 
   /* Radii */
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
+  --radius-lg: 0.875rem;
   --radius-pill: 30px;
   --radius-full: 9999px;
 
