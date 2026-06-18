@@ -1,33 +1,47 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { Button, Card, CardBody, Input } from "@analog/ui";
+import { Button, Card, CardBody, Input, useToast } from "@analog/ui";
 import { dataSource } from "../../data";
 import { qk } from "../../data/hooks";
 import styles from "./LoginPage.module.css";
 
 export function LoginPage() {
   const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const toast = useToast();
 
-  const finishSignIn = async () => {
+  const goToDashboard = async () => {
     await qc.invalidateQueries({ queryKey: qk.currentMember });
     navigate("/innercircle/dashboard");
   };
 
   const handleEmail = async () => {
     if (!email.trim()) return;
-    await dataSource.signInWithEmail(email.trim());
-    // Mock signs in immediately; a real magic link would land on a callback route.
-    setSent(true);
-    await finishSignIn();
+    setStatus("sending");
+    try {
+      await dataSource.signInWithEmail(email.trim());
+      // Mock signs in instantly; Firebase only sends a link (not signed in yet).
+      const memberId = await dataSource.getCurrentMemberId();
+      if (memberId) {
+        await goToDashboard();
+      } else {
+        setStatus("sent");
+        toast.success("Check your email for a one-time sign-in link.");
+      }
+    } catch (e) {
+      setStatus("idle");
+      toast.error(
+        e instanceof Error ? e.message : "Couldn't send the sign-in link. Please try again.",
+      );
+    }
   };
 
   const devSignIn = async () => {
     await dataSource.devSignInAs("aaron");
-    await finishSignIn();
+    await goToDashboard();
   };
 
   return (
@@ -59,15 +73,20 @@ export function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-              <Button type="submit" fullWidth>
-                Email sign-in link
+              <Button type="submit" fullWidth disabled={status === "sending"}>
+                {status === "sending" ? "Sending…" : "Email sign-in link"}
               </Button>
             </form>
-            {sent && <p className={styles.note}>Signed in. Redirecting…</p>}
-
-            <button type="button" className={styles.dev} onClick={devSignIn}>
-              Dev sign-in (skip email)
-            </button>
+            {import.meta.env.DEV && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className={styles.dev}
+                onClick={devSignIn}
+              >
+                Dev sign-in (skip email)
+              </Button>
+            )}
           </CardBody>
         </Card>
       </div>

@@ -1,5 +1,5 @@
 import { useParams, useSearchParams } from "react-router-dom";
-import { Accordion, Spinner, Tabs } from "@analog/ui";
+import { Accordion, Button, Spinner, Tabs, useToast } from "@analog/ui";
 import {
   useCreateEvent,
   useCurrentMemberId,
@@ -75,35 +75,48 @@ export function YourCirclePage() {
   const createEvent = useCreateEvent();
   const updateEvent = useUpdateEvent(groupId);
   const deleteEvent = useDeleteEvent(groupId);
+  const toast = useToast();
 
   const handleCreate = (v: EventFormValues) => {
-    createEvent.mutate({
-      scope: v.scope,
-      groupId,
-      title: v.title,
-      date: v.date,
-      startTime: v.startTime,
-      endTime: v.endTime,
-      hostId: memberId,
-      creatorId: memberId ?? "",
-      address: v.address || null,
-      guideUrl: null,
-      type: "event",
-    });
-  };
-
-  const handleEdit = (id: string, v: EventFormValues) => {
-    updateEvent.mutate({
-      id,
-      patch: {
+    createEvent.mutate(
+      {
+        scope: v.scope,
+        groupId,
         title: v.title,
         date: v.date,
         startTime: v.startTime,
         endTime: v.endTime,
+        hostId: memberId,
+        creatorId: memberId ?? "",
         address: v.address || null,
-        scope: v.scope,
+        guideUrl: null,
+        type: "event",
       },
-    });
+      {
+        onSuccess: () => toast.success("Meeting created."),
+        onError: () => toast.error("Couldn't create the meeting."),
+      },
+    );
+  };
+
+  const handleEdit = (id: string, v: EventFormValues) => {
+    updateEvent.mutate(
+      {
+        id,
+        patch: {
+          title: v.title,
+          date: v.date,
+          startTime: v.startTime,
+          endTime: v.endTime,
+          address: v.address || null,
+          scope: v.scope,
+        },
+      },
+      {
+        onSuccess: () => toast.success("Meeting updated."),
+        onError: () => toast.error("Couldn't update the meeting."),
+      },
+    );
   };
 
   return (
@@ -144,13 +157,14 @@ export function YourCirclePage() {
                 }
               >
                 <div className={styles.addAllOptions}>
-                  <button
-                    type="button"
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     className={styles.calBtn}
                     onClick={() => downloadAllIcs(events)}
                   >
                     Download all as .ics
-                  </button>
+                  </Button>
                 </div>
               </Accordion>
             </div>
@@ -162,7 +176,12 @@ export function YourCirclePage() {
             groupId={groupId}
             onCreate={handleCreate}
             onEdit={handleEdit}
-            onDelete={(id) => deleteEvent.mutate(id)}
+            onDelete={(id) =>
+              deleteEvent.mutate(id, {
+                onSuccess: () => toast.success("Meeting deleted."),
+                onError: () => toast.error("Couldn't delete the meeting."),
+              })
+            }
           />
         </section>
       )}

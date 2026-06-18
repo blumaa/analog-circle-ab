@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Calendar, Compass } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { Button, Input, LabeledField } from "@analog/ui";
+import { Button, Input, LabeledField, useToast } from "@analog/ui";
 import { useCurrentMemberId, useInnerGroup, useMember, useUpdateMember } from "../../data/hooks";
 import { dataSource } from "../../data";
 import { ProfileHeader } from "../../components/ProfileHeader";
@@ -27,6 +27,7 @@ export function ProfilePage() {
   const { data: innerGroup = null } = useInnerGroup(memberId);
   const updateMember = useUpdateMember();
 
+  const toast = useToast();
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState<EditFormState>({
     from: "",
@@ -70,7 +71,13 @@ export function ProfilePage() {
           whatsappUrl: form.whatsappUrl.trim() || null,
         },
       },
-      { onSuccess: () => setEditing(false) },
+      {
+        onSuccess: () => {
+          toast.success("Profile updated.");
+          setEditing(false);
+        },
+        onError: () => toast.error("Couldn't save your profile."),
+      },
     );
   }
 

@@ -5,6 +5,7 @@ import {
   Calendar,
   Card,
   Spinner,
+  useToast,
   type CalendarEvent,
   type CalendarView,
 } from "@analog/ui";
@@ -66,6 +67,7 @@ function EventCardWithRsvps({
 }) {
   const { data: rsvps = [] } = useRsvps(event.id);
   const setRsvp = useSetRsvp();
+  const toast = useToast();
   const going = rsvps.filter((r) => r.status === "going").length;
   const attendees = rsvps
     .map((r) => {
@@ -91,8 +93,15 @@ function EventCardWithRsvps({
         monthLabel={formatMonthYear(event.date)}
         onRsvp={(status, note) => {
           if (!currentMemberId) return;
-          setRsvp.mutate({ eventId: event.id, memberId: currentMemberId, status, note });
+          setRsvp.mutate(
+            { eventId: event.id, memberId: currentMemberId, status, note },
+            {
+              onSuccess: () => toast.success("RSVP updated."),
+              onError: () => toast.error("Couldn't update your RSVP."),
+            },
+          );
         }}
+        onProposeSwap={() => toast.success("Hosting-swap proposed.")}
       />
       {canManage && (onEdit || onDelete) && (
         <div className={styles.manage}>

@@ -6,6 +6,7 @@ import {
   Header,
   Input,
   SegmentedControl,
+  useToast,
 } from "@analog/ui";
 import {
   useLoopPosts,
@@ -44,6 +45,7 @@ export function TheLoopPage() {
   const createPost = useCreateLoopPost();
   const archivePost = useArchiveLoopPost();
   const addNote = useAddLoopNote();
+  const toast = useToast();
 
   // Composer state
   const [composerOpen, setComposerOpen] = useState(false);
@@ -85,16 +87,22 @@ export function TheLoopPage() {
 
   function handleSave() {
     if (!currentMemberId || !draftCategory.trim() || !draftBody.trim()) return;
-    createPost.mutate({
-      scope: draftScope,
-      kind: draftKind,
-      category: draftCategory.trim(),
-      body: draftBody.trim(),
-      authorId: currentMemberId,
-      archived: false,
-      notes: [],
-      helpedBy: [],
-    });
+    createPost.mutate(
+      {
+        scope: draftScope,
+        kind: draftKind,
+        category: draftCategory.trim(),
+        body: draftBody.trim(),
+        authorId: currentMemberId,
+        archived: false,
+        notes: [],
+        helpedBy: [],
+      },
+      {
+        onSuccess: () => toast.success("Posted to The Loop."),
+        onError: () => toast.error("Couldn't post."),
+      },
+    );
     setComposerOpen(false);
     setDraftKind("need");
     setDraftScope("analog");
@@ -241,11 +249,22 @@ export function TheLoopPage() {
               authorName={resolveAuthorName(post.authorId)}
               authorWhatsappUrl={resolveWhatsappUrl(post.authorId)}
               canArchive={post.authorId === currentMemberId}
-              onArchive={() => archivePost.mutate(post.id)}
+              onArchive={() =>
+                archivePost.mutate(post.id, {
+                  onSuccess: () => toast.success("Post archived."),
+                  onError: () => toast.error("Couldn't archive."),
+                })
+              }
               resolveName={resolveAuthorName}
               currentMemberId={currentMemberId ?? null}
               onAddNote={(postId, authorId, body) =>
-                addNote.mutate({ postId, authorId, body })
+                addNote.mutate(
+                  { postId, authorId, body },
+                  {
+                    onSuccess: () => toast.success("Sent — thanks for helping!"),
+                    onError: () => toast.error("Couldn't send your note."),
+                  },
+                )
               }
             />
           ))

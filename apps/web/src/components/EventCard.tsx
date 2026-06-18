@@ -344,13 +344,14 @@ export function EventCard({
       {/* ADD TO CALENDAR collapsible */}
       <Accordion summary={<span className={styles.addCalLabel}>ADD TO CALENDAR</span>}>
         <div className={styles.calOptions}>
-          <button
-            type="button"
-            className={styles.calOptionBtn}
+          <Button
+            variant="ghost"
+            size="sm"
+            className={styles.calOption}
             onClick={() => downloadIcs(event)}
           >
             Download .ics
-          </button>
+          </Button>
           <a
             className={styles.calOptionBtn}
             href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${event.date.replace(/-/g, "")}T${event.startTime.replace(":", "")}00/${event.date.replace(/-/g, "")}T${event.endTime.replace(":", "")}00`}

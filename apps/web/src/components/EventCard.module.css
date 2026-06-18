@@ -198,6 +198,10 @@
   padding-top: var(--space-3);
 }
 
+.calOption {
+  align-self: flex-start;
+}
+
 .calOptionBtn {
   display: inline-block;
   font-family: var(--text-body-family);

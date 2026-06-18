@@ -1,4 +1,4 @@
-import { Badge, Button, Label } from "@analog/ui";
+import { Badge, Button, Label, useToast } from "@analog/ui";
 import { Trash2 } from "lucide-react";
 import { useCurrentMemberId, useCreateWallPost, useDeleteWallPost, useInnerGroup, useMembers, useWallPosts } from "../data/hooks";
 import { canDeleteWallPost } from "../lib/permissions";
@@ -16,6 +16,7 @@ export function ProfileWall({ ownerId }: ProfileWallProps) {
   const { data: members = [] } = useMembers();
   const createPost = useCreateWallPost(ownerId);
   const deletePost = useDeleteWallPost(ownerId);
+  const toast = useToast();
   const { data: viewerInnerGroup = null } = useInnerGroup(currentMemberId);
   const { data: ownerInnerGroup = null } = useInnerGroup(ownerId);
 
@@ -46,7 +47,12 @@ export function ProfileWall({ ownerId }: ProfileWallProps) {
           ownerId={ownerId}
           authorId={currentMemberId}
           canPostInner={canPostInner}
-          onPost={(input) => createPost.mutate(input)}
+          onPost={(input) =>
+            createPost.mutate(input, {
+              onSuccess: () => toast.success("Posted to the wall."),
+              onError: () => toast.error("Couldn't post to the wall."),
+            })
+          }
         />
       )}
 
@@ -57,7 +63,12 @@ export function ProfileWall({ ownerId }: ProfileWallProps) {
             post={post}
             authorName={getAuthorName(post.authorId)}
             currentMemberId={currentMemberId}
-            onDelete={(id) => deletePost.mutate(id)}
+            onDelete={(id) =>
+              deletePost.mutate(id, {
+                onSuccess: () => toast.success("Post removed."),
+                onError: () => toast.error("Couldn't remove the post."),
+              })
+            }
           />
         ))}
       </ul>

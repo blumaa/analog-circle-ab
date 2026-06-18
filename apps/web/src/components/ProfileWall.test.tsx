@@ -92,6 +92,7 @@ describe("ProfileWall", () => {
     await userEvent.click(screen.getByRole("button", { name: /^Post$/i }));
     expect(mockCreateMutate).toHaveBeenCalledWith(
       expect.objectContaining({ body: "My new post", ownerId, authorId }),
+      expect.any(Object),
     );
   });
 

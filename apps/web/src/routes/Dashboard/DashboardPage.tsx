@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Compass, HeartHandshake, User, Users } from "lucide-react";
-import { NavCard } from "@analog/ui";
+import { NavCard, useToast } from "@analog/ui";
 import {
   useCurrentMemberId,
   useEvents,
@@ -85,6 +85,7 @@ export function DashboardPage() {
     : [];
 
   const firstName = me?.name.split(" ")[0] ?? "";
+  const toast = useToast();
 
   return (
     <div className={styles.page}>
@@ -106,6 +107,7 @@ export function DashboardPage() {
             attendees={attendees}
             swapTargets={swapTargets}
             monthLabel={formatMonthYear(nextEvent.date)}
+            onProposeSwap={() => toast.success("Hosting-swap proposed.")}
             defaultOpen
           />
         </section>

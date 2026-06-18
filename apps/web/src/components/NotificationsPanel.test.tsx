@@ -2,6 +2,7 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
+import { ToastProvider } from "@analog/ui";
 import { NotificationsPanel } from "./NotificationsPanel";
 import type { Activity, Member } from "../data/types";
 
@@ -70,11 +71,13 @@ const activities: Activity[] = [
 function renderPanel() {
   return render(
     <MemoryRouter>
-      <NotificationsPanel
-        activities={activities}
-        members={members}
-        currentMemberId="aaron"
-      />
+      <ToastProvider>
+        <NotificationsPanel
+          activities={activities}
+          members={members}
+          currentMemberId="aaron"
+        />
+      </ToastProvider>
     </MemoryRouter>,
   );
 }
@@ -110,7 +113,9 @@ describe("NotificationsPanel tab filter", () => {
   it("shows an empty state when a tab has no activity", async () => {
     render(
       <MemoryRouter>
-        <NotificationsPanel activities={[]} members={members} currentMemberId="aaron" />
+        <ToastProvider>
+          <NotificationsPanel activities={[]} members={members} currentMemberId="aaron" />
+        </ToastProvider>
       </MemoryRouter>,
     );
     expect(screen.getByText("Nothing here yet.")).toBeInTheDocument();
@@ -121,6 +126,6 @@ describe("NotificationsPanel mark all read", () => {
   it("calls markAll with the current member id", async () => {
     renderPanel();
     await userEvent.click(screen.getByRole("button", { name: /mark all read/i }));
-    expect(markAllMutate).toHaveBeenCalledWith("aaron");
+    expect(markAllMutate).toHaveBeenCalledWith("aaron", expect.any(Object));
   });
 });

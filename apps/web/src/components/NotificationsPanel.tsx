@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, SegmentedControl } from "@analog/ui";
+import { Button, SegmentedControl, useToast } from "@analog/ui";
 import type { Activity, Member } from "../data/types";
 import { useMarkActivityRead, useMarkAllActivityRead } from "../data/hooks";
 import { NotificationItem } from "./NotificationItem";
@@ -42,6 +42,7 @@ export function NotificationsPanel({
   const [tab, setTab] = useState<TabValue>("analog");
   const markRead = useMarkActivityRead();
   const markAll = useMarkAllActivityRead();
+  const toast = useToast();
 
   const visible = filterActivities(activities, tab, currentMemberId);
 
@@ -52,7 +53,12 @@ export function NotificationsPanel({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => markAll.mutate(currentMemberId)}
+          onClick={() =>
+            markAll.mutate(currentMemberId, {
+              onSuccess: () => toast.success("All caught up."),
+              onError: () => toast.error("Couldn't mark all read."),
+            })
+          }
         >
           Mark all read
         </Button>
