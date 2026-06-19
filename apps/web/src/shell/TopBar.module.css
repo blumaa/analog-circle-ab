@@ -17,8 +17,8 @@
 .wordmark {
   font-family: var(--text-wordmark-family);
   font-weight: var(--weight-bold);
-  font-size: var(--font-lg);
-  letter-spacing: 0.02em;
+  font-size: var(--text-wordmark-size);
+  letter-spacing: var(--text-wordmark-tracking);
   color: var(--color-accent);
   text-decoration: none;
 }

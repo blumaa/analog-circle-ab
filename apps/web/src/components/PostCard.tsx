@@ -49,9 +49,9 @@ export function PostCard({
       : null;
 
   return (
-    <article className={styles.card}>
+    <article className={styles.card} data-kind={post.kind}>
       <div className={styles.topRow}>
-        <Badge variant={post.kind === "need" ? "danger" : "offer"}>{post.kind === "need" ? "NEED" : "OFFER"}</Badge>
+        <Badge variant={post.kind === "need" ? "rose" : "offer"}>{post.kind === "need" ? "NEED" : "OFFER"}</Badge>
         {post.category && (
           <span className={styles.category}>{post.category}</span>
         )}

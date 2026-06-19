@@ -53,6 +53,11 @@ export interface CardSectionProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
 }
 
+export interface CardBodyProps extends CardSectionProps {
+  /** "none" removes the default section padding; useful when an inner component supplies its own. */
+  padding?: "default" | "none";
+}
+
 /** Top section with a bottom hairline divider. */
 export function CardHeader({ className, children, ...rest }: CardSectionProps) {
   return (
@@ -63,9 +68,13 @@ export function CardHeader({ className, children, ...rest }: CardSectionProps) {
 }
 
 /** Main content section with default padding. */
-export function CardBody({ className, children, ...rest }: CardSectionProps) {
+export function CardBody({ className, children, padding = "default", ...rest }: CardBodyProps) {
   return (
-    <div className={[styles.body, className].filter(Boolean).join(" ")} {...rest}>
+    <div
+      className={[styles.body, className].filter(Boolean).join(" ")}
+      data-padding={padding !== "default" ? padding : undefined}
+      {...rest}
+    >
       {children}
     </div>
   );

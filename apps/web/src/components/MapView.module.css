@@ -7,22 +7,26 @@
   border: 1px solid var(--color-hairline);
 }
 
-/* Gold teardrop pin with member initials. */
-.pin :global(span),
-.pin span {
+/* CSS teardrop pin: 34×34px circle with 0-deg bottom-left corner = teardrop pointing down-left */
+.pin :global(.ic-teardrop) {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 34px;
   height: 34px;
-  border-radius: var(--radius-full) var(--radius-full) 2px var(--radius-full);
-  transform: rotate(45deg);
+  border-radius: 50% 50% 50% 0;
+  border: 2px solid var(--color-accent);
+  background: var(--color-bg);
   font-family: var(--text-body-family);
   font-weight: var(--weight-bold);
   font-size: var(--font-xs);
+  color: var(--color-accent);
   box-shadow: var(--elevation-card);
+  transform: rotate(-45deg);
 }
 
-.pin span {
-  transform: rotate(0deg);
+.pin :global(.ic-teardrop-initials) {
+  transform: rotate(45deg);
+  display: block;
+  line-height: 1;
 }

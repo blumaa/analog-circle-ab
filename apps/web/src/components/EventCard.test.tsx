@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderWithProviders } from "../test/renderWithProviders";
 import { EventCard } from "./EventCard";
 import type { EventItem, Member } from "../data";
 import type { EventAttendee } from "./EventCard";
@@ -29,7 +30,7 @@ const aaron: Member = {
   bio: null,
   interests: [],
   dietary: null,
-  whatsappUrl: null,
+  whatsappUrl: null, homeAddress: null,
   location: null,
 };
 
@@ -42,7 +43,7 @@ const cemre: Member = {
   bio: null,
   interests: [],
   dietary: null,
-  whatsappUrl: null,
+  whatsappUrl: null, homeAddress: null,
   location: null,
 };
 
@@ -55,13 +56,13 @@ const vki: Member = {
   bio: null,
   interests: [],
   dietary: null,
-  whatsappUrl: null,
+  whatsappUrl: null, homeAddress: null,
   location: null,
 };
 
 describe("EventCard", () => {
   it("shows title and formatted when", () => {
-    render(
+    renderWithProviders(
       <EventCard event={event} host={aaron} currentMemberId="aaron" going={5} total={7} defaultOpen />,
     );
     expect(screen.getByText("Inner Circle meeting")).toBeInTheDocument();
@@ -69,7 +70,7 @@ describe("EventCard", () => {
   });
 
   it("renders the title as small body text, not a large serif heading", () => {
-    render(
+    renderWithProviders(
       <EventCard event={event} host={aaron} currentMemberId="aaron" going={6} total={8} defaultOpen />,
     );
     // Title must NOT be a heading element (it is the accordion summary).
@@ -80,7 +81,7 @@ describe("EventCard", () => {
   });
 
   it("shows attendance count in green-styled success text", () => {
-    render(
+    renderWithProviders(
       <EventCard event={event} host={aaron} currentMemberId="aaron" going={6} total={8} defaultOpen />,
     );
     expect(screen.getByText("6 of 8 going")).toBeInTheDocument();
@@ -88,7 +89,7 @@ describe("EventCard", () => {
 
   it("opens the propose-hosting-swap modal and sends a swap", async () => {
     const onSwap = vi.fn();
-    render(
+    renderWithProviders(
       <EventCard
         event={event}
         host={aaron}
@@ -126,7 +127,7 @@ describe("EventCard", () => {
 
   it("shows another member as host without swap action", () => {
     const other = { ...aaron, id: "david", name: "David" };
-    render(
+    renderWithProviders(
       <EventCard
         event={event}
         host={other}
@@ -144,7 +145,7 @@ describe("EventCard", () => {
     it("shows 'You're going' and offers a can't-make-it toggle", async () => {
       const onRsvp = vi.fn();
       const other = { ...aaron, id: "david", name: "David" };
-      render(
+      renderWithProviders(
         <EventCard
           event={event}
           host={other}
@@ -153,6 +154,7 @@ describe("EventCard", () => {
           total={8}
           attendees={[{ member: aaron, status: "going" }]}
           onRsvp={onRsvp}
+          defaultOpen
         />,
       );
       expect(screen.getByText("You're going")).toBeInTheDocument();
@@ -164,7 +166,7 @@ describe("EventCard", () => {
     it("lets a not-going member toggle back to going", async () => {
       const onRsvp = vi.fn();
       const other = { ...aaron, id: "david", name: "David" };
-      render(
+      renderWithProviders(
         <EventCard
           event={event}
           host={other}
@@ -173,6 +175,7 @@ describe("EventCard", () => {
           total={8}
           attendees={[{ member: aaron, status: "declined", note: "Away" }]}
           onRsvp={onRsvp}
+          defaultOpen
         />,
       );
       expect(screen.getByText("You're not going")).toBeInTheDocument();
@@ -190,7 +193,7 @@ describe("EventCard", () => {
     ];
 
     it("renders declined members in the attendance accordion", () => {
-      render(
+      renderWithProviders(
         <EventCard
           event={event}
           host={aaron}
@@ -206,7 +209,7 @@ describe("EventCard", () => {
     });
 
     it("shows 'can't make it' label for declined members", () => {
-      render(
+      renderWithProviders(
         <EventCard
           event={event}
           host={aaron}
@@ -222,7 +225,7 @@ describe("EventCard", () => {
     });
 
     it("shows decline reason notes", () => {
-      render(
+      renderWithProviders(
         <EventCard
           event={event}
           host={aaron}
@@ -237,7 +240,7 @@ describe("EventCard", () => {
     });
 
     it("does not render going members in the non-going list", () => {
-      render(
+      renderWithProviders(
         <EventCard
           event={event}
           host={aaron}
@@ -259,7 +262,7 @@ describe("EventCard", () => {
       const withMaybe: EventAttendee[] = [
         { member: vki, status: "maybe", note: "Not sure yet." },
       ];
-      render(
+      renderWithProviders(
         <EventCard
           event={event}
           host={aaron}

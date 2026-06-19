@@ -24,7 +24,7 @@ function makeMember(id: string, name: string): Member {
     bio: null,
     interests: [],
     dietary: null,
-    whatsappUrl: null,
+    whatsappUrl: null, homeAddress: null,
     location: null,
   };
 }
@@ -92,13 +92,13 @@ describe("NotificationsPanel tab filter", () => {
     renderPanel();
     expect(screen.getByText("David posted to The Loop")).toBeInTheDocument();
     expect(screen.getByText("David wrote on your wall")).toBeInTheDocument();
-    expect(screen.queryByText("Odette created a meeting")).not.toBeInTheDocument();
+    expect(screen.queryByText("Odette created an event")).not.toBeInTheDocument();
   });
 
   it("shows inner-scope activity on the Inner Circle tab", async () => {
     renderPanel();
     await userEvent.click(screen.getByRole("button", { name: "Inner Circle" }));
-    expect(screen.getByText("Odette created a meeting")).toBeInTheDocument();
+    expect(screen.getByText("Odette created an event")).toBeInTheDocument();
     expect(screen.queryByText("David posted to The Loop")).not.toBeInTheDocument();
   });
 
@@ -107,7 +107,7 @@ describe("NotificationsPanel tab filter", () => {
     await userEvent.click(screen.getByRole("button", { name: "Yourself" }));
     expect(screen.getByText("David wrote on your wall")).toBeInTheDocument();
     expect(screen.queryByText("David posted to The Loop")).not.toBeInTheDocument();
-    expect(screen.queryByText("Odette created a meeting")).not.toBeInTheDocument();
+    expect(screen.queryByText("Odette created an event")).not.toBeInTheDocument();
   });
 
   it("shows an empty state when a tab has no activity", async () => {

@@ -19,8 +19,28 @@ describe("Label", () => {
     expect(screen.getByText("Address").tagName).toBe("DIV");
   });
 
-  it("has no accessibility violations", async () => {
+  it("defaults transform to uppercase via data attribute", () => {
+    render(<Label>Coming up</Label>);
+    expect(screen.getByText("Coming up")).toHaveAttribute("data-transform", "uppercase");
+  });
+
+  it("sets data-transform='none' when transform='none'", () => {
+    render(<Label transform="none">Coming up</Label>);
+    expect(screen.getByText("Coming up")).toHaveAttribute("data-transform", "none");
+  });
+
+  it("sets data-transform='uppercase' when explicitly provided", () => {
+    render(<Label transform="uppercase">WHEN</Label>);
+    expect(screen.getByText("WHEN")).toHaveAttribute("data-transform", "uppercase");
+  });
+
+  it("has no accessibility violations (uppercase)", async () => {
     const { container } = render(<Label>Coming up</Label>);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("has no accessibility violations (none)", async () => {
+    const { container } = render(<Label transform="none">Coming up</Label>);
     expect(await axe(container)).toHaveNoViolations();
   });
 });

@@ -6,7 +6,7 @@
   border: 1px solid transparent;
   border-radius: var(--radius-control);
   font-family: var(--text-body-family);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-semi);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   cursor: pointer;
@@ -29,6 +29,11 @@
 
 .button[data-full-width] {
   width: 100%;
+}
+
+/* non-pill: rounded rect (sign-out style) — overrides the pill default radius */
+.button[data-pill="false"] {
+  border-radius: var(--radius-md);
 }
 
 /* icon-only: square, circular */
@@ -68,14 +73,16 @@
   border-color: var(--color-accent);
 }
 
-/* outline — transparent + accent border */
+/* outline — ghost gold: bright gold text, ~45% gold border, pill radius (matches live "Add to The Loop") */
 .button[data-variant="outline"] {
   background: transparent;
-  border-color: var(--color-accent);
-  color: var(--color-accent);
+  border-color: var(--color-accent-line-strong);
+  color: var(--color-accent-bright);
+  font-size: 0.92rem;
 }
 .button[data-variant="outline"]:hover:not(:disabled) {
   background: var(--color-accent-glow);
+  border-color: var(--color-accent-bright);
 }
 
 /* ghost — subtle hairline (white-alpha, matches live) */
@@ -107,6 +114,28 @@
 }
 .button[data-variant="danger"]:hover:not(:disabled) {
   background: var(--color-error-soft);
+}
+
+/* soft — neutral frosted: for calendar action buttons ("Download .ics") */
+.button[data-variant="soft"] {
+  background: var(--color-control-soft-bg);
+  border-color: var(--color-control-soft-line);
+  color: var(--color-control-soft-ink);
+  font-size: 0.72rem;
+}
+.button[data-variant="soft"]:hover:not(:disabled) {
+  background: var(--color-surface-raised);
+}
+
+/* whatsapp — green outlined matching live site */
+.button[data-variant="whatsapp"] {
+  background: var(--color-whatsapp-soft);
+  border-color: var(--color-whatsapp-border);
+  color: var(--color-whatsapp-ink);
+}
+.button[data-variant="whatsapp"]:hover:not(:disabled) {
+  background: var(--color-success-soft);
+  opacity: 0.9;
 }
 
 .icon {

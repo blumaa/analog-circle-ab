@@ -1,0 +1,64 @@
+.wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 80px;
+  resize: vertical;
+  font-family: var(--text-body-family);
+  font-size: var(--font-base);
+  color: var(--color-text);
+  background: var(--color-surface-input);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-input);
+  padding: var(--space-3);
+  box-sizing: border-box;
+}
+
+.textarea:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.textarea::placeholder {
+  color: var(--color-text-muted-2);
+}
+
+.textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* @mention picker ---------------------------------------------------------- */
+
+.mentionPicker {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  list-style: none;
+  margin: 0;
+  padding: var(--space-1) 0;
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-card);
+  box-shadow: 0 4px 12px var(--color-shadow, rgba(0, 0, 0, 0.15));
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.mentionOption {
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+  font-family: var(--text-body-family);
+  font-size: var(--font-sm);
+  color: var(--color-text);
+}
+
+.mentionOption[data-active] {
+  background: var(--color-surface-hover, var(--color-surface-input));
+  color: var(--color-accent);
+}

@@ -31,6 +31,31 @@
   color: var(--color-accent);
 }
 
+.iconTile[data-tone="accent"] {
+  background: var(--color-accent-glow);
+  color: var(--color-accent);
+}
+
+.iconTile[data-tone="rose"] {
+  background: var(--color-tile-rose);
+  color: var(--color-tile-rose-ink);
+}
+
+.iconTile[data-tone="indigo"] {
+  background: var(--color-tile-indigo);
+  color: var(--color-tile-indigo-ink);
+}
+
+.iconTile[data-tone="green"] {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.iconTile[data-tone="sky"] {
+  background: var(--color-tile-sky);
+  color: var(--color-tile-sky-ink);
+}
+
 .text {
   display: flex;
   flex-direction: column;

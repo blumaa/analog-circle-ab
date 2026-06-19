@@ -51,3 +51,27 @@
   background: var(--color-accent-soft);
   color: var(--color-accent);
 }
+
+/* rose tone — Need/Offer style, matches Badge rose tokens */
+.chip[data-tone="rose"] {
+  border-color: var(--color-need-ink);
+  color: var(--color-need-ink);
+  background: var(--color-need-bg);
+}
+
+.chip[data-tone="rose"]:hover:not(:disabled) {
+  background: var(--color-need-bg);
+  border-color: var(--color-need-ink);
+  opacity: 0.85;
+}
+
+.chip[data-tone="rose"][data-selected] {
+  background: var(--color-need-bg);
+  border-color: var(--color-need-ink);
+  color: var(--color-need-ink);
+}
+
+.chip[data-tone="rose"] .count {
+  background: var(--color-need-bg);
+  color: var(--color-need-ink);
+}

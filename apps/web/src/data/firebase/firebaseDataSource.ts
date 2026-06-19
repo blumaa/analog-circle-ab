@@ -1,4 +1,5 @@
 import {
+  arrayRemove,
   arrayUnion,
   collection,
   deleteDoc,
@@ -31,6 +32,8 @@ import type {
   Rsvp,
   RsvpStatus,
   Scope,
+  WallPost,
+  WallReply,
 } from "../types";
 
 /** Deterministic credentials for the seeded demo persona (dev-bypass sign-in only). */
@@ -141,7 +144,7 @@ export function createFirebaseDataSource(): DataSource {
         scope: input.scope,
         actorId: input.creatorId,
         subjectId: null,
-        targetRoute: `/innercircle/group/${input.groupId}`,
+        targetRoute: `/innercircle/event/${ev.id}`,
       });
       return ev;
     },
@@ -207,13 +210,30 @@ export function createFirebaseDataSource(): DataSource {
         query(collection(d, "wallPosts"), where("ownerId", "==", ownerId)),
       );
       return snap.docs
-        .map((s) => ({ id: s.id, ...s.data() }) as import("../types").WallPost)
+        .map((s) => {
+          const data = s.data();
+          // Back-compat: documents written before replies/mentions existed won't have these fields.
+          return {
+            id: s.id,
+            ...data,
+            replies: data["replies"] ?? [],
+            mentions: data["mentions"] ?? [],
+          } as WallPost;
+        })
         .sort((x, y) => y.createdAt.localeCompare(x.createdAt));
     },
     async createWallPost(input) {
       const ref = doc(collection(d, "wallPosts"));
-      const post = { ...input, id: ref.id, createdAt: new Date().toISOString() };
-      await setDoc(ref, { ...input, createdAt: post.createdAt });
+      const now = new Date().toISOString();
+      const post: WallPost = {
+        ...input,
+        id: ref.id,
+        createdAt: now,
+        likedBy: input.likedBy ?? [],
+        replies: input.replies ?? [],
+        mentions: input.mentions ?? [],
+      };
+      await setDoc(ref, { ...input, createdAt: now, likedBy: post.likedBy, mentions: post.mentions });
       await addActivity(d, {
         type: "wall_post",
         scope: input.scope,
@@ -221,10 +241,46 @@ export function createFirebaseDataSource(): DataSource {
         subjectId: input.ownerId,
         targetRoute: `/innercircle/members/${input.ownerId}`,
       });
+      // One "mention" activity per tagged member, skipping self-tags.
+      for (const mentionedId of post.mentions) {
+        if (mentionedId === input.authorId) continue;
+        await addActivity(d, {
+          type: "mention",
+          scope: input.scope,
+          actorId: input.authorId,
+          subjectId: mentionedId,
+          targetRoute: `/innercircle/members/${input.ownerId}`,
+        });
+      }
       return post;
     },
     async deleteWallPost(id) {
       await deleteDoc(doc(d, "wallPosts", id));
+    },
+    async toggleWallPostLike(postId, memberId) {
+      const ref = doc(d, "wallPosts", postId);
+      const current = await getDoc(ref);
+      const likedBy = (current.data()?.likedBy as string[] | undefined) ?? [];
+      await updateDoc(ref, {
+        likedBy: likedBy.includes(memberId) ? arrayRemove(memberId) : arrayUnion(memberId),
+      });
+      const s = await getDoc(ref);
+      const data = s.data();
+      return { id: s.id, ...data, replies: data?.["replies"] ?? [], mentions: data?.["mentions"] ?? [] } as WallPost;
+    },
+    async addWallPostReply(postId, authorId, body) {
+      const ref = doc(d, "wallPosts", postId);
+      // arrayUnion appends an object element; Firestore preserves insertion order.
+      const reply: WallReply = {
+        id: `reply-${Date.now().toString(36)}`,
+        authorId,
+        body,
+        createdAt: new Date().toISOString(),
+      };
+      await updateDoc(ref, { replies: arrayUnion(reply) });
+      const s = await getDoc(ref);
+      const data = s.data();
+      return { id: s.id, ...data, replies: data?.["replies"] ?? [], mentions: data?.["mentions"] ?? [] } as WallPost;
     },
 
     async listActivity() {

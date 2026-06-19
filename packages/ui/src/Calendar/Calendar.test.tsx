@@ -46,12 +46,22 @@ describe("Calendar", () => {
     expect(screen.getByText(/July 2026/)).toBeInTheDocument();
   });
 
-  it("calls onView when a view toolbar button is pressed", async () => {
-    const onView = vi.fn();
+  it("renders nav controls and omits the duplicate view switcher", () => {
+    render(<Calendar events={events} view="month" date={date} />);
+    expect(screen.getByRole("button", { name: /today/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /next/i })).toBeInTheDocument();
+    // The consumer owns the view (Month/Week), so the toolbar must NOT duplicate it.
+    expect(screen.queryByRole("button", { name: /^week$/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^month$/i })).not.toBeInTheDocument();
+  });
+
+  it("calls onNavigate when Next is pressed", async () => {
+    const onNavigate = vi.fn();
     render(
-      <Calendar events={events} view="month" date={date} onView={onView} />,
+      <Calendar events={events} view="month" date={date} onNavigate={onNavigate} />,
     );
-    await userEvent.click(screen.getByRole("button", { name: /week/i }));
-    expect(onView).toHaveBeenCalledWith("week");
+    await userEvent.click(screen.getByRole("button", { name: /next/i }));
+    expect(onNavigate).toHaveBeenCalled();
   });
 });

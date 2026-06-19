@@ -8,9 +8,9 @@
 .title {
   font-family: var(--text-display-family);
   font-weight: var(--weight-bold);
-  font-size: var(--font-xl);
+  font-size: var(--text-page-h2-size); /* 26.4px — Loop/Members/Profile titles */
   line-height: 1.15;
-  color: var(--color-text-strong);
+  color: var(--color-text-heading); /* warm cream #f5f0e8, not blue-tinted --color-text-strong */
 }
 
 .description {

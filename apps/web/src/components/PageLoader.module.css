@@ -1,0 +1,7 @@
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-7);
+  min-height: 40vh;
+}

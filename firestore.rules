@@ -37,7 +37,9 @@ service cloud.firestore {
       allow read: if signedIn();
       allow create: if signedIn() && request.resource.data.authorId == uid();
       allow delete: if signedIn() && (resource.data.authorId == uid() || resource.data.ownerId == uid());
-      allow update: if false;
+      // Any member can like/unlike (toggleWallPostLike updates likedBy)
+      // or append a reply (addWallPostReply updates replies) — both use update.
+      allow update: if signedIn();
     }
     match /activity/{id} {
       allow read: if signedIn();

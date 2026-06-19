@@ -3,3 +3,12 @@
   flex-wrap: wrap;
   gap: var(--space-2);
 }
+
+/* Interest chips use the sage-green palette from the live site */
+.interestChip {
+  background: var(--color-interest-bg);
+  border-color: var(--color-interest-border);
+  color: var(--color-interest-ink);
+  font-size: var(--font-base);
+  cursor: default;
+}

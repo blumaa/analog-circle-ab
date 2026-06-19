@@ -41,6 +41,11 @@ export function TopBar() {
       to: innerGroup ? `/innercircle/group/${innerGroup.id}` : "/innercircle/dashboard",
     },
     {
+      label: "The Square",
+      description: "The community calendar",
+      to: "/innercircle/calendar",
+    },
+    {
       label: "The Loop",
       description: "Ask for help and offer what you can",
       to: "/innercircle/the-loop",

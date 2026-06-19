@@ -17,6 +17,9 @@
   --color-text-faint: var(--ivory-300);
   --color-text-muted: var(--muted-500);
   --color-text-muted-2: var(--muted-400);
+  /* Heading text — warm cream (--ivory-50 = #f5f0e8 = rgb(245,240,232)).
+     Distinct from --color-text-strong (--ivory-100 = #ececf4, which has a blue tint). */
+  --color-text-heading: var(--ivory-50);
 
   /* Brand accent (gold) */
   --color-accent: var(--gold-500);
@@ -41,6 +44,9 @@
 
   /* Status */
   --color-whatsapp: var(--green-500);
+  --color-whatsapp-soft: var(--whatsapp-alpha);   /* button fill */
+  --color-whatsapp-border: var(--whatsapp-border); /* button border */
+  --color-whatsapp-ink: var(--green-400);          /* button text */
   --color-success: var(--green-400);
   --color-success-bright: var(--green-300);
   --color-success-soft: var(--green-200);
@@ -48,12 +54,62 @@
   --color-error-soft: var(--red-300);
   --color-info: var(--blue-400);
 
+  /* Interest chips (sage green) — matches live ic-member-tag */
+  --color-interest-bg: var(--sage-alpha);
+  --color-interest-border: var(--sage-border);
+  --color-interest-ink: var(--sage-500);
+
+  /* Typography */
+  --font-base: var(--font-md); /* alias for font-md — used across app CSS modules */
+
+  /* Icon tile tints — used by NavCard tone variants */
+  --color-tile-rose: var(--rose-alpha);
+  --color-tile-rose-ink: var(--rose-300);
+  --color-tile-indigo: var(--indigo-alpha);
+  --color-tile-indigo-ink: var(--indigo-300);
+  --color-tile-sky: var(--sky-alpha);
+  --color-tile-sky-ink: var(--sky-300);
+
+  /* Need-rose badge tokens */
+  --color-need-bg: var(--need-bg);
+  --color-need-ink: var(--need-ink);
+  /* Need card border — rose ~28% opacity, matches live Loop "Need" card outline */
+  --color-need-line: var(--need-line);
+
+  /* Soft-control button tokens (calendar action buttons) */
+  --color-control-soft-bg: var(--control-soft-bg);
+  --color-control-soft-ink: var(--control-soft-ink);
+  --color-control-soft-line: var(--control-soft-line);
+
+  /* Gold outline border at ~45% opacity — ghost-gold / outline variant border */
+  --color-accent-line-strong: var(--alpha-accent-45);
+
+  /* Member card tokens */
+  --color-member-card-bg: var(--member-card-bg);   /* rgba(0,0,0,0.22) */
+  --color-accent-line-22: var(--alpha-accent-22);  /* rgba(201,168,76,0.22) gold border */
+  --color-member-media-bg: var(--member-media-bg); /* rgba(0,0,0,0.35) avatar backdrop */
+
+  /* Food card tokens */
+  --color-food-card-bg: var(--food-card-bg);       /* rgba(26,26,46,0.65) */
+  --color-accent-line-15: var(--alpha-accent-15);  /* rgba(201,168,76,0.15) gold border */
+  --color-food-detail-ink: var(--alpha-cream-92);  /* rgba(245,240,232,0.92) dietary detail */
+
+  /* Tabs */
+  --color-tab-inactive: rgba(245, 240, 232, 0.55); /* cream 55% alpha — inactive tab label */
+  --text-tab-size: var(--font-tab);                 /* 0.72rem / 11.52px — live group tab */
+
+  /* Input */
+  --color-input-bg: var(--alpha-dark-25);           /* rgba(0,0,0,0.25) — members-style fill */
+  --text-input-size: var(--font-input);             /* 0.95rem / 15.2px — live search input */
+
   /* Focus ring */
   --color-focus-ring: var(--gold-300);
 
   /* Component radii */
   --radius-control: var(--radius-pill);
+  --radius-input: var(--radius-md);                 /* 0.75rem / 12px — input field corners */
   --radius-card: var(--radius-lg);
+  --radius-card-lg: var(--radius-card-lg);          /* 1.125rem / 18px — Loop PostCard large radius */
   --radius-tile: var(--radius-sm);
 
   /* Control sizes */
@@ -64,9 +120,33 @@
   --text-display-family: var(--family-display);
   --text-wordmark-family: var(--family-wordmark);
   --text-body-family: var(--family-body);
+  --text-eyebrow-family: var(--family-eyebrow);
+
+  /* Wordmark type scale (live-matched: 21.6px / 0.432px tracking) */
+  --text-wordmark-size: var(--font-wordmark);
+  --text-wordmark-tracking: 0.02em; /* 0.432px at 21.6px base */
+
+  /* Eyebrow / section-label type scale (live-matched: 10.88px / 1.3056px tracking) */
+  --text-eyebrow-size: var(--font-eyebrow);
+  --text-eyebrow-weight: var(--weight-semi);
+  --text-eyebrow-tracking: 0.12em; /* 1.3056px at 10.88px base */
+
+  /* Page heading type scale (live-matched) */
+  --text-page-h2-size: var(--font-page-h2);     /* Loop/Members/Profile — 26.4px */
+  --text-welcome-h2-size: var(--font-welcome-h2); /* Dashboard welcome — 37.6px */
+
+  /* Nav link type scale (live-matched: 13.12px) */
+  --text-nav-size: 0.82rem;        /* 13.12px ÷ 16 */
+  --text-nav-weight-inactive: var(--weight-medium);
+  --color-nav-inactive: rgba(245, 240, 232, 0.5); /* cream @ 50% alpha */
+  --color-nav-active: var(--color-accent);
+  /* Mobile bottom-nav surface — live is bluer than --color-bg-deep (rgb(26,26,46)) */
+  --color-nav-bg: var(--navy-800);
+  /* Mobile bottom-nav top border — gold @ 15% (live is brighter than hairline-soft) */
+  --color-nav-border: var(--alpha-accent-15);
 
   /* Elevation */
-  --elevation-card: var(--shadow-soft);
+  --elevation-card: var(--shadow-card-inset); /* live cards: subtle inset highlight, no heavy drop shadow */
   --elevation-raised: var(--shadow-lift);
 
   /* Motion */

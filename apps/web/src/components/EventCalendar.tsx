@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import {
   Button,
   Calendar,
-  Card,
   Spinner,
   useToast,
   type CalendarEvent,
@@ -19,8 +18,8 @@ import {
 } from "../data/hooks";
 import type { EventItem, Member, Scope } from "../data";
 import { EventCard, type SwapTarget } from "./EventCard";
-import { EventForm, type EventFormValues } from "./EventForm";
-import { canCreateEvent, canManageEvent } from "../lib/permissions";
+import type { EventFormValues } from "./EventForm";
+import { canManageEvent } from "../lib/permissions";
 import { formatMonthYear } from "../lib/format";
 import styles from "./EventCalendar.module.css";
 
@@ -30,12 +29,14 @@ export interface EventCalendarProps {
   /** analog = all events; inner = only this member's inner-group meetings. */
   scope: Scope;
   view: EventCalendarView;
-  /** When provided, a "New meeting" affordance and the create form are shown (list view). */
+  /** When provided, the page can wire up a create handler (called from a modal). */
   onCreate?: (values: EventFormValues) => void;
-  /** When provided, list-view events become editable. */
+  /** When provided, the page can wire up an update handler (called from a modal). */
   onEdit?: (id: string, values: EventFormValues) => void;
   /** When provided, list-view events become deletable. */
   onDelete?: (id: string) => void;
+  /** Called when the user clicks the Edit button on an event; the page opens a modal. */
+  onRequestEdit?: (event: EventItem) => void;
   /** Used to build the create/edit form's groupId field. */
   groupId?: string;
 }
@@ -128,9 +129,10 @@ function EventCardWithRsvps({
 export function EventCalendar({
   scope,
   view,
-  onCreate,
+  onCreate: _onCreate,
   onEdit,
   onDelete,
+  onRequestEdit,
   groupId,
 }: EventCalendarProps) {
   const navigate = useNavigate();
@@ -162,8 +164,6 @@ export function EventCalendar({
   );
 
   const [calendarDate, setCalendarDate] = useState<Date>(new Date());
-  const [creating, setCreating] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
 
   const memberById = (mid: string | null) => members.find((m) => m.id === mid) ?? null;
 
@@ -188,6 +188,8 @@ export function EventCalendar({
       title: e.title,
       start: toDate(e.date, e.startTime),
       end: toDate(e.date, e.endTime),
+      // Inner-circle events = gold (accent); Analog-circle events = blue (info).
+      tone: e.scope === "inner" ? "accent" : "info",
     }));
 
     if (loading) return <Spinner label="Loading calendar" />;
@@ -198,72 +200,35 @@ export function EventCalendar({
         view={view as CalendarView}
         date={calendarDate}
         onNavigate={setCalendarDate}
-        onSelectEvent={() => {
-          if (innerGroupId) navigate(`/innercircle/group/${innerGroupId}`);
+        onSelectEvent={(id) => {
+          if (id) navigate(`/innercircle/event/${id}`);
         }}
       />
     );
   }
 
   // ---- List view ----
-  const showManagement = !!(onCreate || onEdit || onDelete);
+  const showManagement = !!(onEdit || onDelete || onRequestEdit);
 
   return (
     <div className={styles.list}>
-      {onCreate && canCreateEvent(memberId) && !creating && (
-        <Button variant="outline" onClick={() => setCreating(true)}>
-          New meeting
-        </Button>
-      )}
-
-      {onCreate && creating && (
-        <Card>
-          <EventForm
-            groupId={innerGroupId}
-            onSubmit={(v) => {
-              onCreate(v);
-              setCreating(false);
-            }}
-            onCancel={() => setCreating(false)}
-            submitLabel="Create meeting"
-          />
-        </Card>
-      )}
-
       {loading ? (
         <Spinner label="Loading meetings" />
       ) : (
         <ul className={styles.eventList}>
-          {sortedEvents.map((ev) =>
-            editingId === ev.id && onEdit ? (
-              <li key={ev.id} className={styles.editRow}>
-                <Card>
-                  <EventForm
-                    groupId={innerGroupId}
-                    initial={ev}
-                    onSubmit={(v) => {
-                      onEdit(ev.id, v);
-                      setEditingId(null);
-                    }}
-                    onCancel={() => setEditingId(null)}
-                    submitLabel="Save changes"
-                  />
-                </Card>
-              </li>
-            ) : (
-              <EventCardWithRsvps
-                key={ev.id}
-                event={ev}
-                host={memberById(ev.hostId)}
-                currentMemberId={memberId}
-                members={members}
-                swapTargets={swapTargetsFor(ev.id)}
-                canManage={showManagement && canManageEvent(ev, memberId)}
-                onEdit={onEdit ? () => setEditingId(ev.id) : undefined}
-                onDelete={onDelete ? () => onDelete(ev.id) : undefined}
-              />
-            ),
-          )}
+          {sortedEvents.map((ev) => (
+            <EventCardWithRsvps
+              key={ev.id}
+              event={ev}
+              host={memberById(ev.hostId)}
+              currentMemberId={memberId}
+              members={members}
+              swapTargets={swapTargetsFor(ev.id)}
+              canManage={showManagement && canManageEvent(ev, memberId)}
+              onEdit={onRequestEdit ? () => onRequestEdit(ev) : undefined}
+              onDelete={onDelete ? () => onDelete(ev.id) : undefined}
+            />
+          ))}
         </ul>
       )}
     </div>

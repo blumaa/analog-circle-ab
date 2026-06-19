@@ -10,9 +10,10 @@
 .welcome {
   font-family: var(--text-display-family);
   font-weight: var(--weight-bold);
-  font-size: var(--font-3xl);
-  line-height: 1.05;
-  color: var(--color-text-strong);
+  /* Match live: ~28.8px mobile → 37.6px desktop */
+  font-size: clamp(1.8rem, 5vw, var(--text-welcome-h2-size));
+  line-height: 1.1;
+  color: var(--color-text-heading); /* warm cream #f5f0e8, not blue-tinted --color-text-strong */
   margin: 0;
 }
 
@@ -24,30 +25,29 @@
 .section {
   display: flex;
   flex-direction: column;
+  gap: var(--space-3);
   margin-bottom: var(--space-6);
 }
 
-.sectionHeading {
-  font-family: var(--text-body-family);
-  font-size: var(--font-xs);
-  font-weight: var(--weight-bold);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  margin: 0 0 var(--space-3);
+.whatsappWrapper {
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-6);
 }
 
 /* Community nav — arrangement only; NavCard owns its own look. */
 .communityList {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+
+@media (max-width: 700px) {
+  .communityList {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 600px) {
-  .welcome {
-    font-size: var(--font-2xl);
-  }
   .welcomeSection {
     margin: var(--space-4) 0 var(--space-6);
   }

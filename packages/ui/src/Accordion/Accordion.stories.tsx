@@ -25,6 +25,16 @@ export const WithTrailing: Story = {
   },
 };
 
+export const DividedOpen: Story = {
+  args: {
+    summary: "Inner Circle meeting — June 2026",
+    trailing: <Badge variant="accent">You&apos;re hosting</Badge>,
+    defaultOpen: true,
+    divided: true,
+    children: "Full-width hairline appears between the trigger and this content.",
+  },
+};
+
 export const LongSummaryWithTrailing: Story = {
   args: {
     summary:

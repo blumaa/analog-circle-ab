@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { rawColor } from "@analog/tokens";
 import type { Member } from "../data";
 import styles from "./MapView.module.css";
 
@@ -16,7 +15,7 @@ function initials(name: string): string {
     .join("");
 }
 
-/** Member locations on a dark CARTO basemap with gold initial pins. */
+/** Member locations on a dark CARTO basemap with gold CSS-teardrop pins. */
 export function MapView({ members }: { members: Member[] }) {
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
@@ -35,9 +34,9 @@ export function MapView({ members }: { members: Member[] }) {
       if (!m.location) continue;
       const icon = L.divIcon({
         className: styles.pin,
-        html: `<span style="background:${rawColor.gold500};color:${rawColor.goldInk}">${initials(m.name)}</span>`,
-        iconSize: [34, 42],
-        iconAnchor: [17, 42],
+        html: `<span class="ic-teardrop"><span class="ic-teardrop-initials">${initials(m.name)}</span></span>`,
+        iconSize: [34, 34],
+        iconAnchor: [17, 34],
       });
       L.marker([m.location.lat, m.location.lng], { icon, title: m.name }).addTo(map);
     }

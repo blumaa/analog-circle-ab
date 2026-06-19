@@ -1,39 +1,67 @@
-/* Card owns surface, border, radius, shadow, and overflow.
-   These rules only arrange the slotted content. */
+.card {
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+  background: var(--color-member-card-bg);
+  border: 1px solid var(--color-accent-line-22);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.media {
+  flex-shrink: 0;
+  display: flex;
+  align-items: stretch;
+  background: var(--color-member-media-bg);
+  padding: 6px;
+  width: 88px;
+}
+
+.media img {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
 
 .body {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  gap: var(--space-3);
-  padding: var(--space-4);
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  min-width: 0;
 }
 
-.memberLink {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: var(--space-3);
+.nameLink {
   text-decoration: none;
   color: inherit;
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-sm);
 }
 
-.memberLink:focus-visible {
+.nameLink:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
 
 .name {
-  font-family: var(--text-display-family);
-  font-size: var(--font-xl);
-  font-weight: var(--weight-bold);
+  font-family: var(--text-body-family);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semi);
   color: var(--color-accent);
   margin: 0;
-  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.whatsappLink {
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.actionLink {
   display: block;
   text-decoration: none;
 }

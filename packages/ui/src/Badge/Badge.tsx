@@ -7,7 +7,8 @@ export type BadgeVariant =
   | "meeting"
   | "accent"
   | "neutral"
-  | "success";
+  | "success"
+  | "rose";
 
 export interface BadgeProps {
   variant?: BadgeVariant;

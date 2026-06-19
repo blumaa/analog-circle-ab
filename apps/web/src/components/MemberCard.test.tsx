@@ -14,6 +14,7 @@ const member: Member = {
   interests: ["Design", "Hiking"],
   dietary: null,
   whatsappUrl: "https://wa.me/000",
+  homeAddress: null,
   location: null,
 };
 
@@ -25,13 +26,13 @@ describe("MemberCard", () => {
 
   it("renders WhatsApp button linking to whatsappUrl", () => {
     renderWithProviders(<MemberCard member={member} />);
-    const link = screen.getByRole("link", { name: /whatsapp/i });
+    const link = screen.getByRole("link", { name: /whatsapp aaron/i });
     expect(link).toHaveAttribute("href", "https://wa.me/000");
   });
 
-  it("links to the member's profile page", () => {
+  it("links to the member's profile page via name link", () => {
     renderWithProviders(<MemberCard member={member} />);
-    const link = screen.getByRole("link", { name: /aaron blum/i });
+    const link = screen.getByRole("link", { name: /^aaron blum$/i });
     expect(link).toHaveAttribute("href", "/innercircle/members/aaron");
   });
 
@@ -43,5 +44,15 @@ describe("MemberCard", () => {
   it("omits WhatsApp button when whatsappUrl is null", () => {
     renderWithProviders(<MemberCard member={{ ...member, whatsappUrl: null }} />);
     expect(screen.queryByRole("link", { name: /whatsapp/i })).not.toBeInTheDocument();
+  });
+
+  it("renders as an article element (card layout)", () => {
+    const { container } = renderWithProviders(<MemberCard member={member} />);
+    expect(container.querySelector("article")).toBeInTheDocument();
+  });
+
+  it("renders More info button", () => {
+    renderWithProviders(<MemberCard member={member} />);
+    expect(screen.getByText("More info")).toBeInTheDocument();
   });
 });

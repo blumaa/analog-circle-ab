@@ -1,16 +1,18 @@
 import type { LoopPost } from "../../data";
 
-export type KindFilter = "all" | "need" | "offer" | "archived";
+export type KindFilter = "all" | "need" | "offer" | "archived" | "mine";
 
 export interface FilterParams {
   query: string;
   kind: KindFilter;
   category: string;
+  /** Required for the "mine" filter — the signed-in member's id. */
+  currentMemberId?: string | null;
 }
 
 export function filterLoopPosts(
   posts: LoopPost[],
-  { query, kind, category }: FilterParams,
+  { query, kind, category, currentMemberId }: FilterParams,
   resolveAuthorName: (authorId: string) => string,
 ): LoopPost[] {
   return posts.filter((post) => {
@@ -19,7 +21,11 @@ export function filterLoopPosts(
       if (!post.archived) return false;
     } else {
       if (post.archived) return false;
-      if (kind !== "all" && post.kind !== kind) return false;
+      if (kind === "mine") {
+        if (!currentMemberId || post.authorId !== currentMemberId) return false;
+      } else if (kind !== "all") {
+        if (post.kind !== kind) return false;
+      }
     }
 
     // Category filter

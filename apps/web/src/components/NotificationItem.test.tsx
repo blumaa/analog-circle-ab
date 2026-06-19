@@ -27,7 +27,7 @@ function makeMember(id: string, name: string): Member {
     bio: null,
     interests: [],
     dietary: null,
-    whatsappUrl: null,
+    whatsappUrl: null, homeAddress: null,
     location: null,
   };
 }
@@ -72,7 +72,7 @@ describe("NotificationItem text per type", () => {
 
   it("event_created", () => {
     renderItem(makeActivity({ type: "event_created", actorId: "david", subjectId: null }));
-    expect(screen.getByText("David created a meeting")).toBeInTheDocument();
+    expect(screen.getByText("David created an event")).toBeInTheDocument();
   });
 
   it("member_joined inner", () => {
@@ -92,6 +92,16 @@ describe("NotificationItem text per type", () => {
   it("loop_post", () => {
     renderItem(makeActivity({ type: "loop_post", actorId: "david", subjectId: null }));
     expect(screen.getByText("David posted to The Loop")).toBeInTheDocument();
+  });
+
+  it("mention tagged you (subjectId === currentMemberId)", () => {
+    renderItem(makeActivity({ type: "mention", actorId: "david", subjectId: "aaron" }), "aaron");
+    expect(screen.getByText("David tagged you in a post")).toBeInTheDocument();
+  });
+
+  it("mention tagged someone else", () => {
+    renderItem(makeActivity({ type: "mention", actorId: "david", subjectId: "vki" }), "aaron");
+    expect(screen.getByText("David tagged Vki in a post")).toBeInTheDocument();
   });
 });
 

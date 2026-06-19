@@ -50,4 +50,49 @@ describe("Chip", () => {
     );
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  describe("static variant", () => {
+    it("renders as a <span> when static is true", () => {
+      const { container } = render(<Chip static>Hiking</Chip>);
+      expect(container.querySelector("span.chip, span[class*='chip']")).not.toBeNull();
+      expect(container.querySelector("button")).toBeNull();
+    });
+
+    it("does not have a button role when static", () => {
+      render(<Chip static>Hiking</Chip>);
+      expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    });
+
+    it("has no accessibility violations when static", async () => {
+      const { container } = render(<Chip static>Hiking</Chip>);
+      expect(await axe(container)).toHaveNoViolations();
+    });
+  });
+
+  describe("rose tone", () => {
+    it("applies data-tone=rose to interactive chip", () => {
+      render(<Chip tone="rose">Need</Chip>);
+      expect(screen.getByRole("button", { name: "Need" })).toHaveAttribute("data-tone", "rose");
+    });
+
+    it("applies data-tone=rose to static chip", () => {
+      const { container } = render(<Chip static tone="rose">Offer</Chip>);
+      const span = container.querySelector("[data-tone='rose']");
+      expect(span).not.toBeNull();
+    });
+
+    it("has no accessibility violations with rose tone", async () => {
+      const { container } = render(<Chip tone="rose">Need</Chip>);
+      expect(await axe(container)).toHaveNoViolations();
+    });
+
+    it("has no accessibility violations with rose tone selected", async () => {
+      const { container } = render(
+        <Chip tone="rose" selected>
+          Need
+        </Chip>,
+      );
+      expect(await axe(container)).toHaveNoViolations();
+    });
+  });
 });

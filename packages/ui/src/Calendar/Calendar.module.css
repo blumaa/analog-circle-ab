@@ -14,6 +14,27 @@
   font-family: var(--text-body-family);
 }
 
+/* Custom toolbar (nav + label only; view switcher omitted) */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.nav {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.toolbarLabel {
+  font-family: var(--text-display-family);
+  font-size: var(--font-lg);
+  color: var(--color-text-heading);
+}
+
 /* Toolbar */
 .calendar :global(.rbc-toolbar) {
   margin-bottom: var(--space-4);
@@ -124,8 +145,9 @@
 
 /* Event pills */
 .calendar :global(.rbc-event) {
-  background: var(--color-accent);
-  color: var(--color-on-accent);
+  /* Per-event tone vars (set via eventPropGetter); fall back to accent. */
+  background: var(--cal-event-bg, var(--color-accent));
+  color: var(--cal-event-ink, var(--color-on-accent));
   border: none;
   border-radius: var(--radius-tile);
   padding: var(--space-1) var(--space-2);
@@ -140,8 +162,8 @@
 
 .calendar :global(.rbc-event.rbc-selected),
 .calendar :global(.rbc-day-slot .rbc-selected.rbc-event) {
-  background: var(--color-accent-bright);
-  color: var(--color-on-accent);
+  background: var(--cal-event-bg-strong, var(--color-accent-bright));
+  color: var(--cal-event-ink, var(--color-on-accent));
 }
 
 .calendar :global(.rbc-event-label) {

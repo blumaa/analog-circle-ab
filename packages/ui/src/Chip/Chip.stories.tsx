@@ -15,3 +15,7 @@ export const Default: Story = {};
 export const Selected: Story = { args: { selected: true } };
 export const WithCount: Story = { args: { count: 7 } };
 export const SelectedWithCount: Story = { args: { selected: true, count: 7 } };
+export const Static: Story = { args: { static: true, children: "Hiking" } };
+export const RoseTone: Story = { args: { tone: "rose", children: "Need" } };
+export const RoseToneSelected: Story = { args: { tone: "rose", selected: true, children: "Need" } };
+export const RoseToneStatic: Story = { args: { static: true, tone: "rose", children: "Offer" } };

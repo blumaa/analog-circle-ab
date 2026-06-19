@@ -34,8 +34,18 @@ describe("Badge", () => {
     expect(screen.getByText("Hosting")).toHaveAttribute("data-variant", "accent");
   });
 
+  it("applies the rose variant", () => {
+    render(<Badge variant="rose">Need</Badge>);
+    expect(screen.getByText("Need")).toHaveAttribute("data-variant", "rose");
+  });
+
   it("has no accessibility violations", async () => {
     const { container } = render(<Badge variant="success">Going</Badge>);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("has no accessibility violations for rose variant", async () => {
+    const { container } = render(<Badge variant="rose">Need</Badge>);
     expect(await axe(container)).toHaveNoViolations();
   });
 });

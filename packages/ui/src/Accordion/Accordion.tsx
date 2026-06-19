@@ -10,6 +10,8 @@ export interface AccordionProps {
   defaultOpen?: boolean;
   /** Optional right-aligned node in the header (e.g. a status). */
   trailing?: ReactNode;
+  /** When true and open, renders a full-width hairline below the trigger. */
+  divided?: boolean;
 }
 
 export function Accordion({
@@ -17,12 +19,17 @@ export function Accordion({
   children,
   defaultOpen = false,
   trailing,
+  divided = false,
 }: AccordionProps) {
   const [open, setOpen] = useState(defaultOpen);
   const contentId = useId();
 
   return (
-    <div className={styles.accordion} data-open={open || undefined}>
+    <div
+      className={styles.accordion}
+      data-open={open || undefined}
+      data-divided={divided || undefined}
+    >
       <button
         type="button"
         aria-expanded={open}

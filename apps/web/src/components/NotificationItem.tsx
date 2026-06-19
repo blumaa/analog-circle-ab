@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Avatar } from "@analog/ui";
 import type { Activity, Member } from "../data/types";
+import { activityText } from "../lib/activityText";
 import { relativeTime } from "../lib/relativeTime";
 import styles from "./NotificationItem.module.css";
 
@@ -10,34 +11,6 @@ export interface NotificationItemProps {
   currentMemberId: string;
   /** Called after navigation to mark this activity read. */
   onRead: () => void;
-}
-
-function activityText(
-  activity: Activity,
-  members: Member[],
-  currentMemberId: string,
-): string {
-  const actor = members.find((m) => m.id === activity.actorId);
-  const actorName = actor?.name ?? "Someone";
-
-  switch (activity.type) {
-    case "wall_post": {
-      if (activity.subjectId === currentMemberId) {
-        return `${actorName} wrote on your wall`;
-      }
-      const subject = members.find((m) => m.id === activity.subjectId);
-      const subjectName = subject?.name ?? "a member";
-      return `${actorName} wrote on ${subjectName}’s wall`;
-    }
-    case "event_created":
-      return `${actorName} created a meeting`;
-    case "member_joined":
-      return `${actorName} joined the ${
-        activity.scope === "inner" ? "Inner Circle" : "Analog Circle"
-      }`;
-    case "loop_post":
-      return `${actorName} posted to The Loop`;
-  }
 }
 
 export function NotificationItem({

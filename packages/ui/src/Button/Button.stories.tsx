@@ -10,7 +10,7 @@ const meta = {
   argTypes: {
     variant: {
       control: "select",
-      options: ["primary", "secondary", "outline", "ghost", "success", "danger"],
+      options: ["primary", "secondary", "outline", "ghost", "success", "danger", "whatsapp", "soft"],
     },
     size: { control: "inline-radio", options: ["sm", "md"] },
   },
@@ -36,3 +36,5 @@ export const IconOnly: Story = {
 export const IconOnlyGhost: Story = {
   args: { iconOnly: true, "aria-label": "Close", variant: "ghost", children: <X size={20} /> },
 };
+export const OutlineGold: Story = { args: { variant: "outline", children: "Add to The Loop" } };
+export const Soft: Story = { args: { variant: "soft", children: "Download .ics" } };

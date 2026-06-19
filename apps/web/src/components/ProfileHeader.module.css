@@ -1,10 +1,17 @@
-.header {
+.hero {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-6) 0 var(--space-4);
+  padding: var(--space-6) var(--space-5) var(--space-5);
   text-align: center;
+}
+
+.editBtn {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
 }
 
 .avatarRing {
@@ -14,9 +21,22 @@
   display: inline-flex;
 }
 
+/* Override Avatar's lg size (56px) to match live profile avatar (116px) */
+.avatarLg {
+  width: 116px !important;
+  height: 116px !important;
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
 .name {
   font-family: var(--text-display-family);
-  font-size: var(--font-2xl);
+  font-size: var(--font-xl);
   font-weight: var(--weight-bold);
   color: var(--color-text-strong);
   margin: 0;
@@ -26,4 +46,5 @@
   font-size: var(--font-sm);
   color: var(--color-text-muted-2);
   margin: 0;
+  opacity: 0.8;
 }

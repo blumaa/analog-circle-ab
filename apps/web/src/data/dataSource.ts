@@ -53,6 +53,11 @@ export interface DataSource {
   listWallPosts(ownerId: string): Promise<WallPost[]>;
   createWallPost(input: Omit<WallPost, "id" | "createdAt">): Promise<WallPost>;
   deleteWallPost(id: string): Promise<void>;
+  /** Toggle a member's like on a wall post; returns the updated post. */
+  toggleWallPostLike(postId: string, memberId: string): Promise<WallPost>;
+
+  /** Append a reply to a wall post; returns the updated post. */
+  addWallPostReply(postId: string, authorId: string, body: string, mentions?: string[]): Promise<WallPost>;
 
   // Activity / notifications
   listActivity(): Promise<Activity[]>;

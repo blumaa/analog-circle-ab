@@ -48,3 +48,10 @@
   background: var(--color-surface-raised);
   color: var(--color-text-muted);
 }
+
+/* rose — warm red-rose: live Loop "Need" badge */
+.badge[data-variant="rose"] {
+  background: var(--color-need-bg);
+  color: var(--color-need-ink);
+  padding: 0 var(--space-3);
+}

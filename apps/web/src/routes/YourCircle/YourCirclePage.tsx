@@ -1,5 +1,7 @@
+import { lazy, Suspense, useState } from "react";
+import { Plus } from "lucide-react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { Accordion, Button, Spinner, Tabs, useToast } from "@analog/ui";
+import { Accordion, Button, Fab, Modal, Spinner, Tabs, useToast } from "@analog/ui";
 import {
   useCreateEvent,
   useCurrentMemberId,
@@ -9,18 +11,26 @@ import {
   useUpdateEvent,
 } from "../../data/hooks";
 import type { EventItem } from "../../data";
-import { EventCalendar } from "../../components/EventCalendar";
-import { type EventFormValues } from "../../components/EventForm";
-import { MapView } from "../../components/MapView";
+import { EventForm, type EventFormValues } from "../../components/EventForm";
 import { FoodList } from "../../components/FoodList";
 import { MemberCard } from "../../components/MemberCard";
+import { canCreateEvent } from "../../lib/permissions";
+import { PageLoader } from "../../components/PageLoader";
 import styles from "./YourCirclePage.module.css";
 
+// Heavy deps (react-big-calendar, Leaflet) loaded only when their tab is opened.
+const EventCalendar = lazy(() =>
+  import("../../components/EventCalendar").then((m) => ({ default: m.EventCalendar })),
+);
+const MapView = lazy(() =>
+  import("../../components/MapView").then((m) => ({ default: m.MapView })),
+);
+
 const TABS = [
-  { value: "calendar", label: "CALENDAR" },
-  { value: "members", label: "MEMBERS" },
-  { value: "map", label: "MAP" },
-  { value: "food", label: "FOOD" },
+  { value: "calendar", label: "Calendar" },
+  { value: "members", label: "Members" },
+  { value: "map", label: "Map" },
+  { value: "food", label: "Food" },
 ];
 
 /** Generate .ics content for all events and trigger bulk download. */
@@ -68,6 +78,9 @@ export function YourCirclePage() {
   const [params, setParams] = useSearchParams();
   const view = params.get("view") ?? "calendar";
 
+  const [createOpen, setCreateOpen] = useState(false);
+  const [editEvent, setEditEvent] = useState<EventItem | null>(null);
+
   const { data: memberId = null } = useCurrentMemberId();
   const { data: members = [], isLoading: membersLoading } = useMembers("inner", groupId);
   const { data: events = [] } = useEvents(groupId);
@@ -93,7 +106,10 @@ export function YourCirclePage() {
         type: "event",
       },
       {
-        onSuccess: () => toast.success("Meeting created."),
+        onSuccess: () => {
+          toast.success("Meeting created.");
+          setCreateOpen(false);
+        },
         onError: () => toast.error("Couldn't create the meeting."),
       },
     );
@@ -113,7 +129,10 @@ export function YourCirclePage() {
         },
       },
       {
-        onSuccess: () => toast.success("Meeting updated."),
+        onSuccess: () => {
+          toast.success("Meeting updated.");
+          setEditEvent(null);
+        },
         onError: () => toast.error("Couldn't update the meeting."),
       },
     );
@@ -158,31 +177,34 @@ export function YourCirclePage() {
               >
                 <div className={styles.addAllOptions}>
                   <Button
-                    variant="ghost"
+                    variant="soft"
                     size="sm"
                     className={styles.calBtn}
                     onClick={() => downloadAllIcs(events)}
                   >
-                    Download all as .ics
+                    Download .ics file
                   </Button>
                 </div>
               </Accordion>
             </div>
           )}
 
-          <EventCalendar
-            scope="inner"
-            view="list"
-            groupId={groupId}
-            onCreate={handleCreate}
-            onEdit={handleEdit}
-            onDelete={(id) =>
-              deleteEvent.mutate(id, {
-                onSuccess: () => toast.success("Meeting deleted."),
-                onError: () => toast.error("Couldn't delete the meeting."),
-              })
-            }
-          />
+          <Suspense fallback={<PageLoader />}>
+            <EventCalendar
+              scope="inner"
+              view="list"
+              groupId={groupId}
+              onCreate={handleCreate}
+              onEdit={handleEdit}
+              onRequestEdit={(ev) => setEditEvent(ev)}
+              onDelete={(id) =>
+                deleteEvent.mutate(id, {
+                  onSuccess: () => toast.success("Meeting deleted."),
+                  onError: () => toast.error("Couldn't delete the meeting."),
+                })
+              }
+            />
+          </Suspense>
         </section>
       )}
 
@@ -196,9 +218,53 @@ export function YourCirclePage() {
         </section>
       )}
 
-      {view === "map" && (membersLoading ? <Spinner /> : <MapView members={members} />)}
+      {view === "map" &&
+        (membersLoading ? (
+          <Spinner />
+        ) : (
+          <Suspense fallback={<PageLoader />}>
+            <MapView members={members} />
+          </Suspense>
+        ))}
 
       {view === "food" && <FoodList members={members} />}
+
+      {canCreateEvent(memberId) && view === "calendar" && (
+        <Fab
+          icon={<Plus size={24} />}
+          aria-label="New meeting"
+          onClick={() => setCreateOpen(true)}
+        />
+      )}
+
+      <Modal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        title="New meeting"
+      >
+        <EventForm
+          groupId={groupId}
+          onSubmit={handleCreate}
+          onCancel={() => setCreateOpen(false)}
+          submitLabel="Create meeting"
+        />
+      </Modal>
+
+      <Modal
+        open={!!editEvent}
+        onClose={() => setEditEvent(null)}
+        title="Edit meeting"
+      >
+        {editEvent && (
+          <EventForm
+            groupId={groupId}
+            initial={editEvent}
+            onSubmit={(v) => handleEdit(editEvent.id, v)}
+            onCancel={() => setEditEvent(null)}
+            submitLabel="Save changes"
+          />
+        )}
+      </Modal>
     </div>
   );
 }

@@ -1,9 +1,13 @@
 .label {
   display: inline-block;
-  font-family: var(--text-body-family);
-  font-size: var(--font-xs);
-  font-weight: var(--weight-bold);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-family: var(--text-eyebrow-family);
+  font-size: var(--text-eyebrow-size);
+  font-weight: var(--text-eyebrow-weight);
+  letter-spacing: var(--text-eyebrow-tracking);
+  text-transform: uppercase; /* default: uppercase */
   color: var(--color-text-muted);
+}
+
+.label[data-transform="none"] {
+  text-transform: none;
 }

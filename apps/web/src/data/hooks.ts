@@ -131,7 +131,10 @@ export function useCreateWallPost(ownerId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (input: Omit<WallPost, "id" | "createdAt">) => dataSource.createWallPost(input),
-    onSuccess: () => qc.invalidateQueries({ queryKey: qk.wallPosts(ownerId) }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: qk.wallPosts(ownerId) });
+      qc.invalidateQueries({ queryKey: qk.activity });
+    },
   });
 }
 
@@ -139,6 +142,24 @@ export function useDeleteWallPost(ownerId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => dataSource.deleteWallPost(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: qk.wallPosts(ownerId) }),
+  });
+}
+
+export function useToggleWallPostLike(ownerId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (v: { postId: string; memberId: string }) =>
+      dataSource.toggleWallPostLike(v.postId, v.memberId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: qk.wallPosts(ownerId) }),
+  });
+}
+
+export function useAddWallPostReply(ownerId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (v: { postId: string; authorId: string; body: string }) =>
+      dataSource.addWallPostReply(v.postId, v.authorId, v.body),
     onSuccess: () => qc.invalidateQueries({ queryKey: qk.wallPosts(ownerId) }),
   });
 }

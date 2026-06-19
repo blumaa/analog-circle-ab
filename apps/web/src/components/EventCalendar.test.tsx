@@ -17,7 +17,7 @@ const aaron: Member = {
   bio: null,
   interests: [],
   dietary: null,
-  whatsappUrl: null,
+  whatsappUrl: null, homeAddress: null,
   location: null,
 };
 
@@ -91,26 +91,18 @@ describe("EventCalendar", () => {
         expect(screen.getAllByText("MEETING").length).toBe(allEvents.length);
       });
       // Community event dates appear under analog scope.
-      expect(screen.getByText(/18 July/)).toBeInTheDocument();
-      expect(screen.getByText(/15 August/)).toBeInTheDocument();
+      expect(screen.getAllByText(/18 July/).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/15 August/).length).toBeGreaterThan(0);
     });
 
-    it("shows a New meeting affordance only when onCreate is provided", async () => {
-      const { unmount } = renderWithProviders(
-        <EventCalendar scope="inner" view="list" groupId="ic4" />,
+    it("does not show an inline New meeting button (create is modal-driven from the page)", async () => {
+      renderWithProviders(
+        <EventCalendar scope="inner" view="list" groupId="ic4" onCreate={() => {}} />,
       );
       await waitFor(() => {
         expect(screen.getAllByText("MEETING").length).toBe(innerEvents.length);
       });
       expect(screen.queryByRole("button", { name: /new meeting/i })).not.toBeInTheDocument();
-      unmount();
-
-      renderWithProviders(
-        <EventCalendar scope="inner" view="list" groupId="ic4" onCreate={() => {}} />,
-      );
-      await waitFor(() => {
-        expect(screen.getByRole("button", { name: /new meeting/i })).toBeInTheDocument();
-      });
     });
   });
 

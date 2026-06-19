@@ -21,6 +21,9 @@ vi.mock("../../data/hooks", () => ({
   useMembers: () => mockMembers(),
   useCreateWallPost: () => ({ mutate: mockCreateMutate }),
   useDeleteWallPost: () => ({ mutate: mockDeleteMutate }),
+  useToggleWallPostLike: () => ({ mutate: vi.fn() }),
+  useAddWallPostReply: () => ({ mutate: vi.fn() }),
+  useActivity: () => ({ data: [] }),
 }));
 
 vi.mock("../../data", () => ({
@@ -39,6 +42,7 @@ const member = {
   interests: ["hiking", "music"],
   dietary: "Vegetarian",
   whatsappUrl: null,
+  homeAddress: null,
   location: null,
 };
 
@@ -54,12 +58,12 @@ beforeEach(() => {
 });
 
 describe("ProfilePage edit mode", () => {
-  it("shows Edit profile button", () => {
+  it("shows pencil edit button", () => {
     renderWithProviders(<ProfilePage />);
     expect(screen.getByRole("button", { name: /edit profile/i })).toBeInTheDocument();
   });
 
-  it("shows edit form when Edit profile is clicked", async () => {
+  it("shows edit form when pencil button is clicked", async () => {
     renderWithProviders(<ProfilePage />);
     await userEvent.click(screen.getByRole("button", { name: /edit profile/i }));
     expect(screen.getByRole("button", { name: /^Save$/i })).toBeInTheDocument();
@@ -90,5 +94,32 @@ describe("ProfilePage edit mode", () => {
     await userEvent.click(screen.getByRole("button", { name: /^Cancel$/i }));
     expect(screen.getByRole("button", { name: /edit profile/i })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /^Save$/i })).not.toBeInTheDocument();
+  });
+
+  it("hides the edit button when in edit mode", async () => {
+    renderWithProviders(<ProfilePage />);
+    await userEvent.click(screen.getByRole("button", { name: /edit profile/i }));
+    // pencil button should disappear while editing
+    expect(screen.queryByRole("button", { name: /edit profile/i })).not.toBeInTheDocument();
+  });
+
+  it("includes homeAddress field in the edit form", async () => {
+    renderWithProviders(<ProfilePage />);
+    await userEvent.click(screen.getByRole("button", { name: /edit profile/i }));
+    expect(screen.getByLabelText(/home address/i)).toBeInTheDocument();
+  });
+
+  it("includes homeAddress in the patch on save", async () => {
+    const memberWithAddress = { ...member, homeAddress: "Test Street 1" };
+    mockMember.mockReturnValue({ data: memberWithAddress });
+    renderWithProviders(<ProfilePage />);
+    await userEvent.click(screen.getByRole("button", { name: /edit profile/i }));
+    await userEvent.click(screen.getByRole("button", { name: /^Save$/i }));
+    expect(mockUpdateMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        patch: expect.objectContaining({ homeAddress: "Test Street 1" }),
+      }),
+      expect.any(Object),
+    );
   });
 });

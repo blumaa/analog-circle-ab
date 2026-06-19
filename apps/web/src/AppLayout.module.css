@@ -12,22 +12,22 @@
   background: var(--color-bg);
 }
 
+.topInner {
+  width: 100%;
+  padding: 0 var(--space-5);
+}
+
 .container {
+  flex: 1;
   width: 100%;
   max-width: var(--container-max);
   margin: 0 auto;
-  padding: 0 var(--space-4);
-}
-
-main.container {
-  flex: 1;
-  padding-top: var(--space-5);
-  padding-bottom: var(--space-7);
+  padding: var(--space-5) var(--space-4) var(--space-7);
 }
 
 .navWrap {
   position: sticky;
   bottom: 0;
   z-index: 10;
-  background: var(--color-bg-deep);
+  background: var(--color-nav-bg);
 }

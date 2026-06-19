@@ -1,14 +1,21 @@
 .page {
-  padding: var(--space-5);
+  padding: var(--space-5) var(--space-4) var(--space-7);
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
 }
 
-.article {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
+/* Centered narrow card column — matches live ~520px */
+.cardWrap {
+  width: 100%;
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+/* Remove CardHeader default bottom padding so ProfileHeader controls its own */
+.cardHeader {
+  padding: 0;
+  border-bottom: none;
 }
 
 .sections {
@@ -17,25 +24,52 @@
   gap: var(--space-5);
 }
 
-.innerCircleLinks {
+/* Inner Circle group-link buttons — match live ic-profile-group-link */
+.innerCircleItems {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-3);
+  margin-top: var(--space-2);
 }
 
-.circleLink {
+.groupLink {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
+  align-self: flex-start;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-accent-border);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-surface);
   color: var(--color-accent);
-  font-size: var(--font-sm);
+  font-family: var(--text-body-family);
+  font-size: var(--font-base);
+  font-weight: var(--weight-medium);
   text-decoration: none;
+  transition:
+    background-color var(--motion-fast) var(--motion-ease),
+    border-color var(--motion-fast) var(--motion-ease),
+    opacity var(--motion-fast) var(--motion-ease);
 }
 
-.circleLink:hover {
-  text-decoration: underline;
+.groupLink:hover {
+  background: var(--color-accent-glow);
+  border-color: var(--color-accent);
 }
 
+/* WhatsApp link uses green palette */
+.groupLinkWhatsapp {
+  border-color: var(--color-whatsapp-border);
+  background: var(--color-whatsapp-soft);
+  color: var(--color-whatsapp-ink);
+}
+
+.groupLinkWhatsapp:hover {
+  background: var(--color-success-soft);
+  opacity: 0.9;
+}
+
+/* Edit form */
 .editForm {
   display: flex;
   flex-direction: column;
@@ -46,12 +80,12 @@
   width: 100%;
   min-height: 6rem;
   padding: var(--space-2);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-control-line);
   border-radius: var(--radius-sm);
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   color: var(--color-text);
   font-family: inherit;
-  font-size: var(--text-sm);
+  font-size: var(--font-base);
   resize: vertical;
 }
 

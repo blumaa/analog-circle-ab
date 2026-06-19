@@ -1,0 +1,182 @@
+.card {
+  border: 1px solid var(--color-hairline-soft);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-card);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* ── Header ── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.authorRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.authorName {
+  font-weight: var(--weight-medium);
+  font-size: var(--font-sm);
+  color: var(--color-text-strong);
+}
+
+.timestamp {
+  font-size: var(--font-xs);
+  color: var(--color-text-muted);
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* ── Body ── */
+.body {
+  white-space: pre-wrap;
+  color: var(--color-text);
+  font-size: var(--font-base);
+  margin: 0;
+}
+
+/* Body as a navigable link (e.g. activity items → their target route). */
+.bodyLink {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: var(--radius-sm);
+  transition: opacity var(--motion-fast) var(--motion-ease);
+}
+
+.bodyLink:hover {
+  opacity: 0.78;
+}
+
+.bodyLink:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ── Like bar ── */
+.likeBar {
+  display: flex;
+  align-items: center;
+}
+
+.likes {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.likeCount {
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+}
+
+.heartActive {
+  color: var(--color-error);
+}
+
+/* ── Replies ── */
+.repliesSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.replyToggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: var(--font-xs);
+  color: var(--color-text-muted);
+  text-align: left;
+}
+
+.replyToggle:hover {
+  color: var(--color-text);
+}
+
+.replyList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border-left: 2px solid var(--color-hairline-soft);
+  padding-left: var(--space-3);
+}
+
+.replyItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.replyMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.replyAuthor {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-strong);
+}
+
+.replyTime {
+  font-size: var(--font-xs);
+  color: var(--color-text-muted);
+}
+
+.replyBody {
+  font-size: var(--font-sm);
+  color: var(--color-text);
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* ── Reply composer ── */
+.replyComposer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.replyTextarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  border: 1px solid var(--color-hairline-soft);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-sm);
+  color: var(--color-text);
+  background: var(--color-surface-input, var(--color-surface-card));
+  font-family: inherit;
+}
+
+.replyTextarea:focus {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 1px;
+}
+
+.replyActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}

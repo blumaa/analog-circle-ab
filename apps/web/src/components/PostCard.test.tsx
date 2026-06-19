@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { axe } from "jest-axe";
 import { PostCard } from "./PostCard";
 import type { LoopPost } from "../data";
 
@@ -33,6 +34,50 @@ describe("PostCard", () => {
       <PostCard post={needPost} authorName="Alice" canArchive={false} onArchive={() => undefined} />,
     );
     expect(screen.getByText("NEED")).toBeInTheDocument();
+  });
+
+  it("uses rose badge variant for need posts", () => {
+    const { container } = render(
+      <PostCard post={needPost} authorName="Alice" canArchive={false} onArchive={() => undefined} />,
+    );
+    const badge = container.querySelector("[data-variant='rose']");
+    expect(badge).toBeInTheDocument();
+  });
+
+  it("uses offer badge variant for offer posts", () => {
+    const { container } = render(
+      <PostCard post={offerPost} authorName="Alice" canArchive={false} onArchive={() => undefined} />,
+    );
+    const badge = container.querySelector("[data-variant='offer']");
+    expect(badge).toBeInTheDocument();
+  });
+
+  it("sets data-kind=need on the card article for need posts", () => {
+    const { container } = render(
+      <PostCard post={needPost} authorName="Alice" canArchive={false} onArchive={() => undefined} />,
+    );
+    expect(container.querySelector("article")).toHaveAttribute("data-kind", "need");
+  });
+
+  it("sets data-kind=offer on the card article for offer posts", () => {
+    const { container } = render(
+      <PostCard post={offerPost} authorName="Alice" canArchive={false} onArchive={() => undefined} />,
+    );
+    expect(container.querySelector("article")).toHaveAttribute("data-kind", "offer");
+  });
+
+  it("has no accessibility violations (need post)", async () => {
+    const { container } = render(
+      <PostCard post={needPost} authorName="Alice" canArchive={false} onArchive={() => undefined} />,
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("has no accessibility violations (offer post)", async () => {
+    const { container } = render(
+      <PostCard post={offerPost} authorName="Alice" canArchive={false} onArchive={() => undefined} />,
+    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("renders OFFER badge for an offer post", () => {

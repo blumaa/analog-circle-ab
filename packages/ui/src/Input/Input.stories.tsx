@@ -18,3 +18,8 @@ export const WithLeftIcon: Story = {
 };
 export const Disabled: Story = { args: { placeholder: "Disabled", disabled: true } };
 export const WithValue: Story = { args: { value: "analog.circle", readOnly: true } };
+
+/** Bare variant — Loop search: no background, no border, no radius box */
+export const Bare: Story = {
+  args: { placeholder: "Search loops…", variant: "bare", leftIcon: <Search size={16} /> },
+};

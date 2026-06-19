@@ -55,6 +55,14 @@ describe("Button", () => {
     expect(ref.current?.tagName).toBe("BUTTON");
   });
 
+  it("applies the whatsapp variant as a data attribute", () => {
+    render(<Button variant="whatsapp">WhatsApp</Button>);
+    expect(screen.getByRole("button", { name: "WhatsApp" })).toHaveAttribute(
+      "data-variant",
+      "whatsapp",
+    );
+  });
+
   it("has no accessibility violations", async () => {
     const { container } = render(<Button>Accessible</Button>);
     expect(await axe(container)).toHaveNoViolations();
@@ -66,6 +74,53 @@ describe("Button", () => {
         ✕
       </Button>,
     );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("has no accessibility violations for whatsapp variant", async () => {
+    const { container } = render(<Button variant="whatsapp">Join WhatsApp</Button>);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("applies the outline variant as a data attribute", () => {
+    render(<Button variant="outline">Add to The Loop</Button>);
+    expect(screen.getByRole("button", { name: "Add to The Loop" })).toHaveAttribute(
+      "data-variant",
+      "outline",
+    );
+  });
+
+  it("applies the soft variant as a data attribute", () => {
+    render(<Button variant="soft">Download .ics</Button>);
+    expect(screen.getByRole("button", { name: "Download .ics" })).toHaveAttribute(
+      "data-variant",
+      "soft",
+    );
+  });
+
+  it("has no accessibility violations for outline variant", async () => {
+    const { container } = render(<Button variant="outline">Add to The Loop</Button>);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("has no accessibility violations for soft variant", async () => {
+    const { container } = render(<Button variant="soft">Download .ics</Button>);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("defaults to pill=true (no data-pill attribute)", () => {
+    render(<Button>Default</Button>);
+    const btn = screen.getByRole("button", { name: "Default" });
+    expect(btn).not.toHaveAttribute("data-pill");
+  });
+
+  it("sets data-pill=false when pill={false}", () => {
+    render(<Button pill={false}>Sign out</Button>);
+    expect(screen.getByRole("button", { name: "Sign out" })).toHaveAttribute("data-pill", "false");
+  });
+
+  it("has no accessibility violations for pill=false", async () => {
+    const { container } = render(<Button pill={false}>Sign out</Button>);
     expect(await axe(container)).toHaveNoViolations();
   });
 });

@@ -1,14 +1,25 @@
 import { useId, type InputHTMLAttributes, type ReactNode } from "react";
 import styles from "./Input.module.css";
 
+export type InputVariant = "filled" | "bare";
+
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   leftIcon?: ReactNode;
   label?: string;
+  /** @default "filled" */
+  variant?: InputVariant;
 }
 
-export function Input({ leftIcon, label, id: idProp, className, ...rest }: InputProps) {
+export function Input({ leftIcon, label, id: idProp, className, variant = "filled", ...rest }: InputProps) {
   const generatedId = useId();
   const id = idProp ?? (label ? generatedId : undefined);
+
+  const inputClass = [
+    styles.input,
+    variant === "bare" && styles.inputBare,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <div className={[styles.wrapper, className].filter(Boolean).join(" ")}>
@@ -25,7 +36,7 @@ export function Input({ leftIcon, label, id: idProp, className, ...rest }: Input
         )}
         <input
           id={id}
-          className={styles.input}
+          className={inputClass}
           data-has-left-icon={leftIcon ? true : undefined}
           {...rest}
         />

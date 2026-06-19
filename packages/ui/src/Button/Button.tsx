@@ -1,7 +1,7 @@
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
 import styles from "./Button.module.css";
 
-export type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "success" | "danger";
+export type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "success" | "danger" | "whatsapp" | "soft";
 export type ButtonSize = "sm" | "md";
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -10,6 +10,11 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   leftIcon?: ReactNode;
   iconOnly?: boolean;
   fullWidth?: boolean;
+  /**
+   * When true (default) the button uses the 999px pill radius.
+   * Pass false to use var(--radius-md) (~12px) — e.g. the sign-out button.
+   */
+  pill?: boolean;
   children: ReactNode;
 }
 
@@ -20,6 +25,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     leftIcon,
     iconOnly = false,
     fullWidth = false,
+    pill = true,
     type = "button",
     className,
     children,
@@ -35,6 +41,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       data-size={size}
       data-full-width={fullWidth || undefined}
       data-icon-only={iconOnly || undefined}
+      data-pill={pill ? undefined : "false"}
       className={[styles.button, className].filter(Boolean).join(" ")}
       {...rest}
     >

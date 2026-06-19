@@ -58,6 +58,22 @@ describe("filterLoopPosts", () => {
       const result = filterLoopPosts(posts, { query: "", kind: "archived", category: "all categories" }, resolver);
       expect(result.map((p) => p.id)).toEqual(["2", "3"]);
     });
+
+    it("mine: shows only non-archived posts by the current member", () => {
+      const posts = [
+        base({ id: "1", authorId: "u1", archived: false }),
+        base({ id: "2", authorId: "u2", archived: false }),
+        base({ id: "3", authorId: "u1", archived: true }),
+      ];
+      const result = filterLoopPosts(posts, { query: "", kind: "mine", category: "all categories", currentMemberId: "u1" }, resolver);
+      expect(result.map((p) => p.id)).toEqual(["1"]);
+    });
+
+    it("mine: returns empty when currentMemberId is null", () => {
+      const posts = [base({ id: "1", authorId: "u1", archived: false })];
+      const result = filterLoopPosts(posts, { query: "", kind: "mine", category: "all categories", currentMemberId: null }, resolver);
+      expect(result).toHaveLength(0);
+    });
   });
 
   describe("category filter", () => {

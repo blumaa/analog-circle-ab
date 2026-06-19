@@ -37,6 +37,46 @@
   --green-200: #aef5c9;
   --blue-400: #60a5fa;
 
+  /* Sage / interest chip — matches live ic-member-tag */
+  --sage-500: #7a9e7e;
+  --sage-alpha: rgba(122, 158, 126, 0.2);
+  --sage-border: rgba(122, 158, 126, 0.35);
+
+  /* WhatsApp green alphas */
+  --whatsapp-alpha: rgba(37, 211, 102, 0.1);
+  --whatsapp-border: rgba(37, 211, 102, 0.35);
+
+  /* Rose / pink scale */
+  --rose-300: #f9a8d4;
+  --rose-alpha: rgba(249, 118, 170, 0.12);
+
+  /* Need-rose — warmer/redder than rose-300 pink, matches live Loop "Need" badge */
+  --need-bg: rgba(212, 138, 138, 0.16);
+  --need-ink: rgb(240, 180, 180);
+  /* Need card border — rose at 28% opacity, matches live Loop "Need" card outline */
+  --need-line: rgba(212, 138, 138, 0.28);
+
+  /* Soft-control — for calendar action buttons ("Download .ics") */
+  --control-soft-bg: rgba(255, 255, 255, 0.04);
+  --control-soft-ink: rgba(255, 255, 255, 0.86);
+  --control-soft-line: rgba(255, 255, 255, 0.16);
+
+  /* Gold border at 45% — for ghost-gold outline variant */
+  --alpha-accent-45: rgba(201, 168, 76, 0.45);
+  /* Gold border at 15% — live mobile nav top border (bluer/brighter than hairline-soft) */
+  --alpha-accent-15: rgba(201, 168, 76, 0.15);
+
+  /* Indigo scale */
+  --indigo-300: #a5b4fc;
+  --indigo-alpha: rgba(129, 140, 248, 0.12);
+
+  /* Sky scale */
+  --sky-300: #93c5fd;
+  --sky-alpha: rgba(96, 165, 250, 0.12);
+
+  /* Dark-surface input fill — members-style search bg */
+  --alpha-dark-25: rgba(0, 0, 0, 0.25);
+
   /* Alpha helpers (over navy) — match live (white over dark surfaces) */
   --alpha-glass: rgba(255, 255, 255, 0.03);
   --alpha-hairline: rgba(201, 168, 118, 0.16);
@@ -57,8 +97,21 @@
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
   --radius-lg: 0.875rem;
-  --radius-pill: 30px;
+  --radius-card-lg: 1.125rem; /* 18px — Loop PostCard large corner radius */
+  --radius-pill: 999px; /* fully-round pill — matches live buttons/badges/filter-pills */
   --radius-full: 9999px;
+  --radius-food: 0.625rem; /* 10px — live food card corner radius */
+
+  /* Member card surface — rgba(0,0,0,0.22) dark overlay */
+  --member-card-bg: rgba(0, 0, 0, 0.22);
+  /* Food card surface — rgba(26,26,46,0.65) deep navy overlay */
+  --food-card-bg: rgba(26, 26, 46, 0.65);
+  /* Gold accent line at 22% — member card border */
+  --alpha-accent-22: rgba(201, 168, 76, 0.22);
+  /* Member card media (avatar) backdrop — rgba(0,0,0,0.35) */
+  --member-media-bg: rgba(0, 0, 0, 0.35);
+  /* Cream (ivory-50 = rgb(245,240,232)) at 92% — food dietary detail text */
+  --alpha-cream-92: rgba(245, 240, 232, 0.92);
 
   /* Spacing scale */
   --space-1: 0.25rem;
@@ -78,13 +131,19 @@
   /* Shadows */
   --shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.35), 0 24px 64px rgba(0, 0, 0, 0.45);
   --shadow-lift: 0 8px 24px rgba(0, 0, 0, 0.45), 0 32px 80px rgba(0, 0, 0, 0.55);
+  /* Subtle inset highlight — live card default (no heavy drop shadow) */
+  --shadow-card-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 
-  /* Typography families — match live: Playfair Display (headings), DM Sans (body) */
+  /* Typography families — match live: Playfair Display (headings), DM Sans (body),
+     Crimson Pro (eyebrow / section labels) */
   --family-display: "Playfair Display", ui-serif, Georgia, serif;
   --family-wordmark: "Playfair Display", ui-serif, Georgia, serif;
   --family-body: "DM Sans", -apple-system, system-ui, sans-serif;
+  --family-eyebrow: "Crimson Pro", Georgia, serif;
 
   /* Font sizes */
+  --font-tab: 0.72rem;   /* 11.52px — live group tab label size */
+  --font-input: 0.95rem; /* 15.2px — live search / members input size */
   --font-xs: 0.75rem;
   --font-sm: 0.875rem;
   --font-md: 1rem;
@@ -92,10 +151,16 @@
   --font-xl: 1.75rem;
   --font-2xl: 2.5rem;
   --font-3xl: 3.5rem;
+  /* Parity sizes — live-matched, not on the generic scale */
+  --font-wordmark: 1.35rem;   /* 21.6px ÷ 16 */
+  --font-eyebrow: 0.68rem;    /* 10.88px ÷ 16 */
+  --font-page-h2: 1.65rem;    /* 26.4px ÷ 16 — Loop/Members/Profile titles */
+  --font-welcome-h2: 2.35rem; /* 37.6px ÷ 16 — Dashboard welcome heading */
 
   /* Font weights */
   --weight-regular: 400;
   --weight-medium: 500;
+  --weight-semi: 600;
   --weight-bold: 700;
 
   /* Motion */
@@ -104,5 +169,7 @@
   --dur-fast: 0.25s;
 
   /* Layout */
-  --container-max: 1180px;
+  --container-max: 640px; /* live content column width */
+  /* NOTE: the two-column layout breakpoint is 1024px. CSS custom properties cannot be
+     used inside @media conditions, so that value is written literally in the shell modules. */
 }

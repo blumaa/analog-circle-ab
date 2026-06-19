@@ -9,6 +9,7 @@ import type {
   RsvpStatus,
   Scope,
   WallPost,
+  WallReply,
 } from "../types";
 import * as seed from "./fixtures";
 
@@ -137,7 +138,7 @@ export function createMockDataSource(): DataSource {
         scope: input.scope,
         actorId: input.creatorId,
         subjectId: null,
-        targetRoute: `/innercircle/group/${input.groupId}`,
+        targetRoute: `/innercircle/event/${ev.id}`,
       });
       save(db);
       return ok(ev);
@@ -220,11 +221,21 @@ export function createMockDataSource(): DataSource {
       ok(
         load()
           .wallPosts.filter((p) => p.ownerId === ownerId)
+          // Back-compat: seed data written before replies/mentions existed won't have these fields.
+          .map((p) => ({ ...p, replies: p.replies ?? [], mentions: p.mentions ?? [] }))
           .sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
       ),
     createWallPost: (input) => {
       const db = load();
-      const post: WallPost = { ...input, id: id("wall"), createdAt: new Date().toISOString() };
+      const now = new Date().toISOString();
+      const post: WallPost = {
+        ...input,
+        id: id("wall"),
+        createdAt: now,
+        likedBy: input.likedBy ?? [],
+        replies: input.replies ?? [],
+        mentions: input.mentions ?? [],
+      };
       db.wallPosts.push(post);
       pushActivity(db, {
         type: "wall_post",
@@ -233,6 +244,17 @@ export function createMockDataSource(): DataSource {
         subjectId: input.ownerId,
         targetRoute: `/innercircle/members/${input.ownerId}`,
       });
+      // One "mention" activity per tagged member, skipping self-tags.
+      for (const mentionedId of post.mentions) {
+        if (mentionedId === input.authorId) continue;
+        pushActivity(db, {
+          type: "mention",
+          scope: input.scope,
+          actorId: input.authorId,
+          subjectId: mentionedId,
+          targetRoute: `/innercircle/members/${input.ownerId}`,
+        });
+      }
       save(db);
       return ok(post);
     },
@@ -241,6 +263,42 @@ export function createMockDataSource(): DataSource {
       db.wallPosts = db.wallPosts.filter((x) => x.id !== pid);
       save(db);
       return ok(undefined);
+    },
+    toggleWallPostLike: (postId, memberId) => {
+      const db = load();
+      const p = db.wallPosts.find((x) => x.id === postId);
+      if (!p) throw new Error(`WallPost ${postId} not found`);
+      p.likedBy = p.likedBy.includes(memberId)
+        ? p.likedBy.filter((mid) => mid !== memberId)
+        : [...p.likedBy, memberId];
+      save(db);
+      return ok(p);
+    },
+    addWallPostReply: (postId, authorId, body, mentions = []) => {
+      const db = load();
+      const p = db.wallPosts.find((x) => x.id === postId);
+      if (!p) throw new Error(`WallPost ${postId} not found`);
+      const reply: WallReply = {
+        id: id("reply"),
+        authorId,
+        body,
+        createdAt: new Date().toISOString(),
+        mentions,
+      };
+      p.replies = [...(p.replies ?? []), reply];
+      // One "mention" activity per tagged member, skipping self-tags.
+      for (const mentionedId of mentions) {
+        if (mentionedId === authorId) continue;
+        pushActivity(db, {
+          type: "mention",
+          scope: p.scope,
+          actorId: authorId,
+          subjectId: mentionedId,
+          targetRoute: `/innercircle/members/${p.ownerId}`,
+        });
+      }
+      save(db);
+      return ok(p);
     },
 
     listActivity: () =>

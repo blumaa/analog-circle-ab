@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { Button, Input, SegmentedControl } from "@analog/ui";
-import type { Scope, WallPost } from "../data";
+import { Button, Input, MentionTextarea, SegmentedControl } from "@analog/ui";
+import type { Member, Scope, WallPost } from "../data";
 import styles from "./WallComposer.module.css";
 
 export interface WallComposerProps {
   ownerId: string;
   authorId: string;
   canPostInner: boolean;
+  /** Members list for the @mention picker. */
+  members?: Member[];
   onPost: (input: Omit<WallPost, "id" | "createdAt">) => void;
 }
 
@@ -15,10 +17,29 @@ const scopeOptions = [
   { value: "inner", label: "Inner circle only" },
 ];
 
-export function WallComposer({ ownerId, authorId, canPostInner, onPost }: WallComposerProps) {
+export function WallComposer({
+  ownerId,
+  authorId,
+  canPostInner,
+  members = [],
+  onPost,
+}: WallComposerProps) {
   const [body, setBody] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [scope, setScope] = useState<Scope>("analog");
+  const [mentions, setMentions] = useState<string[]>([]);
+
+  // Exclude the author from the mentionable list.
+  const mentionables = members
+    .filter((m) => m.id !== authorId)
+    .map((m) => ({ id: m.id, name: m.name }));
+
+  function reset() {
+    setBody("");
+    setImageUrl("");
+    setScope("analog");
+    setMentions([]);
+  }
 
   function handleSubmit() {
     const trimmed = body.trim();
@@ -29,21 +50,23 @@ export function WallComposer({ ownerId, authorId, canPostInner, onPost }: WallCo
       scope,
       body: trimmed,
       imageUrl: imageUrl.trim() || null,
+      likedBy: [],
+      replies: [],
+      mentions,
     });
-    setBody("");
-    setImageUrl("");
-    setScope("analog");
+    reset();
   }
 
   return (
     <div className={styles.composer}>
-      <textarea
-        className={styles.textarea}
-        placeholder="Write something…"
+      <MentionTextarea
         value={body}
-        onChange={(e) => setBody(e.target.value)}
-        rows={3}
+        onChange={setBody}
+        mentionables={mentionables}
+        onMentionsChange={setMentions}
+        placeholder="Write something… use @ to tag members"
         aria-label="Post body"
+        rows={3}
       />
       <Input
         placeholder="Image URL (optional)"

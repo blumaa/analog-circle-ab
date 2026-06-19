@@ -13,6 +13,7 @@ export interface Member {
   interests: string[];
   dietary: string | null;
   whatsappUrl: string | null;
+  homeAddress: string | null;
   location: { lat: number; lng: number } | null;
   /** True for the signed-in demo persona (real data); others are fictional. */
   isReal?: boolean;
@@ -73,6 +74,15 @@ export interface LoopPost {
   helpedBy: string[];
 }
 
+export interface WallReply {
+  id: string;
+  authorId: string;
+  body: string;
+  createdAt: string;
+  /** Member ids explicitly tagged in the reply body. */
+  mentions?: string[];
+}
+
 export interface WallPost {
   id: string;
   /** Whose wall this post lives on. */
@@ -83,9 +93,15 @@ export interface WallPost {
   body: string;
   imageUrl: string | null;
   createdAt: string;
+  /** Member ids who have liked this post. */
+  likedBy: string[];
+  /** Threaded replies on this post. */
+  replies: WallReply[];
+  /** Member ids explicitly tagged in the post body. */
+  mentions: string[];
 }
 
-export type ActivityType = "wall_post" | "event_created" | "member_joined" | "loop_post";
+export type ActivityType = "wall_post" | "event_created" | "member_joined" | "loop_post" | "mention";
 
 /** A community activity record powering the notifications feed. */
 export interface Activity {

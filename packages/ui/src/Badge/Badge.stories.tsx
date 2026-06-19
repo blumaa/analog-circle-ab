@@ -9,7 +9,7 @@ const meta = {
   argTypes: {
     variant: {
       control: "select",
-      options: ["danger", "offer", "meeting", "accent", "neutral", "success"],
+      options: ["danger", "offer", "meeting", "accent", "neutral", "success", "rose"],
     },
   },
 } satisfies Meta<typeof Badge>;
@@ -23,3 +23,4 @@ export const Meeting: Story = { args: { variant: "meeting", children: "Meeting" 
 export const Accent: Story = { args: { variant: "accent", children: "Hosting" } };
 export const Neutral: Story = { args: { variant: "neutral", children: "Neutral" } };
 export const Success: Story = { args: { variant: "success", children: "Going" } };
+export const Rose: Story = { args: { variant: "rose", children: "Need" } };

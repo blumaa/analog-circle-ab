@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
-import { Accordion, Badge, Button, Card, Label, Modal } from "@analog/ui";
+import { Link } from "react-router-dom";
+import { Accordion, Badge, Button, Card, CardBody, Label, Modal } from "@analog/ui";
 import type { EventItem, Member, RsvpStatus } from "../data";
 import { formatEventWhen } from "../lib/format";
 import styles from "./EventCard.module.css";
@@ -35,8 +36,8 @@ export interface EventCardProps {
   /** Persist an RSVP change for the current member. */
   onRsvp?: (status: RsvpStatus, note?: string | null) => void;
   /**
-   * When true, renders the full collapsible card (dashboard "Coming Up" style).
-   * When false (default), renders the flat calendar list-item style.
+   * When true, the card accordion starts open (dashboard "Coming Up" style).
+   * When false (default), the accordion starts collapsed (calendar list style).
    */
   defaultOpen?: boolean;
 }
@@ -186,7 +187,7 @@ function ProposeSwapButton({
   );
 }
 
-/** RSVP toggle for the calendar variant (non-hosting members). */
+/** RSVP toggle for non-hosting members. */
 function RsvpControl({
   status,
   onRsvp,
@@ -252,13 +253,21 @@ export function EventCard({
   const myStatus: RsvpStatus =
     attendees?.find((a) => a.member.id === currentMemberId)?.status ?? "going";
 
-  if (defaultOpen) {
-    // Dashboard "Coming Up" style — collapsible Card with full detail
-    return (
-      <Card variant={isHosting ? "active" : "default"} className={styles.card}>
+  return (
+    <Card variant={isHosting ? "active" : "default"} className={styles.card}>
+      <CardBody padding="none">
         <Accordion
-          defaultOpen
-          summary={<span className={styles.title}>{event.title}</span>}
+          divided
+          defaultOpen={defaultOpen}
+          summary={
+            <div className={styles.summaryContent}>
+              <span className={styles.title}>{event.title}</span>
+              <div className={styles.summaryBadges}>
+                <Badge variant="meeting">MEETING</Badge>
+                {isHosting && <Badge variant="accent">YOU&apos;RE HOSTING</Badge>}
+              </div>
+            </div>
+          }
           trailing={
             <span className={styles.meta}>
               {[isHosting ? "You're hosting" : null, when].filter(Boolean).join(" · ")}
@@ -287,8 +296,31 @@ export function EventCard({
               </Field>
             )}
             <Field label="HOST">
-              {isHosting ? "You're the host" : (host?.name ?? "TBD")}
+              {isHosting ? "You're the host" : (hostName ?? "TBD")}
             </Field>
+
+            <Accordion
+              summary={<span className={styles.addCalLabel}>ADD TO CALENDAR</span>}
+            >
+              <div className={styles.addCalOptions}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={styles.addCalOption}
+                  onClick={() => downloadIcs(event)}
+                >
+                  Download .ics
+                </Button>
+                <a
+                  className={styles.addCalOptionBtn}
+                  href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${event.date.replace(/-/g, "")}T${event.startTime.replace(":", "")}00/${event.date.replace(/-/g, "")}T${event.endTime.replace(":", "")}00`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Google Calendar
+                </a>
+              </div>
+            </Accordion>
 
             {isHosting && (
               <ProposeSwapButton
@@ -315,66 +347,16 @@ export function EventCard({
                 </p>
               )}
             </Accordion>
+
+            {!isHosting && <RsvpControl status={myStatus} onRsvp={onRsvp} />}
+
+            <Link className={styles.link} to={`/innercircle/event/${event.id}`}>
+              View event details
+            </Link>
           </div>
         </Accordion>
-      </Card>
-    );
-  }
-
-  // Calendar list-item style — flat, no Card wrapper
-  return (
-    <div className={styles.calItem}>
-      {/* Badges row */}
-      <div className={styles.badges}>
-        <Badge variant="meeting">MEETING</Badge>
-        {isHosting && <Badge variant="accent">YOU&apos;RE HOSTING</Badge>}
-      </div>
-
-      {/* Date + host line */}
-      <p className={styles.when}>
-        {when}
-        {hostName && (
-          <>
-            <span className={styles.dot}> · Host: </span>
-            <span>{hostName}</span>
-          </>
-        )}
-      </p>
-
-      {/* ADD TO CALENDAR collapsible */}
-      <Accordion summary={<span className={styles.addCalLabel}>ADD TO CALENDAR</span>}>
-        <div className={styles.calOptions}>
-          <Button
-            variant="ghost"
-            size="sm"
-            className={styles.calOption}
-            onClick={() => downloadIcs(event)}
-          >
-            Download .ics
-          </Button>
-          <a
-            className={styles.calOptionBtn}
-            href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${event.date.replace(/-/g, "")}T${event.startTime.replace(":", "")}00/${event.date.replace(/-/g, "")}T${event.endTime.replace(":", "")}00`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Google Calendar
-          </a>
-        </div>
-      </Accordion>
-
-      {/* PROPOSE HOSTING SWAP (hosting member only) */}
-      {isHosting && (
-        <ProposeSwapButton
-          swapTargets={swapTargets}
-          monthLabel={monthLabel}
-          onProposeSwap={onProposeSwap}
-        />
-      )}
-
-      {/* RSVP (non-hosting members) */}
-      {!isHosting && <RsvpControl status={myStatus} onRsvp={onRsvp} />}
-    </div>
+      </CardBody>
+    </Card>
   );
 }
 

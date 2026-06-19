@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import { Compass, HeartHandshake, User, Users } from "lucide-react";
-import { NavCard, useToast } from "@analog/ui";
+import { CalendarDays, Compass, HeartHandshake, User, Users } from "lucide-react";
+import { Label, NavCard, useToast, type NavCardTone } from "@analog/ui";
 import {
   useCurrentMemberId,
   useEvents,
@@ -21,30 +21,42 @@ const COMMUNITY_LINKS: ReadonlyArray<{
   description: string;
   icon: ReactNode;
   href: (groupId: string) => string;
+  tone: NavCardTone;
 }> = [
   {
     label: "Your Circle",
     description: "Meetings, 1-1s, members, map, and food preferences",
     icon: <Users />,
     href: (groupId) => `/innercircle/group/${groupId}`,
+    tone: "accent",
+  },
+  {
+    label: "The Square",
+    description: "Browse and RSVP to upcoming events",
+    icon: <CalendarDays />,
+    href: () => "/innercircle/calendar",
+    tone: "sky",
   },
   {
     label: "The Loop",
     description: "Ask for help and offer what you can",
     icon: <HeartHandshake />,
     href: () => "/innercircle/the-loop",
+    tone: "rose",
   },
   {
     label: "Directory",
     description: "Browse everyone in the community",
     icon: <Compass />,
     href: () => "/innercircle/members",
+    tone: "indigo",
   },
   {
     label: "Your profile",
     description: "Bio, contact details, and group info",
     icon: <User />,
     href: () => "/innercircle/profile",
+    tone: "green",
   },
 ];
 
@@ -97,7 +109,7 @@ export function DashboardPage() {
 
       {nextEvent && (
         <section className={styles.section}>
-          <h3 className={styles.sectionHeading}>COMING UP</h3>
+          <Label as="div">Coming up</Label>
           <EventCard
             event={nextEvent}
             host={host}
@@ -113,18 +125,23 @@ export function DashboardPage() {
         </section>
       )}
 
-      {me?.whatsappUrl && <WhatsAppCard href={me.whatsappUrl} />}
+      {me?.whatsappUrl && (
+        <div className={styles.whatsappWrapper}>
+          <WhatsAppCard href={me.whatsappUrl} />
+        </div>
+      )}
 
-      <section className={styles.section} aria-label="COMMUNITY">
-        <h3 className={styles.sectionHeading}>COMMUNITY</h3>
+      <section className={styles.section} aria-label="Community">
+        <Label as="div">Community</Label>
         <div className={styles.communityList}>
-          {COMMUNITY_LINKS.map(({ label, description, icon, href }) => (
+          {COMMUNITY_LINKS.map(({ label, description, icon, href, tone }) => (
             <NavCard
               key={label}
               icon={icon}
               title={label}
               description={description}
               href={href(innerGroup?.id ?? "")}
+              tone={tone}
             />
           ))}
         </div>

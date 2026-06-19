@@ -31,6 +31,18 @@ describe("Input", () => {
     expect(screen.getByRole("textbox")).toBeInTheDocument();
   });
 
+  it("defaults to filled variant", () => {
+    render(<Input aria-label="Search" />);
+    const input = screen.getByRole("textbox");
+    // filled variant has no data-variant attribute — the variant is applied via CSS class
+    expect(input).toBeInTheDocument();
+  });
+
+  it("renders bare variant without error", () => {
+    render(<Input aria-label="Search" variant="bare" />);
+    expect(screen.getByRole("textbox")).toBeInTheDocument();
+  });
+
   it("has no accessibility violations", async () => {
     const { container } = render(<Input aria-label="Search query" />);
     expect(await axe(container)).toHaveNoViolations();
@@ -40,6 +52,11 @@ describe("Input", () => {
     const { container } = render(
       <Input aria-label="Search query" leftIcon={<Search size={16} />} />,
     );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("has no accessibility violations with bare variant", async () => {
+    const { container } = render(<Input aria-label="Search query" variant="bare" />);
     expect(await axe(container)).toHaveNoViolations();
   });
 

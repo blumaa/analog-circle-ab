@@ -1,7 +1,6 @@
+/* Transparent disclosure — surface comes from a wrapping Card when needed. */
 .accordion {
-  border: 1px solid var(--color-hairline);
-  border-radius: var(--radius-card);
-  background: var(--color-surface-card);
+  background: transparent;
 }
 
 .trigger {
@@ -53,6 +52,10 @@
 
 .accordion[data-open] .chevron {
   transform: rotate(180deg);
+}
+
+.accordion[data-divided][data-open] .trigger {
+  border-bottom: 1px solid var(--color-hairline-soft);
 }
 
 .content {

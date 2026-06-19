@@ -10,8 +10,8 @@ export function FoodList({ members }: { members: Member[] }) {
       </p>
       <ul className={styles.list}>
         {members.map((m) => (
-          <li key={m.id} className={styles.item}>
-            <span className={styles.name}>{m.name.toUpperCase()}</span>
+          <li key={m.id} className={styles.card}>
+            <span className={styles.name}>{m.name}</span>
             <span className={styles.note}>{m.dietary?.trim() ? m.dietary : "-"}</span>
           </li>
         ))}

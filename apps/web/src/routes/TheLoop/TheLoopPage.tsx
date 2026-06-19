@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Plus, Search } from "lucide-react";
 import {
   Button,
@@ -67,12 +67,15 @@ export function TheLoopPage() {
     return m;
   }, [members]);
 
-  const resolveAuthorName = (authorId: string) => memberMap.get(authorId)?.name ?? "Unknown";
+  const resolveAuthorName = useCallback(
+    (authorId: string) => memberMap.get(authorId)?.name ?? "Unknown",
+    [memberMap],
+  );
   const resolveWhatsappUrl = (authorId: string) => memberMap.get(authorId)?.whatsappUrl ?? null;
 
   const filteredPosts = useMemo(
-    () => filterLoopPosts(posts, { query, kind: kindFilter, category: categoryFilter }, resolveAuthorName),
-    [posts, query, kindFilter, categoryFilter, memberMap],
+    () => filterLoopPosts(posts, { query, kind: kindFilter, category: categoryFilter, currentMemberId }, resolveAuthorName),
+    [posts, query, kindFilter, categoryFilter, currentMemberId, resolveAuthorName],
   );
 
   const counts = useMemo(() => {
@@ -82,8 +85,9 @@ export function TheLoopPage() {
       need: nonArchived.filter((p) => p.kind === "need").length,
       offer: nonArchived.filter((p) => p.kind === "offer").length,
       archived: posts.filter((p) => p.archived).length,
+      mine: currentMemberId ? nonArchived.filter((p) => p.authorId === currentMemberId).length : 0,
     };
-  }, [posts]);
+  }, [posts, currentMemberId]);
 
   function handleSave() {
     if (!currentMemberId || !draftCategory.trim() || !draftBody.trim()) return;
@@ -128,7 +132,7 @@ export function TheLoopPage() {
 
       <div className={styles.addRow}>
         <Button
-          variant="primary"
+          variant="outline"
           leftIcon={<Plus size={16} />}
           onClick={() => setComposerOpen((v) => !v)}
         >
@@ -200,6 +204,7 @@ export function TheLoopPage() {
       )}
 
       <Input
+        variant="bare"
         leftIcon={<Search size={16} />}
         placeholder="Search The Loop"
         value={query}
@@ -213,7 +218,7 @@ export function TheLoopPage() {
           { value: "all", label: "All", count: counts.all },
           { value: "need", label: "Needs", count: counts.need },
           { value: "offer", label: "Offers", count: counts.offer },
-          { value: "archived", label: "Archived", count: counts.archived },
+          { value: "mine", label: "Mine", count: counts.mine },
         ]}
         value={kindFilter}
         onChange={(v) => setKindFilter(v as KindFilter)}
