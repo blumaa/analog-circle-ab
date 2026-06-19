@@ -122,32 +122,6 @@
   font-weight: var(--weight-medium);
 }
 
-.swapField {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.swapSelect,
-.swapTextarea {
-  font-family: var(--text-body-family);
-  font-size: var(--font-sm);
-  color: var(--color-text);
-  background: var(--color-surface-card);
-  border: 1px solid var(--color-hairline);
-  border-radius: var(--radius-tile);
-  padding: var(--space-3);
-}
-
-.swapTextarea {
-  resize: vertical;
-}
-
-.swapSelect:focus-visible,
-.swapTextarea:focus-visible {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 1px;
-}
 
 .divider {
   border: none;

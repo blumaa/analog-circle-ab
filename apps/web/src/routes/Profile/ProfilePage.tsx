@@ -7,6 +7,7 @@ import {
   CardBody,
   Input,
   LabeledField,
+  Textarea,
   useToast,
 } from "@analog/ui";
 import { useCurrentMemberId, useInnerGroup, useMember, useUpdateMember } from "../../data/hooks";
@@ -153,16 +154,13 @@ export function ProfilePage() {
                     onChange={(e) => setForm((f) => ({ ...f, homeAddress: e.target.value }))}
                     placeholder="Street, Postcode City"
                   />
-                  <LabeledField label="Bio">
-                    <textarea
-                      className={styles.bioTextarea}
-                      value={form.bio}
-                      onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
-                      placeholder="A little about you…"
-                      rows={4}
-                      aria-label="Bio"
-                    />
-                  </LabeledField>
+                  <Textarea
+                    label="Bio"
+                    value={form.bio}
+                    onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
+                    placeholder="A little about you…"
+                    rows={4}
+                  />
                   <Input
                     label="Interests"
                     value={form.interests}

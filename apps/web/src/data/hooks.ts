@@ -158,9 +158,12 @@ export function useToggleWallPostLike(ownerId: string) {
 export function useAddWallPostReply(ownerId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (v: { postId: string; authorId: string; body: string }) =>
-      dataSource.addWallPostReply(v.postId, v.authorId, v.body),
-    onSuccess: () => qc.invalidateQueries({ queryKey: qk.wallPosts(ownerId) }),
+    mutationFn: (v: { postId: string; authorId: string; body: string; mentions?: string[] }) =>
+      dataSource.addWallPostReply(v.postId, v.authorId, v.body, v.mentions),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: qk.wallPosts(ownerId) });
+      qc.invalidateQueries({ queryKey: qk.activity });
+    },
   });
 }
 

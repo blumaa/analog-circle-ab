@@ -152,13 +152,16 @@ describe("ProfileWall", () => {
 
   it("submits a reply via useAddWallPostReply", async () => {
     renderWithProviders(<ProfileWall ownerId={ownerId} />);
-    // p1 has a reply composer (current member present). Find its Reply body textarea.
+    // p1 has a reply — open the Accordion first to reveal the composer.
+    // p1 has 1 reply, so its Accordion trigger is "1 reply".
+    const [accordionTrigger] = screen.getAllByRole("button", { name: /1 reply/i });
+    await userEvent.click(accordionTrigger!);
     const [replyBox] = screen.getAllByRole("textbox", { name: /reply body/i });
     await userEvent.type(replyBox!, "Thanks!");
     const replyButtons = screen.getAllByRole("button", { name: /^Reply$/ });
     await userEvent.click(replyButtons[0]!);
     expect(mockAddReplyMutate).toHaveBeenCalledWith(
-      expect.objectContaining({ authorId, body: "Thanks!" }),
+      expect.objectContaining({ authorId, body: "Thanks!", mentions: [] }),
       expect.any(Object),
     );
   });

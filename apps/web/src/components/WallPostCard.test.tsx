@@ -53,6 +53,13 @@ describe("WallPostCard — rendering", () => {
     const ts = screen.getByText(/ago|just now/);
     expect(ts).toBeInTheDocument();
   });
+
+  it("renders inside a Card (div element, not article)", () => {
+    const { container } = renderCard();
+    // Card renders as a div; there should be no article element
+    expect(container.querySelector("article")).not.toBeInTheDocument();
+    expect(container.querySelector("div")).toBeInTheDocument();
+  });
 });
 
 describe("WallPostCard — scope badge", () => {
@@ -109,31 +116,62 @@ describe("WallPostCard — heart / likes", () => {
   });
 });
 
-describe("WallPostCard — replies", () => {
+describe("WallPostCard — replies (Accordion)", () => {
   it("does not show reply section when replies prop is omitted", () => {
     renderCard();
+    // No Accordion trigger and no reply list
     expect(screen.queryByRole("button", { name: /repl/i })).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Replies")).not.toBeInTheDocument();
   });
 
-  it("shows reply count toggle when items are present", () => {
+  it("shows Accordion trigger with reply count when items are present", () => {
     renderCard({ replies: { items: sampleReplies } });
-    expect(screen.getByRole("button", { name: /1 reply/i })).toBeInTheDocument();
+    // Accordion renders a button with aria-expanded
+    const trigger = screen.getByRole("button", { name: /1 reply/i });
+    expect(trigger).toBeInTheDocument();
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
   });
 
-  it("expands reply list when toggle is clicked", async () => {
+  it("expands reply list when Accordion trigger is clicked", async () => {
     renderCard({ replies: { items: sampleReplies } });
     await userEvent.click(screen.getByRole("button", { name: /1 reply/i }));
     expect(screen.getByText("Seconded!")).toBeInTheDocument();
     expect(screen.getByText("Vki")).toBeInTheDocument();
   });
 
-  it("collapses reply list when toggle is clicked again", async () => {
+  it("collapses reply list when Accordion trigger is clicked again", async () => {
     renderCard({ replies: { items: sampleReplies } });
-    const toggle = screen.getByRole("button", { name: /1 reply/i });
-    await userEvent.click(toggle);
-    await userEvent.click(screen.getByRole("button", { name: /hide replies/i }));
-    expect(screen.queryByText("Seconded!")).not.toBeInTheDocument();
+    const trigger = screen.getByRole("button", { name: /1 reply/i });
+    await userEvent.click(trigger);
+    expect(screen.getByText("Seconded!")).toBeVisible();
+    // Click again to collapse — Accordion uses `hidden` attribute, so element remains in DOM
+    await userEvent.click(trigger);
+    expect(screen.getByText("Seconded!")).not.toBeVisible();
+  });
+
+  it("Accordion trigger has rotating chevron via aria-expanded toggle", async () => {
+    renderCard({ replies: { items: sampleReplies } });
+    const trigger = screen.getByRole("button", { name: /1 reply/i });
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    await userEvent.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("Accordion trigger has aria-controls referencing the content panel", () => {
+    renderCard({ replies: { items: sampleReplies } });
+    const trigger = screen.getByRole("button", { name: /1 reply/i });
+    const controlsId = trigger.getAttribute("aria-controls");
+    expect(controlsId).toBeTruthy();
+    expect(document.getElementById(controlsId!)).toBeInTheDocument();
+  });
+
+  it("shows plural label for multiple replies", () => {
+    const twoReplies: WallPostCardReply[] = [
+      { author: "Vki", body: "Nice!", timestamp: "2026-06-10T11:00:00.000Z" },
+      { author: "Kasey", body: "Agreed!", timestamp: "2026-06-10T12:00:00.000Z" },
+    ];
+    renderCard({ replies: { items: twoReplies } });
+    expect(screen.getByRole("button", { name: /2 replies/i })).toBeInTheDocument();
   });
 
   it("does not show reply composer when canReply is false", () => {
@@ -141,23 +179,49 @@ describe("WallPostCard — replies", () => {
     expect(screen.queryByLabelText("Reply body")).not.toBeInTheDocument();
   });
 
-  it("shows reply composer when canReply is true", () => {
+  it("shows reply composer (no Accordion) when there are no replies but canReply is true", () => {
     renderCard({ replies: { items: [], canReply: true, onReply: vi.fn() } });
+    // No accordion toggle button, just the composer textarea
+    expect(screen.queryByRole("button", { name: /\d+ repl/i })).not.toBeInTheDocument();
     expect(screen.getByLabelText("Reply body")).toBeInTheDocument();
   });
 
-  it("calls onReply with the trimmed text and clears the textarea", async () => {
+  it("shows reply composer inside Accordion when replies exist and canReply is true", async () => {
+    renderCard({ replies: { items: sampleReplies, canReply: true, onReply: vi.fn() } });
+    // Accordion content is hidden via the `hidden` attribute until triggered
+    expect(screen.getByLabelText("Reply body")).not.toBeVisible();
+    await userEvent.click(screen.getByRole("button", { name: /1 reply/i }));
+    expect(screen.getByLabelText("Reply body")).toBeVisible();
+  });
+
+  it("calls onReply with trimmed text and empty mentions array, then clears the textarea", async () => {
     const onReply = vi.fn();
     renderCard({ replies: { items: [], canReply: true, onReply } });
     await userEvent.type(screen.getByLabelText("Reply body"), "Nice post!");
     await userEvent.click(screen.getByRole("button", { name: "Reply" }));
-    expect(onReply).toHaveBeenCalledWith("Nice post!");
+    expect(onReply).toHaveBeenCalledWith("Nice post!", []);
     expect(screen.getByLabelText("Reply body")).toHaveValue("");
   });
 
   it("disables the Reply button when textarea is empty", () => {
     renderCard({ replies: { items: [], canReply: true, onReply: vi.fn() } });
     expect(screen.getByRole("button", { name: "Reply" })).toBeDisabled();
+  });
+});
+
+describe("WallPostCard — mentionables", () => {
+  it("passes mentionables to MentionTextarea (picker opens on @)", async () => {
+    const onReply = vi.fn();
+    const mentionables = [{ id: "vki", name: "Vki" }];
+    renderCard({
+      replies: { items: [], canReply: true, onReply },
+      mentionables,
+    });
+    const textarea = screen.getByLabelText("Reply body");
+    await userEvent.type(textarea, "@V");
+    // MentionTextarea renders a listbox when @ is typed and there are matches
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
+    expect(screen.getByText("Vki")).toBeInTheDocument();
   });
 });
 

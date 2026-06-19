@@ -1,11 +1,15 @@
+/* Card overrides — Card lib supplies surface/border/radius/shadow */
 .card {
+  /* Gold accent border matching the member card design */
+  border-color: var(--color-accent-line-22) !important;
+  background: var(--color-member-card-bg) !important;
+}
+
+/* Inner row layout: media thumbnail + body content */
+.inner {
   display: flex;
   flex-direction: row;
   gap: 0;
-  background: var(--color-member-card-bg);
-  border: 1px solid var(--color-accent-line-22);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
 }
 
 .media {

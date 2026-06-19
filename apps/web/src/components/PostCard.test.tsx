@@ -44,11 +44,11 @@ describe("PostCard", () => {
     expect(badge).toBeInTheDocument();
   });
 
-  it("uses offer badge variant for offer posts", () => {
+  it("uses accent badge variant for offer posts", () => {
     const { container } = render(
       <PostCard post={offerPost} authorName="Alice" canArchive={false} onArchive={() => undefined} />,
     );
-    const badge = container.querySelector("[data-variant='offer']");
+    const badge = container.querySelector("[data-variant='accent']");
     expect(badge).toBeInTheDocument();
   });
 

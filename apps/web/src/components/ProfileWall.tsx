@@ -157,6 +157,7 @@ export function ProfileWall({ ownerId }: ProfileWallProps) {
                   currentMemberId={currentMemberId}
                   getMemberName={getMemberName}
                   getMember={getMember}
+                  members={members}
                   onDelete={() =>
                     deletePost.mutate(item.post.id, {
                       onSuccess: () => toast.success("Post removed."),
@@ -174,9 +175,9 @@ export function ProfileWall({ ownerId }: ProfileWallProps) {
                   }
                   onReply={
                     currentMemberId
-                      ? (body) =>
+                      ? (body, mentions) =>
                           addReply.mutate(
-                            { postId: item.post.id, authorId: currentMemberId, body },
+                            { postId: item.post.id, authorId: currentMemberId, body, mentions },
                             { onError: () => toast.error("Couldn't post your reply.") },
                           )
                       : undefined
@@ -205,9 +206,10 @@ interface WallPostFeedCardProps {
   currentMemberId: string | null;
   getMemberName: (memberId: string) => string;
   getMember: (memberId: string) => Member | undefined;
+  members: Member[];
   onDelete: () => void;
   onToggleLike?: () => void;
-  onReply?: (body: string) => void;
+  onReply?: (body: string, mentions: string[]) => void;
 }
 
 function WallPostFeedCard({
@@ -215,6 +217,7 @@ function WallPostFeedCard({
   currentMemberId,
   getMemberName,
   getMember,
+  members,
   onDelete,
   onToggleLike,
   onReply,
@@ -222,6 +225,7 @@ function WallPostFeedCard({
   const author = getMember(post.authorId);
   const likedBy = post.likedBy ?? [];
   const canDelete = canDeleteWallPost(post, currentMemberId);
+  const mentionables = members.map((m) => ({ id: m.id, name: m.name }));
 
   return (
     <WallPostCard
@@ -243,6 +247,7 @@ function WallPostFeedCard({
         canReply: currentMemberId !== null,
         onReply,
       }}
+      mentionables={mentionables}
       onDelete={canDelete ? onDelete : undefined}
     >
       <p className={styles.body}>{post.body}</p>

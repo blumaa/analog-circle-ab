@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
-import { Button, Input, SegmentedControl } from "@analog/ui";
+import { Button, Input, LabeledField, SegmentedControl } from "@analog/ui";
 import type { EventItem, Scope } from "../data";
+import styles from "./EventForm.module.css";
 
 export interface EventFormValues {
   title: string;
@@ -51,52 +52,47 @@ export function EventForm({ initial, onSubmit, onCancel, submitLabel = "Save eve
   };
 
   return (
-    <form onSubmit={handleSubmit} aria-label="Event details" style={{ display: "grid", gap: "1rem" }}>
-      <label>
-        <span>Title</span>
+    <form onSubmit={handleSubmit} aria-label="Event details" className={styles.form}>
+      <LabeledField label="Title">
         <Input
           aria-label="Title"
           value={values.title}
           onChange={(e) => set("title", e.target.value)}
           placeholder="Inner Circle meeting"
         />
-      </label>
-      <label>
-        <span>Date</span>
+      </LabeledField>
+      <LabeledField label="Date">
         <Input
           aria-label="Date"
           type="date"
           value={values.date}
           onChange={(e) => set("date", e.target.value)}
         />
-      </label>
-      <label>
-        <span>Start</span>
+      </LabeledField>
+      <LabeledField label="Start">
         <Input
           aria-label="Start time"
           type="time"
           value={values.startTime}
           onChange={(e) => set("startTime", e.target.value)}
         />
-      </label>
-      <label>
-        <span>End</span>
+      </LabeledField>
+      <LabeledField label="End">
         <Input
           aria-label="End time"
           type="time"
           value={values.endTime}
           onChange={(e) => set("endTime", e.target.value)}
         />
-      </label>
-      <label>
-        <span>Address</span>
+      </LabeledField>
+      <LabeledField label="Address">
         <Input
           aria-label="Address"
           value={values.address}
           onChange={(e) => set("address", e.target.value)}
           placeholder="Street, City"
         />
-      </label>
+      </LabeledField>
       <SegmentedControl
         ariaLabel="Visibility"
         value={values.scope}
@@ -106,7 +102,7 @@ export function EventForm({ initial, onSubmit, onCancel, submitLabel = "Save eve
           { value: "analog", label: "Analog Circle" },
         ]}
       />
-      <div style={{ display: "flex", gap: "0.75rem" }}>
+      <div className={styles.actions}>
         <Button type="submit">{submitLabel}</Button>
         {onCancel && (
           <Button type="button" variant="ghost" onClick={onCancel}>

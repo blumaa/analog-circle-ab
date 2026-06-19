@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { Menu } from "lucide-react";
-import { Button } from "@analog/ui";
+import { Button, Popover } from "@analog/ui";
 import { dataSource } from "../data";
 import { qk, useCurrentMemberId, useMember, useInnerGroup } from "../data/hooks";
 import { NotificationBell } from "../components/NotificationBell";
@@ -23,8 +22,6 @@ export function TopBar() {
   const { data: innerGroup } = useInnerGroup(memberId);
   const firstName = member?.name.split(" ")[0];
 
-  const [open, setOpen] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -67,38 +64,19 @@ export function TopBar() {
     },
   ];
 
-  // Close menu on outside click
-  useEffect(() => {
-    if (!open) return;
-    function handleClick(e: MouseEvent) {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [open]);
-
-  // Close on Escape
-  useEffect(() => {
-    if (!open) return;
-    function handleKey(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
-  }, [open]);
-
   function handleMenuItemClick(item: MenuItem) {
-    setOpen(false);
     if (item.action) {
       void item.action();
     } else if (item.to) {
       navigate(item.to);
     }
   }
+
+  const menuTrigger = (
+    <Button iconOnly aria-label="Member menu" variant="outline">
+      <Menu size={20} />
+    </Button>
+  );
 
   return (
     <header className={styles.bar}>
@@ -110,39 +88,21 @@ export function TopBar() {
       <div className={styles.right}>
         {firstName && <span className={styles.name}>{firstName}</span>}
         <NotificationBell />
-        <div className={styles.menuWrapper} ref={wrapperRef}>
-          <Button
-            iconOnly
-            aria-label="Member menu"
-            variant="outline"
-            aria-haspopup="menu"
-            aria-expanded={open}
-            aria-controls="member-menu"
-            onClick={() => setOpen((v) => !v)}
-          >
-            <Menu size={20} />
-          </Button>
-          {open && (
-            <div
-              id="member-menu"
-              role="menu"
-              className={styles.menu}
-              aria-label="Member menu"
-            >
-              {menuItems.map((item) => (
-                <button
-                  key={item.label}
-                  role="menuitem"
-                  className={styles.menuItem}
-                  onClick={() => handleMenuItemClick(item)}
-                >
-                  <span className={styles.menuItemLabel}>{item.label}</span>
-                  <span className={styles.menuItemDesc}>{item.description}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <Popover trigger={menuTrigger} align="end" ariaLabel="Member menu">
+          <div role="menu" className={styles.menu}>
+            {menuItems.map((item) => (
+              <button
+                key={item.label}
+                role="menuitem"
+                className={styles.menuItem}
+                onClick={() => handleMenuItemClick(item)}
+              >
+                <span className={styles.menuItemLabel}>{item.label}</span>
+                <span className={styles.menuItemDesc}>{item.description}</span>
+              </button>
+            ))}
+          </div>
+        </Popover>
       </div>
     </header>
   );

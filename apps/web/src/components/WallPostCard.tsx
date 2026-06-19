@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { Avatar, Badge, Button, Tooltip } from "@analog/ui";
+import { Accordion, Avatar, Badge, Button, Card, CardBody, Tooltip } from "@analog/ui";
+import { MentionTextarea, type Mentionable } from "@analog/ui";
 import { Heart, Trash2 } from "lucide-react";
 import { relativeTime } from "../lib/relativeTime";
 import styles from "./WallPostCard.module.css";
@@ -30,8 +31,10 @@ export interface WallPostCardProps {
   replies?: {
     items: WallPostCardReply[];
     canReply?: boolean;
-    onReply?: (body: string) => void;
+    onReply?: (body: string, mentions: string[]) => void;
   };
+  /** Members available for @mention in the reply composer. */
+  mentionables?: Mentionable[];
   /** When provided, renders a ghost delete affordance. */
   onDelete?: () => void;
   /** When provided, the card body links to this route (e.g. an activity's target). */
@@ -45,48 +48,58 @@ export function WallPostCard({
   scope,
   likes,
   replies,
+  mentionables = [],
   onDelete,
   href,
 }: WallPostCardProps) {
   return (
-    <article className={styles.card}>
-      <div className={styles.header}>
-        <div className={styles.authorRow}>
-          <Avatar src={author.photoUrl} name={author.name} size="sm" />
-          <div>
-            <span className={styles.authorName}>{author.name}</span>
-            <span className={styles.timestamp}>{relativeTime(timestamp)}</span>
+    <Card>
+      <CardBody padding="none">
+        <div className={styles.inner}>
+          <div className={styles.header}>
+            <div className={styles.authorRow}>
+              <Avatar src={author.photoUrl} name={author.name} size="sm" />
+              <div>
+                <span className={styles.authorName}>{author.name}</span>
+                <span className={styles.timestamp}>{relativeTime(timestamp)}</span>
+              </div>
+            </div>
+
+            <div className={styles.metaRow}>
+              {scope === "inner" && <Badge variant="neutral">Inner</Badge>}
+              {onDelete && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  leftIcon={<Trash2 size={14} />}
+                  onClick={onDelete}
+                  aria-label="Delete post"
+                >
+                  Delete
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
 
-        <div className={styles.metaRow}>
-          {scope === "inner" && <Badge variant="neutral">Inner</Badge>}
-          {onDelete && (
-            <Button
-              variant="ghost"
-              size="sm"
-              leftIcon={<Trash2 size={14} />}
-              onClick={onDelete}
-              aria-label="Delete post"
-            >
-              Delete
-            </Button>
+          {href ? (
+            <Link to={href} className={styles.bodyLink}>
+              <div className={styles.body}>{children}</div>
+            </Link>
+          ) : (
+            <div className={styles.body}>{children}</div>
           )}
+
+          {likes !== undefined && <LikeBar likes={likes} />}
         </div>
-      </div>
 
-      {href ? (
-        <Link to={href} className={styles.bodyLink}>
-          <div className={styles.body}>{children}</div>
-        </Link>
-      ) : (
-        <div className={styles.body}>{children}</div>
-      )}
-
-      {likes !== undefined && <LikeBar likes={likes} />}
-
-      {replies !== undefined && <RepliesSection replies={replies} />}
-    </article>
+        {replies !== undefined && (
+          <RepliesSection
+            replies={replies}
+            mentionables={mentionables}
+          />
+        )}
+      </CardBody>
+    </Card>
   );
 }
 
@@ -133,73 +146,85 @@ function LikeBar({ likes }: LikeBarProps) {
 
 interface RepliesSectionProps {
   replies: NonNullable<WallPostCardProps["replies"]>;
+  mentionables: Mentionable[];
 }
 
-function RepliesSection({ replies }: RepliesSectionProps) {
+function RepliesSection({ replies, mentionables }: RepliesSectionProps) {
   const { items, canReply = false, onReply } = replies;
-  const [expanded, setExpanded] = useState(false);
   const [replyBody, setReplyBody] = useState("");
+  const [replyMentions, setReplyMentions] = useState<string[]>([]);
 
   function handleSubmit() {
     const trimmed = replyBody.trim();
     if (!trimmed || !onReply) return;
-    onReply(trimmed);
+    onReply(trimmed, replyMentions);
     setReplyBody("");
+    setReplyMentions([]);
   }
 
   const hasItems = items.length > 0;
+  const summaryText = hasItems
+    ? `${items.length} ${items.length === 1 ? "reply" : "replies"}`
+    : "Reply";
 
-  return (
-    <div className={styles.repliesSection}>
-      {hasItems && (
-        <button
-          type="button"
-          className={styles.replyToggle}
-          onClick={() => setExpanded((prev) => !prev)}
-          aria-expanded={expanded}
-        >
-          {expanded
-            ? "Hide replies"
-            : `${items.length} ${items.length === 1 ? "reply" : "replies"}`}
-        </button>
-      )}
-
-      {expanded && (
-        <ul className={styles.replyList} aria-label="Replies">
-          {items.map((reply, i) => (
-            <li key={i} className={styles.replyItem}>
-              <div className={styles.replyMeta}>
-                <span className={styles.replyAuthor}>{reply.author}</span>
-                <span className={styles.replyTime}>{relativeTime(reply.timestamp)}</span>
-              </div>
-              <p className={styles.replyBody}>{reply.body}</p>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {canReply && (
-        <div className={styles.replyComposer}>
-          <textarea
-            className={styles.replyTextarea}
-            aria-label="Reply body"
-            placeholder="Write a reply…"
-            rows={2}
-            value={replyBody}
-            onChange={(e) => setReplyBody(e.target.value)}
-          />
-          <div className={styles.replyActions}>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleSubmit}
-              disabled={!replyBody.trim()}
-            >
-              Reply
-            </Button>
+  const replyList = hasItems ? (
+    <ul className={styles.replyList} aria-label="Replies">
+      {items.map((reply, i) => (
+        <li key={i} className={styles.replyItem}>
+          <div className={styles.replyMeta}>
+            <span className={styles.replyAuthor}>{reply.author}</span>
+            <span className={styles.replyTime}>{relativeTime(reply.timestamp)}</span>
           </div>
-        </div>
-      )}
+          <p className={styles.replyBody}>{reply.body}</p>
+        </li>
+      ))}
+    </ul>
+  ) : null;
+
+  const composer = canReply ? (
+    <div className={styles.replyComposer}>
+      <MentionTextarea
+        value={replyBody}
+        onChange={setReplyBody}
+        mentionables={mentionables}
+        onMentionsChange={setReplyMentions}
+        aria-label="Reply body"
+        placeholder="Write a reply…"
+        rows={2}
+      />
+      <div className={styles.replyActions}>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={handleSubmit}
+          disabled={!replyBody.trim()}
+        >
+          Reply
+        </Button>
+      </div>
     </div>
-  );
+  ) : null;
+
+  // When there are replies to show, wrap them (and the composer) in an Accordion.
+  // When there are no replies but the user can reply, show just the composer (no Accordion needed).
+  if (hasItems) {
+    return (
+      <div className={styles.repliesSection}>
+        <Accordion summary={summaryText}>
+          {replyList}
+          {composer}
+        </Accordion>
+      </div>
+    );
+  }
+
+  if (composer) {
+    return (
+      <div className={styles.repliesSection}>
+        <div className={styles.composerOnly}>{composer}</div>
+      </div>
+    );
+  }
+
+  return null;
 }

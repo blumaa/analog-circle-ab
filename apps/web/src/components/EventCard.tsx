@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { Accordion, Badge, Button, Card, CardBody, Label, Modal } from "@analog/ui";
+import { Accordion, Badge, Button, Card, CardBody, Label, Modal, Select, Textarea } from "@analog/ui";
 import type { EventItem, Member, RsvpStatus } from "../data";
 import { formatEventWhen } from "../lib/format";
 import styles from "./EventCard.module.css";
@@ -153,34 +153,21 @@ function ProposeSwapButton({
             </p>
           )}
 
-          <label className={styles.swapField}>
-            <Label as="span">Swap with</Label>
-            <select
-              className={styles.swapSelect}
-              value={targetEventId}
-              onChange={(e) => setTargetEventId(e.target.value)}
-            >
-              <option value="" disabled>
-                Choose a meeting…
-              </option>
-              {swapTargets.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.label}
-                </option>
-              ))}
-            </select>
-          </label>
+          <Select
+            label="Swap with"
+            value={targetEventId}
+            onChange={setTargetEventId}
+            placeholder="Choose a meeting…"
+            options={swapTargets.map((t) => ({ value: t.id, label: t.label }))}
+          />
 
-          <label className={styles.swapField}>
-            <Label as="span">Message (optional)</Label>
-            <textarea
-              className={styles.swapTextarea}
-              rows={3}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Add a note for the other host…"
-            />
-          </label>
+          <Textarea
+            label="Message (optional)"
+            rows={3}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Add a note for the other host…"
+          />
         </div>
       </Modal>
     </>
@@ -213,16 +200,13 @@ function RsvpControl({
             <Button variant="ghost" size="sm" onClick={() => onRsvp?.("declined", note || null)}>
               Can&apos;t make it
             </Button>
-            <label className={styles.swapField}>
-              <Label as="span">Reason (optional)</Label>
-              <textarea
-                className={styles.swapTextarea}
-                rows={2}
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder="Let everyone know why…"
-              />
-            </label>
+            <Textarea
+              label="Reason (optional)"
+              rows={2}
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Let everyone know why…"
+            />
           </>
         ) : (
           <Button variant="ghost" size="sm" onClick={() => onRsvp?.("going", null)}>

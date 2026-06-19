@@ -33,29 +33,6 @@
   text-transform: uppercase;
 }
 
-.textarea {
-  width: 100%;
-  padding: var(--space-3);
-  border: 1px solid var(--color-hairline-soft);
-  border-radius: var(--radius-card);
-  background: var(--color-surface);
-  color: var(--color-text);
-  font-family: var(--text-body-family);
-  font-size: var(--font-base);
-  line-height: var(--leading-body);
-  resize: vertical;
-  box-sizing: border-box;
-}
-
-.textarea:focus {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 1px;
-}
-
-.textarea::placeholder {
-  color: var(--color-text-muted-2);
-}
-
 .composerActions {
   display: flex;
   gap: var(--space-3);

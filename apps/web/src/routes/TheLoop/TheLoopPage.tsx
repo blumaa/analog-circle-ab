@@ -6,6 +6,7 @@ import {
   Header,
   Input,
   SegmentedControl,
+  Textarea,
   useToast,
 } from "@analog/ui";
 import {
@@ -179,8 +180,7 @@ export function TheLoopPage() {
 
           <div className={styles.composerField}>
             <span className={styles.composerLabel}>Details</span>
-            <textarea
-              className={styles.textarea}
+            <Textarea
               placeholder="Describe what you need or what you're offering…"
               value={draftBody}
               onChange={(e) => setDraftBody(e.target.value)}

@@ -268,7 +268,7 @@ export function createFirebaseDataSource(): DataSource {
       const data = s.data();
       return { id: s.id, ...data, replies: data?.["replies"] ?? [], mentions: data?.["mentions"] ?? [] } as WallPost;
     },
-    async addWallPostReply(postId, authorId, body) {
+    async addWallPostReply(postId, authorId, body, mentions = []) {
       const ref = doc(d, "wallPosts", postId);
       // arrayUnion appends an object element; Firestore preserves insertion order.
       const reply: WallReply = {
@@ -276,10 +276,25 @@ export function createFirebaseDataSource(): DataSource {
         authorId,
         body,
         createdAt: new Date().toISOString(),
+        mentions,
       };
       await updateDoc(ref, { replies: arrayUnion(reply) });
+      // Fetch the post's scope to construct the correct targetRoute for mention activities.
       const s = await getDoc(ref);
       const data = s.data();
+      const postScope = (data?.["scope"] as WallPost["scope"] | undefined) ?? "analog";
+      const postOwnerId = (data?.["ownerId"] as string | undefined) ?? "";
+      // One "mention" activity per tagged member, skipping self-tags.
+      for (const mentionedId of mentions) {
+        if (mentionedId === authorId) continue;
+        await addActivity(d, {
+          type: "mention",
+          scope: postScope,
+          actorId: authorId,
+          subjectId: mentionedId,
+          targetRoute: `/innercircle/members/${postOwnerId}`,
+        });
+      }
       return { id: s.id, ...data, replies: data?.["replies"] ?? [], mentions: data?.["mentions"] ?? [] } as WallPost;
     },
 
