@@ -9,7 +9,7 @@ const meta = {
   args: {
     icon: <Users />,
     title: "Your Circle",
-    description: "Meetings, 1-1s, members, map, and food preferences",
+    description: "Events, 1-1s, members, map, and food preferences",
     href: "#",
   },
 } satisfies Meta<typeof NavCard>;
@@ -29,7 +29,7 @@ export const List: Story = {
       <NavCard
         icon={<Users />}
         title="Your Circle"
-        description="Meetings, 1-1s, members, map, and food preferences"
+        description="Events, 1-1s, members, map, and food preferences"
         href="#"
         tone="accent"
       />

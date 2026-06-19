@@ -20,8 +20,8 @@ describe("Badge", () => {
   });
 
   it("applies the variant as a data attribute", () => {
-    render(<Badge variant="meeting">Meeting</Badge>);
-    expect(screen.getByText("Meeting")).toHaveAttribute("data-variant", "meeting");
+    render(<Badge variant="event">Event</Badge>);
+    expect(screen.getByText("Event")).toHaveAttribute("data-variant", "event");
   });
 
   it("applies the danger variant", () => {

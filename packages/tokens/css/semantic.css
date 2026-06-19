@@ -83,6 +83,11 @@
 
   /* Gold outline border at ~45% opacity — ghost-gold / outline variant border */
   --color-accent-line-strong: var(--alpha-accent-45);
+  /* Gold pill borders — SegmentedControl and Chip filter pills */
+  --color-accent-line-42: var(--alpha-accent-42); /* SegmentedControl active pill border */
+  --color-accent-line-38: var(--alpha-accent-38); /* Chip active border */
+  --color-accent-line-18: var(--alpha-accent-18); /* SegmentedControl inactive pill border */
+  --color-accent-line-14: var(--alpha-accent-14); /* Chip inactive border */
 
   /* Member card tokens */
   --color-member-card-bg: var(--member-card-bg);   /* rgba(0,0,0,0.22) */
@@ -97,6 +102,7 @@
   /* Tabs */
   --color-tab-inactive: rgba(245, 240, 232, 0.55); /* cream 55% alpha — inactive tab label */
   --text-tab-size: var(--font-tab);                 /* 0.72rem / 11.52px — live group tab */
+  --text-chip-size: var(--font-chip);               /* 0.8rem / 12.8px — live category chip */
 
   /* Input */
   --color-input-bg: var(--alpha-dark-25);           /* rgba(0,0,0,0.25) — members-style fill */

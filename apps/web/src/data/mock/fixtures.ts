@@ -131,7 +131,7 @@ const innerMeetings: EventItem[] = meetingHosts.map(([date, hostId], i) => ({
   id: `meeting-${i}`,
   scope: "inner",
   groupId: INNER_GROUP_ID,
-  title: "Inner Circle meeting",
+  title: "Inner Circle event",
   date,
   startTime: "16:00",
   endTime: "19:00",

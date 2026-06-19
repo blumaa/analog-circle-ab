@@ -34,7 +34,7 @@ export function TopBar() {
   const menuItems: MenuItem[] = [
     {
       label: "Your Circle",
-      description: "Meetings, 1-1s, members, map, and food preferences",
+      description: "Events, 1-1s, members, map, and food preferences",
       to: innerGroup ? `/innercircle/group/${innerGroup.id}` : "/innercircle/dashboard",
     },
     {

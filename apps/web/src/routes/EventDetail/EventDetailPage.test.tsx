@@ -22,7 +22,7 @@ const makeEvent = (over: Partial<EventItem>): EventItem => ({
   id: "e1",
   scope: "inner",
   groupId: "ic4",
-  title: "Inner Circle meeting",
+  title: "Inner Circle event",
   date: "2026-07-04",
   startTime: "16:00",
   endTime: "19:00",
@@ -34,7 +34,7 @@ const makeEvent = (over: Partial<EventItem>): EventItem => ({
   ...over,
 });
 
-const events = [makeEvent({ id: "e1", title: "Inner Circle meeting" })];
+const events = [makeEvent({ id: "e1", title: "Inner Circle event" })];
 
 vi.mock("../../data/hooks", () => ({
   useCurrentMemberId: () => ({ data: "aaron" }),
@@ -58,7 +58,7 @@ describe("EventDetailPage", () => {
   it("renders the event title for a known id", async () => {
     renderAt("/innercircle/event/e1");
     await waitFor(() => {
-      expect(screen.getByText("Inner Circle meeting")).toBeInTheDocument();
+      expect(screen.getByText("Inner Circle event")).toBeInTheDocument();
     });
   });
 

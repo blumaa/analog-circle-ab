@@ -25,8 +25,8 @@
   color: var(--color-info);
 }
 
-/* meeting — accent (gold) */
-.badge[data-variant="meeting"] {
+/* event — accent (gold) */
+.badge[data-variant="event"] {
   background: var(--color-accent-glow);
   color: var(--color-accent);
 }

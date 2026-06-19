@@ -27,7 +27,7 @@ export const WithTrailing: Story = {
 
 export const DividedOpen: Story = {
   args: {
-    summary: "Inner Circle meeting — June 2026",
+    summary: "Inner Circle event — June 2026",
     trailing: <Badge variant="accent">You&apos;re hosting</Badge>,
     defaultOpen: true,
     divided: true,
@@ -38,7 +38,7 @@ export const DividedOpen: Story = {
 export const LongSummaryWithTrailing: Story = {
   args: {
     summary:
-      "Inner Circle meeting — a long title that should wrap naturally rather than being crushed into three cramped lines",
+      "Inner Circle event — a long title that should wrap naturally rather than being crushed into three cramped lines",
     trailing: <Badge variant="accent">You&apos;re hosting</Badge>,
     children: "The summary stays readable; the trailing badge wraps below on narrow widths.",
   },

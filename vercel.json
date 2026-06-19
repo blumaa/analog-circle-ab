@@ -2,7 +2,10 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vite",
   "installCommand": "pnpm install",
-  "buildCommand": "pnpm --filter web build",
+  "buildCommand": "pnpm --filter web build && pnpm --filter @analog/ui exec storybook build --output-dir ../../apps/web/dist/component-lib",
   "outputDirectory": "apps/web/dist",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/component-lib", "destination": "/component-lib/index.html" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }

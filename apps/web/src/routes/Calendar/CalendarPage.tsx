@@ -61,10 +61,10 @@ export function CalendarPage() {
       },
       {
         onSuccess: () => {
-          toast.success("Meeting created.");
+          toast.success("Event created.");
           setCreateOpen(false);
         },
-        onError: () => toast.error("Couldn't create the meeting."),
+        onError: () => toast.error("Couldn't create the event."),
       },
     );
   };
@@ -84,10 +84,10 @@ export function CalendarPage() {
       },
       {
         onSuccess: () => {
-          toast.success("Meeting updated.");
+          toast.success("Event updated.");
           setEditEvent(null);
         },
-        onError: () => toast.error("Couldn't update the meeting."),
+        onError: () => toast.error("Couldn't update the event."),
       },
     );
   };
@@ -125,7 +125,7 @@ export function CalendarPage() {
       {canCreateEvent(memberId) && (
         <Fab
           icon={<Plus size={24} />}
-          aria-label="New meeting"
+          aria-label="New event"
           onClick={() => setCreateOpen(true)}
         />
       )}
@@ -133,20 +133,20 @@ export function CalendarPage() {
       <Modal
         open={createOpen}
         onClose={() => setCreateOpen(false)}
-        title="New meeting"
+        title="New event"
       >
         <EventForm
           groupId={innerGroupId}
           onSubmit={handleCreate}
           onCancel={() => setCreateOpen(false)}
-          submitLabel="Create meeting"
+          submitLabel="Create event"
         />
       </Modal>
 
       <Modal
         open={!!editEvent}
         onClose={() => setEditEvent(null)}
-        title="Edit meeting"
+        title="Edit event"
       >
         {editEvent && (
           <EventForm

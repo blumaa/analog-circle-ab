@@ -11,7 +11,7 @@ export interface EventAttendee {
   note?: string | null;
 }
 
-/** A meeting the current event's host can propose swapping with. */
+/** An event the current event's host can propose swapping with. */
 export interface SwapTarget {
   id: string;
   /** e.g. "August 2026 · hosted by David" */
@@ -149,7 +149,7 @@ function ProposeSwapButton({
         <div className={styles.swapForm}>
           {monthLabel && (
             <p className={styles.swapMeeting}>
-              Your meeting: <strong>{monthLabel}</strong>
+              Your event: <strong>{monthLabel}</strong>
             </p>
           )}
 
@@ -157,7 +157,7 @@ function ProposeSwapButton({
             label="Swap with"
             value={targetEventId}
             onChange={setTargetEventId}
-            placeholder="Choose a meeting…"
+            placeholder="Choose an event…"
             options={swapTargets.map((t) => ({ value: t.id, label: t.label }))}
           />
 
@@ -247,7 +247,7 @@ export function EventCard({
             <div className={styles.summaryContent}>
               <span className={styles.title}>{event.title}</span>
               <div className={styles.summaryBadges}>
-                <Badge variant="meeting">MEETING</Badge>
+                <Badge variant="event">EVENT</Badge>
                 {isHosting && <Badge variant="accent">YOU&apos;RE HOSTING</Badge>}
               </div>
             </div>
@@ -327,7 +327,7 @@ export function EventCard({
               {attendees && <AttendeeList attendees={attendees} />}
               {(!attendees || attendees.filter((a) => a.status !== "going").length === 0) && (
                 <p className={styles.attendanceNote}>
-                  {going} of {total} members are going to this meeting.
+                  {going} of {total} members are going to this event.
                 </p>
               )}
             </Accordion>

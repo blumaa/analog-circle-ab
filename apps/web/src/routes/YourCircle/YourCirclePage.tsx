@@ -68,7 +68,7 @@ function downloadAllIcs(events: EventItem[]): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "analog-circle-meetings.ics";
+  a.download = "analog-circle-events.ics";
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -107,10 +107,10 @@ export function YourCirclePage() {
       },
       {
         onSuccess: () => {
-          toast.success("Meeting created.");
+          toast.success("Event created.");
           setCreateOpen(false);
         },
-        onError: () => toast.error("Couldn't create the meeting."),
+        onError: () => toast.error("Couldn't create the event."),
       },
     );
   };
@@ -130,10 +130,10 @@ export function YourCirclePage() {
       },
       {
         onSuccess: () => {
-          toast.success("Meeting updated.");
+          toast.success("Event updated.");
           setEditEvent(null);
         },
-        onError: () => toast.error("Couldn't update the meeting."),
+        onError: () => toast.error("Couldn't update the event."),
       },
     );
   };
@@ -163,16 +163,16 @@ export function YourCirclePage() {
       {view === "calendar" && (
         <section className={styles.section}>
           <p className={styles.intro}>
-            All Inner Circle meetings and your 1-1s for the year. Use &ldquo;Propose hosting
+            All Inner Circle events and your 1-1s for the year. Use &ldquo;Propose hosting
             swap&rdquo; to trade dates with another host if needed.
           </p>
 
-          {/* ADD ALL MEETINGS TO CALENDAR */}
+          {/* ADD ALL EVENTS TO CALENDAR */}
           {events.length > 0 && (
             <div className={styles.addAllWrap}>
               <Accordion
                 summary={
-                  <span className={styles.addAllLabel}>ADD ALL MEETINGS TO CALENDAR</span>
+                  <span className={styles.addAllLabel}>ADD ALL EVENTS TO CALENDAR</span>
                 }
               >
                 <div className={styles.addAllOptions}>
@@ -199,8 +199,8 @@ export function YourCirclePage() {
               onRequestEdit={(ev) => setEditEvent(ev)}
               onDelete={(id) =>
                 deleteEvent.mutate(id, {
-                  onSuccess: () => toast.success("Meeting deleted."),
-                  onError: () => toast.error("Couldn't delete the meeting."),
+                  onSuccess: () => toast.success("Event deleted."),
+                  onError: () => toast.error("Couldn't delete the event."),
                 })
               }
             />
@@ -232,7 +232,7 @@ export function YourCirclePage() {
       {canCreateEvent(memberId) && view === "calendar" && (
         <Fab
           icon={<Plus size={24} />}
-          aria-label="New meeting"
+          aria-label="New event"
           onClick={() => setCreateOpen(true)}
         />
       )}
@@ -240,20 +240,20 @@ export function YourCirclePage() {
       <Modal
         open={createOpen}
         onClose={() => setCreateOpen(false)}
-        title="New meeting"
+        title="New event"
       >
         <EventForm
           groupId={groupId}
           onSubmit={handleCreate}
           onCancel={() => setCreateOpen(false)}
-          submitLabel="Create meeting"
+          submitLabel="Create event"
         />
       </Modal>
 
       <Modal
         open={!!editEvent}
         onClose={() => setEditEvent(null)}
-        title="Edit meeting"
+        title="Edit event"
       >
         {editEvent && (
           <EventForm

@@ -7,6 +7,12 @@ const config: StorybookConfig = {
     name: "@storybook/react-vite",
     options: {},
   },
+  // Served at /component-lib on the app's Vercel domain — production assets must
+  // resolve under that subpath. Dev (root) is unaffected.
+  viteFinal: async (viteConfig, { configType }) => {
+    if (configType === "PRODUCTION") viteConfig.base = "/component-lib/";
+    return viteConfig;
+  },
 };
 
 export default config;

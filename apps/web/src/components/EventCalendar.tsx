@@ -26,7 +26,7 @@ import styles from "./EventCalendar.module.css";
 export type EventCalendarView = "month" | "week" | "list";
 
 export interface EventCalendarProps {
-  /** analog = all events; inner = only this member's inner-group meetings. */
+  /** analog = all events; inner = only this member's inner-group events. */
   scope: Scope;
   view: EventCalendarView;
   /** When provided, the page can wire up a create handler (called from a modal). */
@@ -213,7 +213,7 @@ export function EventCalendar({
   return (
     <div className={styles.list}>
       {loading ? (
-        <Spinner label="Loading meetings" />
+        <Spinner label="Loading events" />
       ) : (
         <ul className={styles.eventList}>
           {sortedEvents.map((ev) => (

@@ -63,8 +63,16 @@
 
   /* Gold border at 45% — for ghost-gold outline variant */
   --alpha-accent-45: rgba(201, 168, 76, 0.45);
+  /* Gold border at 42% — SegmentedControl active pill border */
+  --alpha-accent-42: rgba(201, 168, 76, 0.42);
+  /* Gold border at 38% — Chip active border */
+  --alpha-accent-38: rgba(201, 168, 76, 0.38);
+  /* Gold border at 18% — SegmentedControl inactive pill border */
+  --alpha-accent-18: rgba(201, 168, 76, 0.18);
   /* Gold border at 15% — live mobile nav top border (bluer/brighter than hairline-soft) */
   --alpha-accent-15: rgba(201, 168, 76, 0.15);
+  /* Gold border at 14% — Chip inactive border */
+  --alpha-accent-14: rgba(201, 168, 76, 0.14);
 
   /* Indigo scale */
   --indigo-300: #a5b4fc;
@@ -143,6 +151,7 @@
 
   /* Font sizes */
   --font-tab: 0.72rem;   /* 11.52px — live group tab label size */
+  --font-chip: 0.8rem;   /* 12.8px — live category chip label size */
   --font-input: 0.95rem; /* 15.2px — live search / members input size */
   --font-xs: 0.75rem;
   --font-sm: 0.875rem;

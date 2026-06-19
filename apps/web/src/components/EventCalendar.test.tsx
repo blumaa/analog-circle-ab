@@ -37,7 +37,7 @@ const makeEvent = (over: Partial<EventItem>): EventItem => ({
   ...over,
 });
 
-// 2 inner meetings + 2 analog events.
+// 2 inner events + 2 analog events.
 const innerEvents = [
   makeEvent({ id: "m0", date: "2026-07-04" }),
   makeEvent({ id: "m1", date: "2026-08-01" }),
@@ -75,10 +75,10 @@ beforeEach(() => {
 
 describe("EventCalendar", () => {
   describe("list view (scope filter → counts)", () => {
-    it("inner scope shows only inner-group meetings", async () => {
+    it("inner scope shows only inner-group events", async () => {
       renderWithProviders(<EventCalendar scope="inner" view="list" groupId="ic4" />);
       await waitFor(() => {
-        expect(screen.getAllByText("MEETING").length).toBe(innerEvents.length);
+        expect(screen.getAllByText("EVENT").length).toBe(innerEvents.length);
       });
       // Analog-only events are excluded under the inner scope. EventCard's
       // calendar variant renders the date line, e.g. "Sat 18 July".
@@ -88,21 +88,21 @@ describe("EventCalendar", () => {
     it("analog scope shows all events (inner + community)", async () => {
       renderWithProviders(<EventCalendar scope="analog" view="list" />);
       await waitFor(() => {
-        expect(screen.getAllByText("MEETING").length).toBe(allEvents.length);
+        expect(screen.getAllByText("EVENT").length).toBe(allEvents.length);
       });
       // Community event dates appear under analog scope.
       expect(screen.getAllByText(/18 July/).length).toBeGreaterThan(0);
       expect(screen.getAllByText(/15 August/).length).toBeGreaterThan(0);
     });
 
-    it("does not show an inline New meeting button (create is modal-driven from the page)", async () => {
+    it("does not show an inline New event button (create is modal-driven from the page)", async () => {
       renderWithProviders(
         <EventCalendar scope="inner" view="list" groupId="ic4" onCreate={() => {}} />,
       );
       await waitFor(() => {
-        expect(screen.getAllByText("MEETING").length).toBe(innerEvents.length);
+        expect(screen.getAllByText("EVENT").length).toBe(innerEvents.length);
       });
-      expect(screen.queryByRole("button", { name: /new meeting/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /new event/i })).not.toBeInTheDocument();
     });
   });
 
@@ -118,8 +118,8 @@ describe("EventCalendar", () => {
       // (not the duplicate Month/Week view switcher the app already owns).
       expect(container.querySelector(".rbc-month-view")).toBeInTheDocument();
       expect(screen.getByRole("button", { name: /today/i })).toBeInTheDocument();
-      // The list-only "MEETING" badge must not appear in grid mode.
-      expect(screen.queryByText("MEETING")).not.toBeInTheDocument();
+      // The list-only "EVENT" badge must not appear in grid mode.
+      expect(screen.queryByText("EVENT")).not.toBeInTheDocument();
     });
   });
 });

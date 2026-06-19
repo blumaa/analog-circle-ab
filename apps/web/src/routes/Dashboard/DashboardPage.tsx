@@ -25,7 +25,7 @@ const COMMUNITY_LINKS: ReadonlyArray<{
 }> = [
   {
     label: "Your Circle",
-    description: "Meetings, 1-1s, members, map, and food preferences",
+    description: "Events, 1-1s, members, map, and food preferences",
     icon: <Users />,
     href: (groupId) => `/innercircle/group/${groupId}`,
     tone: "accent",

@@ -1,41 +1,35 @@
 .group {
   display: inline-flex;
   align-items: center;
-  gap: 0;
-  border: 1px solid var(--color-hairline);
-  border-radius: var(--radius-control);
-  overflow: hidden;
-  background: var(--color-bg-deep);
+  gap: 6px;
 }
 
 .option {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-2) var(--space-4);
-  border: none;
-  border-right: 1px solid var(--color-hairline);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-accent-line-18);
+  border-radius: var(--radius-pill);
   background: transparent;
   color: var(--color-text-muted);
   font-family: var(--text-body-family);
-  font-size: var(--font-sm);
+  font-size: 0.88rem;
   font-weight: var(--weight-medium);
   cursor: pointer;
   transition:
     background-color var(--motion-fast) var(--motion-ease),
+    border-color var(--motion-fast) var(--motion-ease),
     color var(--motion-fast) var(--motion-ease);
 }
 
-.option:last-child {
-  border-right: none;
-}
-
 .option:hover:not(:disabled) {
+  border-color: var(--color-accent-line-42);
   color: var(--color-text);
-  background: var(--color-hairline-soft);
 }
 
 .option[data-selected] {
+  border: 1px solid var(--color-accent-line-42);
   background: var(--color-accent-glow);
   color: var(--color-accent);
   font-weight: var(--weight-bold);

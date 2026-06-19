@@ -4,7 +4,7 @@ import styles from "./Badge.module.css";
 export type BadgeVariant =
   | "danger"
   | "offer"
-  | "meeting"
+  | "event"
   | "accent"
   | "neutral"
   | "success"

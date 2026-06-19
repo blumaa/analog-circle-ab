@@ -10,7 +10,7 @@ const event: EventItem = {
   id: "e1",
   scope: "inner",
   groupId: "ic4",
-  title: "Inner Circle meeting",
+  title: "Inner Circle event",
   date: "2026-07-04",
   startTime: "16:00",
   endTime: "19:00",
@@ -65,7 +65,7 @@ describe("EventCard", () => {
     renderWithProviders(
       <EventCard event={event} host={aaron} currentMemberId="aaron" going={5} total={7} defaultOpen />,
     );
-    expect(screen.getByText("Inner Circle meeting")).toBeInTheDocument();
+    expect(screen.getByText("Inner Circle event")).toBeInTheDocument();
     expect(screen.getAllByText(/Sat 4 July · 16:00-19:00/).length).toBeGreaterThan(0);
   });
 
@@ -75,9 +75,9 @@ describe("EventCard", () => {
     );
     // Title must NOT be a heading element (it is the accordion summary).
     expect(
-      screen.queryByRole("heading", { name: "Inner Circle meeting" }),
+      screen.queryByRole("heading", { name: "Inner Circle event" }),
     ).not.toBeInTheDocument();
-    expect(screen.getByText("Inner Circle meeting")).toBeInTheDocument();
+    expect(screen.getByText("Inner Circle event")).toBeInTheDocument();
   });
 
   it("shows attendance count in green-styled success text", () => {

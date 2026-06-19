@@ -73,14 +73,14 @@ describe("Accordion", () => {
   it("keeps a long summary readable alongside a trailing node", () => {
     render(
       <Accordion
-        summary="Inner Circle meeting — a long title that should wrap naturally rather than being crushed"
+        summary="Inner Circle event — a long title that should wrap naturally rather than being crushed"
         trailing={<span>Sat 14 Jun · You&apos;re hosting</span>}
       >
         <p>Details</p>
       </Accordion>,
     );
     expect(
-      screen.getByRole("button", { name: /Inner Circle meeting/ }),
+      screen.getByRole("button", { name: /Inner Circle event/ }),
     ).toBeInTheDocument();
     expect(screen.getByText(/You're hosting/)).toBeInTheDocument();
   });

@@ -58,7 +58,7 @@ export function EventForm({ initial, onSubmit, onCancel, submitLabel = "Save eve
           aria-label="Title"
           value={values.title}
           onChange={(e) => set("title", e.target.value)}
-          placeholder="Inner Circle meeting"
+          placeholder="Inner Circle event"
         />
       </LabeledField>
       <LabeledField label="Date">

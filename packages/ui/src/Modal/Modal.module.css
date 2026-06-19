@@ -16,7 +16,13 @@
   outline: none;
 }
 
-.card {
+/*
+ * The modal panel must be OPAQUE — the default Card surface is translucent glass,
+ * which lets the page show through over the scrim. [data-variant] (which Card always
+ * sets) raises specificity above Card's own `.card` rule regardless of CSS order.
+ */
+.card[data-variant] {
+  background: var(--color-surface-raised);
   box-shadow: var(--elevation-raised);
 }
 
