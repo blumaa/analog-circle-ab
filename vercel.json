@@ -4,8 +4,10 @@
   "installCommand": "pnpm install",
   "buildCommand": "pnpm --filter web build && pnpm --filter @analog/ui exec storybook build --output-dir ../../apps/web/dist/component-lib",
   "outputDirectory": "apps/web/dist",
+  "redirects": [
+    { "source": "/component-lib", "destination": "/component-lib/", "permanent": false }
+  ],
   "rewrites": [
-    { "source": "/component-lib", "destination": "/component-lib/index.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
