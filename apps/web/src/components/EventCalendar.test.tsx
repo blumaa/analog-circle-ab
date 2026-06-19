@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import { screen, waitFor, within } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import { renderWithProviders } from "../test/renderWithProviders";
 import { EventCalendar } from "./EventCalendar";
 import type { EventItem, Member, Group } from "../data";
@@ -114,9 +114,10 @@ describe("EventCalendar", () => {
       await waitFor(() => {
         expect(container.querySelector(".rbc-calendar")).toBeInTheDocument();
       });
-      const toolbar = container.querySelector(".rbc-toolbar");
-      expect(toolbar).toBeInTheDocument();
-      expect(within(toolbar as HTMLElement).getByText(/month/i)).toBeInTheDocument();
+      // Grid (month) is rendered, and the custom toolbar shows navigation
+      // (not the duplicate Month/Week view switcher the app already owns).
+      expect(container.querySelector(".rbc-month-view")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /today/i })).toBeInTheDocument();
       // The list-only "MEETING" badge must not appear in grid mode.
       expect(screen.queryByText("MEETING")).not.toBeInTheDocument();
     });
