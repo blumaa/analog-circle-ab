@@ -17,7 +17,7 @@ Dashboard: https://supabase.com/dashboard/project/lorbyyzwrrhonckbaoxq
 1. Apply schema (repo root): `supabase db push`
 2. Seed: `pnpm --filter web seed:supabase`
    - Add `-- --dev-passwords` to set the repo's dev password on every seeded user so "Dev sign-in" works. Test projects only.
-3. Dashboard, Auth, URL Configuration: Site URL = production URL; redirect URLs = `http://localhost:5173`, production URL.
+3. Dashboard, Auth, URL Configuration: Site URL = `https://analog-circle-ab-web.vercel.app`; redirect URLs = `https://analog-circle-ab-web.vercel.app/**`, `http://localhost:5173/**`. The app asks for its own origin (`emailRedirectTo`); Supabase honours it only when it matches this list, otherwise it falls back to Site URL. `supabase/config.toml` covers the local stack only.
 4. `apps/web/.env`: `VITE_BACKEND=supabase`. Restart dev server.
 5. Vercel env: `VITE_BACKEND=supabase`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`.
 
