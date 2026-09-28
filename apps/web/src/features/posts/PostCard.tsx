@@ -16,7 +16,7 @@ import type { Post, RsvpStatus } from "../../data/types";
 import { formatEventWhen } from "../../lib/dates";
 import { isGoing } from "../../lib/feed";
 import { firstName } from "../../lib/names";
-import { postTag, postTone } from "../../lib/postLabel";
+import { isInnerCirclePost, postTag, postTone } from "../../lib/postLabel";
 import { reactionSummary, reactionTotal } from "../../lib/reactions";
 import { PeopleSheet } from "../members/PeopleSheet";
 import { CommentThread } from "./CommentThread";
@@ -100,7 +100,11 @@ export function PostCard({ post, expanded, onToggleComments }: PostCardProps) {
   const thumb = post.imageUrl && <img src={post.imageUrl} alt="" className={styles.thumb} />;
 
   return (
-    <article className={styles.card} aria-label={post.title}>
+    <article
+      className={styles.card}
+      aria-label={post.title}
+      data-inner-circle={isInnerCirclePost(post, circles, me.id) || undefined}
+    >
       <div className={styles.body}>
         {head}
         {byline}

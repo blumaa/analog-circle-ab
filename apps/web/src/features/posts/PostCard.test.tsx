@@ -30,6 +30,18 @@ describe("PostCard", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
+  it("marks Inner Circle posts for the special border", async () => {
+    renderCard("brunch-botanico");
+    const inner = await screen.findByRole("article", { name: "Sunday brunch at Café Botanico" });
+    expect(inner).toHaveAttribute("data-inner-circle");
+  });
+
+  it("leaves other posts unmarked", async () => {
+    renderCard("welcome");
+    const card = await screen.findByRole("article", { name: "Welcome, new members" });
+    expect(card).not.toHaveAttribute("data-inner-circle");
+  });
+
   it("links a post title to the post page", async () => {
     renderCard("welcome");
     const card = await screen.findByRole("article", { name: "Welcome, new members" });

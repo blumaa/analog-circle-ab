@@ -116,8 +116,14 @@
   --text-tag-tracking: 0.12em;
   --text-sheet-title-size: var(--font-22);
 
-  /* Elevation — FAB glow is the only shadow */
+  /* Elevation: gold glows only, for the FAB and Inner Circle posts */
   --elevation-fab: var(--glow-gold);
+  --elevation-inner-circle: var(--glow-gold-soft);
+
+  /* Inner Circle posts */
+  --color-inner-circle-edge-from: var(--gold-300);
+  --color-inner-circle-edge-to: var(--gold-700);
+  --color-inner-circle-tint: var(--gold-wash);
 
   /* Layout */
   --layout-max: 390px;

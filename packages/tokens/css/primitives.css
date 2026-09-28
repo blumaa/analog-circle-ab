@@ -65,6 +65,8 @@
   --rust-600: #b14002;
   --scrim-68: rgba(8, 8, 16, 0.68);
   --glow-gold: 0 8px 30px rgba(201, 167, 78, 0.35);
+  --glow-gold-soft: 0 0 18px rgba(201, 167, 78, 0.22);
+  --gold-wash: rgba(201, 167, 78, 0.05);
 
   /* Spacing — 4px steps */
   --space-1: 0.25rem;   /* 4 */

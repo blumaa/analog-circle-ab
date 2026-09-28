@@ -9,11 +9,17 @@ export const POST_TYPE_LABEL: Record<PostType, string> = {
   need: "Need",
 };
 
+/** Shared to the viewer's own inner circle. Birthdays never count: they have their own look. */
+export function isInnerCirclePost(post: Post, circles: Circle[], viewerId: string): boolean {
+  if (post.type === "birthday") return false;
+  const inner = innerCircleOf(circles, viewerId);
+  return !!inner && post.publishedTo.includes(inner.id);
+}
+
 /** Where the post was shared, from the viewer's point of view. Null for the Square alone. */
 export function postAudience(post: Post, circles: Circle[], viewerId: string): string | null {
   if (post.type === "birthday") return null;
-  const inner = innerCircleOf(circles, viewerId);
-  if (inner && post.publishedTo.includes(inner.id)) return "My Circle";
+  if (isInnerCirclePost(post, circles, viewerId)) return "My Circle";
   const named = post.publishedTo.flatMap((t) => circles.find((c) => c.id === t) ?? []);
   const [first] = named;
   if (first && named.length === 1) return first.name;

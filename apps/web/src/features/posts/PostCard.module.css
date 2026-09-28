@@ -5,6 +5,17 @@
   background: var(--color-surface);
 }
 
+/* Inner Circle: gold gradient border and halo. The padding-box layer paints the
+   card; the border-box layer shows through the transparent border as the gradient. */
+.card[data-inner-circle] {
+  border: 1.5px solid transparent;
+  background:
+    linear-gradient(var(--color-inner-circle-tint), var(--color-inner-circle-tint)) padding-box,
+    linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
+    linear-gradient(135deg, var(--color-inner-circle-edge-from), var(--color-inner-circle-edge-to)) border-box;
+  box-shadow: var(--elevation-inner-circle);
+}
+
 .body {
   display: flex;
   flex-direction: column;

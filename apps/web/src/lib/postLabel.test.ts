@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Circle, Post } from "../data/types";
-import { postAudience, postTag, postTone, POST_TYPE_LABEL } from "./postLabel";
+import { isInnerCirclePost, postAudience, postTag, postTone, POST_TYPE_LABEL } from "./postLabel";
 
 const circle = (id: string, type: Circle["type"], name: string, memberIds: string[]): Circle => ({
   id, type, name, description: "", number: type === "inner" ? 4 : null, imageUrl: null,
@@ -31,5 +31,12 @@ describe("postLabel", () => {
     expect(postTone("offer")).toBe("green");
     expect(postTone("event")).toBe("gold");
     expect(POST_TYPE_LABEL.need).toBe("Need");
+  });
+
+  it("marks posts shared to the viewer's inner circle, never birthdays", () => {
+    expect(isInnerCirclePost(post("event", ["ic4", "square"]), circles, "me")).toBe(true);
+    expect(isInnerCirclePost(post("post", ["padel"]), circles, "me")).toBe(false);
+    expect(isInnerCirclePost(post("post", ["ic4"]), circles, "stranger")).toBe(false);
+    expect(isInnerCirclePost(post("birthday", ["ic4"]), circles, "me")).toBe(false);
   });
 });
