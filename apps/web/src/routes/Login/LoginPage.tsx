@@ -27,7 +27,7 @@ export function LoginPage() {
     setStatus("sending");
     try {
       await dataSource.signInWithEmail(email.trim());
-      // Mock signs in instantly; Firebase only sends a link (not signed in yet).
+      // Mock signs in instantly; cloud backends only send a link (not signed in yet).
       if (await dataSource.getCurrentMemberId()) {
         await enter();
       } else {

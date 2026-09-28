@@ -28,18 +28,19 @@ function createLazyDataSource(load: () => Promise<DataSource>): DataSource {
 }
 
 /**
- * The single active backend. Controlled by VITE_BACKEND ("firebase" | "mock").
- * Defaults to the localStorage mock so the app runs with zero setup. Both
- * backends are lazily loaded, so neither ships in the main bundle.
+ * The single active backend. Controlled by VITE_BACKEND ("supabase" | "firebase" | "mock").
+ * Defaults to the localStorage mock so the app runs with zero setup. Every
+ * backend is lazily loaded, so none ships in the main bundle.
  */
-export const dataSource: DataSource =
-  import.meta.env.VITE_BACKEND === "firebase"
-    ? createLazyDataSource(() =>
-        import("./firebase/firebaseDataSource").then((m) => m.createFirebaseDataSource()),
-      )
-    : createLazyDataSource(() =>
-        import("./mock/mockDataSource").then((m) => m.createMockDataSource()),
-      );
+const loaders: Record<string, () => Promise<DataSource>> = {
+  supabase: () => import("./supabase/supabaseDataSource").then((m) => m.createSupabaseDataSource()),
+  firebase: () => import("./firebase/firebaseDataSource").then((m) => m.createFirebaseDataSource()),
+};
+
+export const dataSource: DataSource = createLazyDataSource(
+  loaders[import.meta.env.VITE_BACKEND as string] ??
+    (() => import("./mock/mockDataSource").then((m) => m.createMockDataSource())),
+);
 
 export * from "./types";
 export type { DataSource } from "./dataSource";

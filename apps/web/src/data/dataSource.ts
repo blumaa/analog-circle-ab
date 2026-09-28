@@ -16,7 +16,7 @@ export type CircleInput = Omit<Circle, "id" | "createdAt" | "memberIds">;
 
 /**
  * Swappable backend seam. App talks only to this interface.
- * Mock (localStorage) by default; Firebase when VITE_BACKEND=firebase.
+ * Mock (localStorage) by default; VITE_BACKEND=supabase or firebase picks a cloud backend.
  */
 export interface DataSource {
   // Auth
