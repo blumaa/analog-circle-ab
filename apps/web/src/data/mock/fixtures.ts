@@ -1,327 +1,388 @@
 import type {
   Activity,
-  EventItem,
-  Group,
-  LoopPost,
+  Circle,
+  Comment,
+  EventDetails,
+  Feedback,
   Member,
-  Membership,
+  Post,
+  Prefs,
   Rsvp,
-  WallPost,
 } from "../types";
+import { defaultPrefs } from "../../lib/prefs";
+import { devEmail } from "../devAccounts";
 
-export const ANALOG_GROUP_ID = "analog-root";
-export const INNER_GROUP_ID = "ic4";
 export const CURRENT_MEMBER_ID = "aaron";
 
-export const groups: Group[] = [
-  { id: ANALOG_GROUP_ID, type: "analog", name: "The Analog Circle", parentId: null },
-  { id: INNER_GROUP_ID, type: "inner", name: "ic4", parentId: ANALOG_GROUP_ID },
+export interface Db {
+  members: Member[];
+  circles: Circle[];
+  posts: Post[];
+  comments: Comment[];
+  rsvps: Rsvp[];
+  prefs: Prefs[];
+  activity: Activity[];
+  feedback: Feedback[];
+  currentMemberId: string | null;
+}
+
+const pad = (n: number) => String(n).padStart(2, "0");
+
+/** Seed dates are relative to `now` so the demo never goes stale. */
+function clock(now: Date) {
+  const base = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const at = (days: number, hour = 12, minute = 0) => {
+    const d = new Date(base);
+    d.setDate(d.getDate() + days);
+    d.setHours(hour, minute);
+    return d;
+  };
+  return {
+    iso: (days: number, hour?: number, minute?: number) => at(days, hour, minute).toISOString(),
+    day: (days: number) => {
+      const d = at(days);
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    },
+    /** Birthday on today's month/day, placeholder year. */
+    birthdayToday: () => `1992-${pad(base.getMonth() + 1)}-${pad(base.getDate())}`,
+  };
+}
+
+type MemberSeed = [id: string, name: string, bio: string];
+
+const NAMED: MemberSeed[] = [
+  ["aaron", "Aaron Blum", "Former teacher, current coder. Poems, mountains, padel (addict), design systems and a good laugh with friends."],
+  ["odette", "Odette Laurent", "Ceramicist and weekend baker."],
+  ["maryam", "Maryam Haddad", "Potter, painter, forever sketching on the U8."],
+  ["nathaly", "Náthaly Ríos", "Salsa on Fridays, spreadsheets the rest of the week."],
+  ["cemre", "Cemre Nur", "Designer. Collects tiny notebooks."],
+  ["martin", "Martin Weber", "Cyclist, tinkerer, owner of too many plants."],
+  ["yetunde", "Yetunde Adeyemi", "Storyteller. Hosts Story Circle every month."],
+  ["georgios", "Georgios Papadakis", "Illustrator. Started Creative Corner."],
+  ["david", "David Okafor", "Curious generalist. Cooks for crowds."],
+  ["vki", "Vki Schmidt", "Loves long walks and longer playlists."],
+  ["kasey", "Kasey Morgan", "Builder. Startups by day, synths by night."],
+  ["naveen", "Naveen Rao", "Reader. Always halfway through three books."],
+  ["aleksandra", "Aleksandra Nowak", "Coffee enthusiast and travel planner."],
+  ["bolu", "Bolu Ajibawo", "Community lead. Ask me anything."],
 ];
 
-/**
- * Inner circle = Aaron's core group (he's the real persona; the rest fictional).
- * The broader Analog Circle (everyone) is innerMembers + analogOnlyMembers below.
- */
-const innerMembers: Member[] = [
-  {
-    id: "aaron",
-    name: "Aaron Blum",
-    email: "blumaa@gmail.com",
-    photoUrl: "https://i.pravatar.cc/400?u=aaron",
-    from: "united states",
-    bio: "Aaron is a former teacher and current coder who enjoys writing poems, hiking in the mountains, playing padel (addict), considering design systems, and a good laugh with friends.",
-    interests: [
-      "Building & tinkering with design systems",
-      "Padel — happy to play any time",
-      "Walking, hiking & being in nature",
-      "Writing & reading poetry",
-    ],
-    dietary: "no",
-    whatsappUrl: "https://wa.me/000",
-    homeAddress: "kiefholzstraße 26, 12435 Berlin",
-    location: { lat: 52.508, lng: 13.46 },
-    isReal: true,
-  },
-  { id: "david", name: "David", email: "david@example.com", photoUrl: "https://i.pravatar.cc/400?u=david", from: "uk", bio: "Curious generalist.", interests: ["Cooking", "Film"], dietary: "I try to avoid raw or undercooked meat and fish like sushi. Always happy to chat on this", whatsappUrl: "https://wa.me/000", homeAddress: null, location: { lat: 52.52, lng: 13.405 }, isReal: false },
-  { id: "vki", name: "Vki", email: "vki@example.com", photoUrl: "https://i.pravatar.cc/400?u=vki", from: "germany", bio: "Loves long walks.", interests: ["Music"], dietary: "vegetarian", whatsappUrl: "https://wa.me/000", homeAddress: null, location: { lat: 52.49, lng: 13.36 }, isReal: false },
-  { id: "kasey", name: "Kasey", email: "kasey@example.com", photoUrl: "https://i.pravatar.cc/400?u=kasey", from: "usa", bio: "Builder.", interests: ["Startups"], dietary: "-", whatsappUrl: "https://wa.me/000", homeAddress: null, location: { lat: 52.5, lng: 13.45 }, isReal: false },
-  { id: "naveen", name: "Naveen", email: "naveen@example.com", photoUrl: "https://i.pravatar.cc/400?u=naveen", from: "india", bio: "Reader.", interests: ["Books"], dietary: "None", whatsappUrl: "https://wa.me/000", homeAddress: null, location: { lat: 52.46, lng: 13.55 }, isReal: false },
-  { id: "cemre", name: "Cemre Nur", email: "cemre@example.com", photoUrl: "https://i.pravatar.cc/400?u=cemre", from: "turkey", bio: "Designer.", interests: ["Art"], dietary: "Thanks, no!", whatsappUrl: "https://wa.me/000", homeAddress: null, location: { lat: 52.47, lng: 13.34 }, isReal: false },
-  { id: "aleksandra", name: "Aleksandra", email: "aleksandra@example.com", photoUrl: "https://i.pravatar.cc/400?u=aleksandra", from: "poland", bio: "Coffee enthusiast.", interests: ["Coffee", "Travel"], dietary: "Nope", whatsappUrl: "https://wa.me/000", homeAddress: null, location: { lat: 52.55, lng: 13.39 }, isReal: false },
-  { id: "odette", name: "Odette", email: "odette@example.com", photoUrl: "https://i.pravatar.cc/400?u=odette", from: "france", bio: "Ceramicist and weekend baker.", interests: ["Ceramics", "Baking"], dietary: "Pescatarian", whatsappUrl: "https://wa.me/000", homeAddress: null, location: { lat: 52.51, lng: 13.42 }, isReal: false },
-  { id: "bolu", name: "Bolu Ajibawo", email: "bolu.ajibawo@gmail.com", photoUrl: "https://i.pravatar.cc/400?u=bolu", from: "nigeria", bio: "Friend of Aaron, checking out the circle.", interests: ["Design", "Music"], dietary: null, whatsappUrl: "https://wa.me/000", homeAddress: null, location: { lat: 52.5, lng: 13.41 }, isReal: false },
+const FIRST_NAMES = [
+  "Mateo", "Yuki", "Priya", "Lukas", "Sofia", "Omar", "Hannah", "Tomas", "Mei", "Noah",
+  "Léa", "Diego", "Anya", "Kwame", "Ingrid", "Rafael", "Elif", "Jonas", "Carmen", "Sven",
+  "Aisha", "Pablo", "Nora", "Hassan", "Greta", "Andrei", "Maya", "Theo", "Wei", "Camille",
+  "Ines", "Felix", "Zara", "Emil", "Lina", "Oskar",
 ];
 
-/**
- * Analog Circle members NOT in Aaron's inner circle — they appear in the
- * Directory (everyone) but not in inner-circle views.
- */
-const ANALOG_ONLY_SEED: Array<[string, string, string[]]> = [
-  ["Mateo", "spain", ["Cycling", "Photography"]],
-  ["Yuki", "japan", ["Ceramics", "Tea"]],
-  ["Priya", "india", ["Yoga", "Writing"]],
-  ["Lukas", "austria", ["Climbing", "Synths"]],
-  ["Sofia", "italy", ["Cooking", "Cinema"]],
-  ["Omar", "egypt", ["Chess", "History"]],
-  ["Hannah", "ireland", ["Running", "Knitting"]],
-  ["Tomas", "czechia", ["Beer", "Hiking"]],
-  ["Mei", "china", ["Painting", "Dance"]],
-  ["Noah", "usa", ["Startups", "Surfing"]],
-  ["Léa", "france", ["Poetry", "Film"]],
-  ["Diego", "argentina", ["Tango", "Asado"]],
-  ["Anya", "russia", ["Ballet", "Chess"]],
-  ["Kwame", "ghana", ["Drums", "Football"]],
-  ["Ingrid", "sweden", ["Sailing", "Design"]],
-  ["Rafael", "brazil", ["Capoeira", "Guitar"]],
-  ["Elif", "turkey", ["Pottery", "Travel"]],
-  ["Jonas", "germany", ["Boardgames", "Brewing"]],
-  ["Carmen", "mexico", ["Murals", "Salsa"]],
-  ["Sven", "norway", ["Skiing", "Coffee"]],
-  ["Aisha", "morocco", ["Calligraphy", "Cooking"]],
-  ["Pablo", "chile", ["Astronomy", "Wine"]],
-  ["Nora", "finland", ["Sauna", "Reading"]],
-  ["Hassan", "lebanon", ["Oud", "Food"]],
-  ["Greta", "denmark", ["Cycling", "Baking"]],
-  ["Andrei", "romania", ["Coding", "Folk music"]],
-  ["Maya", "israel", ["Climbing", "Design"]],
-  ["Theo", "greece", ["Sailing", "Philosophy"]],
-  ["Wei", "singapore", ["Hawker food", "Tech"]],
-  ["Camille", "belgium", ["Chocolate", "Jazz"]],
-];
+const LAST_NAMES = ["Fischer", "Costa", "Ito", "Meyer", "Rossi", "Khan", "Byrne", "Novak", "Lin", "Park"];
 
-const analogOnlyMembers: Member[] = ANALOG_ONLY_SEED.map(([name, from, interests], i) => {
-  const id = `ac-${name.toLowerCase()}-${i}`;
+function member(id: string, name: string, bio: string, i: number, now: Date): Member {
+  const c = clock(now);
   return {
     id,
     name,
-    email: `${name.toLowerCase()}@example.com`,
+    email: devEmail(id),
     photoUrl: `https://i.pravatar.cc/400?u=${id}`,
-    from,
-    bio: `${name} is part of the wider Analog Circle community.`,
-    interests,
-    dietary: null,
+    bio,
+    phone: `+49 151 ${pad(10 + (i % 90))}${pad(20 + (i % 70))} ${pad(30 + (i % 60))}${pad(i % 100)}`,
     whatsappUrl: "https://wa.me/000",
-    homeAddress: null,
-    location: { lat: 52.5 + (i % 7) * 0.01, lng: 13.4 + (i % 5) * 0.015 },
-    isReal: false,
+    social: `https://instagram.com/${id.replace(/-/g, "")}`,
+    birthday: id === "cemre" ? c.birthdayToday() : `19${80 + (i % 20)}-${pad(1 + (i % 12))}-${pad(1 + ((i * 7) % 28))}`,
+    role: id === "aaron" || id === "bolu" ? "admin" : "member",
+    joinedAt: c.iso(-280 + i * 5),
+    birthdayPost: true,
   };
-});
+}
 
-/** Everyone in the Analog Circle (Directory). Inner circle is the first 8. */
-export const members: Member[] = [...innerMembers, ...analogOnlyMembers];
+function buildMembers(now: Date): Member[] {
+  const named = NAMED.map(([id, name, bio], i) => member(id, name, bio, i, now));
+  const rest = FIRST_NAMES.map((first, i) => {
+    const id = first.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return member(id, `${first} ${LAST_NAMES[i % LAST_NAMES.length]}`, `${first} is part of the Analog Circle.`, i + NAMED.length, now);
+  });
+  return [...named, ...rest];
+}
 
-/** Only the inner circle has inner-group memberships. */
-export const memberships: Membership[] = innerMembers.map((m) => ({
-  memberId: m.id,
-  groupId: INNER_GROUP_ID,
-}));
+const INNER_DESCRIPTION = "Seven members, one dinner a month, hosted in turn.";
 
-const meetingHosts: Array<[string, string, string]> = [
-  ["2026-07-04", "aaron", "July 2026"],
-  ["2026-08-01", "david", "August 2026"],
-  ["2026-09-05", "vki", "September 2026"],
-  ["2026-10-03", "kasey", "October 2026"],
-  ["2026-11-07", "naveen", "November 2026"],
-  ["2027-01-02", "cemre", "January 2027"],
-  ["2027-02-06", "aleksandra", "February 2027"],
-  ["2027-03-06", "odette", "March 2027"],
-];
+function buildCircles(members: Member[], now: Date): Circle[] {
+  const c = clock(now);
+  const ids = members.map((m) => m.id);
+  const ic4 = ["aaron", "odette", "cemre", "david", "vki", "kasey", "naveen"];
+  const others = ids.filter((id) => !ic4.includes(id) && id !== "bolu");
+  const inner: Circle[] = [1, 2, 3, 4, 5, 6, 7].map((n) => {
+    const slot = n < 4 ? n - 1 : n - 2;
+    return {
+      id: `ic${n}`,
+      type: "inner",
+      name: `Inner Circle ${n}`,
+      description: INNER_DESCRIPTION,
+      number: n,
+      imageUrl: null,
+      createdBy: "bolu",
+      createdAt: c.iso(-270 + n * 10),
+      memberIds: n === 4 ? ic4 : others.slice(slot * 7, slot * 7 + 7),
+    };
+  });
+  const pick = (start: number, count: number) =>
+    Array.from({ length: count }, (_, i) => ids[(start + i * 3) % ids.length]!);
+  const withAaron = (list: string[]) => (list.includes("aaron") ? list : ["aaron", ...list.slice(1)]);
+  const circle = (
+    id: string,
+    type: Circle["type"],
+    name: string,
+    description: string,
+    createdBy: string,
+    memberIds: string[],
+    days: number,
+  ): Circle => ({
+    id, type, name, description, number: null, imageUrl: null, createdBy,
+    createdAt: c.iso(days), memberIds: Array.from(new Set([createdBy, ...memberIds])),
+  });
+  return [
+    ...inner,
+    circle("creative-corner", "interest", "Creative Corner", "Drawing, pottery, zines. Bring whatever you're making.", "georgios", withAaron(pick(1, 23)), -200),
+    circle("padel", "interest", "Padel Crew", "Weekly doubles. All levels, loud cheering.", "aaron", pick(4, 11), -150),
+    circle("book-club", "interest", "Book Club", "One book a month, one long dinner to argue about it.", "naveen", pick(2, 14), -120),
+    circle("hiking", "interest", "Hiking & Outdoors", "Day trips out of Berlin. Lakes in summer, forests in winter.", "vki", pick(5, 17), -90),
+    circle("kreuzberg", "location", "Kreuzberg, Neukölln & Tempelhof", "Neighbours south of the canal.", "martin", withAaron(pick(0, 30)), -210),
+    circle("prenzlauer", "location", "Prenzlauer Berg & Mitte", "Coffee walks and courtyard dinners.", "aleksandra", pick(7, 19), -180),
+    circle("friedrichshain", "location", "Friedrichshain & Lichtenberg", "East side, best side.", "kasey", pick(9, 15), -160),
+  ];
+}
 
-const innerMeetings: EventItem[] = meetingHosts.map(([date, hostId], i) => ({
-  id: `meeting-${i}`,
-  scope: "inner",
-  groupId: INNER_GROUP_ID,
-  title: "Inner Circle event",
-  date,
-  startTime: "16:00",
-  endTime: "19:00",
-  hostId,
-  creatorId: hostId,
-  address: hostId === "aaron" ? "kiefholzstraße 26, 12435 Berlin" : null,
-  guideUrl: hostId === "aaron" ? "https://gamma.app/docs/hosting-guide" : null,
-  type: "meeting",
-}));
+function event(over: Partial<EventDetails>): EventDetails {
+  return {
+    date: null, startTime: null, endTime: null, address: null,
+    addressVisible: true, canBringFriend: false, guestLimit: null, ...over,
+  };
+}
 
-/** Community-wide events visible to the whole Analog Circle. */
-const ANALOG_EVENT_SEED: Array<{
-  title: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  hostId: string;
-  address: string | null;
-}> = [
-  {
-    title: "Analog Circle mixer",
-    date: "2026-07-18",
-    startTime: "19:00",
-    endTime: "22:00",
-    hostId: "aaron",
-    address: "Klunkerkranich, Karl-Marx-Straße 66, 12043 Berlin",
-  },
-  {
-    title: "Summer picnic",
-    date: "2026-08-15",
-    startTime: "13:00",
-    endTime: "17:00",
-    hostId: "david",
-    address: "Treptower Park, Berlin",
-  },
-  {
-    title: "Photography walk",
-    date: "2026-09-12",
-    startTime: "10:00",
-    endTime: "12:30",
-    hostId: "cemre",
-    address: "Tempelhofer Feld, Berlin",
-  },
-];
+function post(over: Partial<Post> & Pick<Post, "id" | "type" | "title" | "authorId" | "publishedTo" | "createdAt">): Post {
+  return {
+    body: "", imageUrl: null, updatedAt: null, pinned: false, reactions: {},
+    commentCount: 0, event: null, celebrantId: null, ...over,
+  };
+}
 
-const analogEvents: EventItem[] = ANALOG_EVENT_SEED.map((e, i) => ({
-  id: `analog-event-${i}`,
-  scope: "analog",
-  groupId: ANALOG_GROUP_ID,
-  title: e.title,
-  date: e.date,
-  startTime: e.startTime,
-  endTime: e.endTime,
-  hostId: e.hostId,
-  creatorId: e.hostId,
-  address: e.address,
-  guideUrl: null,
-  type: "event",
-}));
+function buildPosts(circles: Circle[], now: Date): Post[] {
+  const c = clock(now);
+  const ic = (n: number) => circles.find((x) => x.id === `ic${n}`)!;
+  /** Monthly inner circle dinners: past three and next one, per circle. */
+  const dinners = [1, 2, 3, 4, 5, 6, 7].flatMap((n) =>
+    [-84, -56, -28, 3 + n].map((offset, k) => {
+      const host = ic(n).memberIds[k % ic(n).memberIds.length]!;
+      return post({
+        id: `dinner-ic${n}-${k}`,
+        type: "event",
+        title: `IC${n} dinner`,
+        body: "Our monthly dinner. Host picks the menu, everyone brings a story.",
+        authorId: host,
+        publishedTo: [`ic${n}`],
+        createdAt: c.iso(offset - 14, 9),
+        event: event({ date: c.day(offset), startTime: "19:00", endTime: "22:30", address: "Host's place, sent in the group" }),
+      });
+    }),
+  );
 
-export const events: EventItem[] = [...innerMeetings, ...analogEvents];
+  return [
+    post({
+      id: "brunch-botanico",
+      type: "event",
+      title: "Sunday brunch at Café Botanico",
+      body: "Garden table booked for ten. Come hungry, stay for the second pot of coffee.",
+      authorId: "odette",
+      publishedTo: ["ic4", "square"],
+      createdAt: c.iso(-2, 10, 12),
+      pinned: true,
+      reactions: { "🥐": ["aaron", "cemre", "david"], "☕": ["vki", "kasey"] },
+      event: event({ date: c.day(4), startTime: "11:00", endTime: "13:30", address: "Richardstraße 105, 12043 Berlin", canBringFriend: true, guestLimit: 10 }),
+    }),
+    post({
+      id: "story-circle-33",
+      type: "event",
+      title: "Story Circle #33",
+      body: "True stories, told live. Theme this month: \"lost and found\". Five minutes each, no notes.",
+      authorId: "yetunde",
+      publishedTo: ["square", "loop"],
+      createdAt: c.iso(-5, 18, 40),
+      reactions: { "🔥": ["aaron", "maryam", "nathaly", "martin"], "❤️": ["georgios"] },
+      event: event({ date: c.day(19), startTime: "14:30", endTime: "17:30", address: "Oranienstraße 25, 10999 Berlin", canBringFriend: true, guestLimit: 30 }),
+    }),
+    post({
+      id: "zine-night",
+      type: "event",
+      title: "Zine night",
+      body: "Scissors, glue, a photocopier. We make one zine together by midnight.",
+      authorId: "georgios",
+      publishedTo: ["creative-corner"],
+      createdAt: c.iso(-3, 20),
+      event: event({ date: c.day(9), startTime: "19:00", endTime: "23:00", address: "Weserstraße 58, 12045 Berlin" }),
+    }),
+    post({
+      id: "padel-doubles",
+      type: "event",
+      title: "Padel doubles, date TBD",
+      body: "Vote for a Saturday in the comments.",
+      authorId: "aaron",
+      publishedTo: ["padel"],
+      createdAt: c.iso(-1, 8, 30),
+      event: event({ address: "Padel Berlin, Holzmarktstraße 25", addressVisible: false }),
+    }),
+    post({
+      id: "lake-day",
+      type: "event",
+      title: "Lake day at Liepnitzsee",
+      body: "Train from Gesundbrunnen at 9. Bring snacks to share.",
+      authorId: "vki",
+      publishedTo: ["hiking", "square"],
+      createdAt: c.iso(-12, 9),
+      reactions: { "🌊": ["aaron", "david"] },
+      event: event({ date: c.day(-6), startTime: "09:00", endTime: "18:00", address: "S Gesundbrunnen" }),
+    }),
+    post({
+      id: "offer-wheel",
+      type: "offer",
+      title: "Pottery wheel time on Thursdays",
+      body: "I rent a studio slot but only use half. Two hours free for anyone who wants to try.",
+      authorId: "maryam",
+      publishedTo: ["creative-corner"],
+      createdAt: c.iso(-4, 16),
+      reactions: { "🙌": ["georgios", "aaron"] },
+    }),
+    post({
+      id: "need-plants",
+      type: "need",
+      title: "Plant sitter for two weeks",
+      body: "Away from the 10th. Twelve plants, one grumpy fig. Kreuzberg, near Görlitzer Park.",
+      authorId: "martin",
+      publishedTo: ["loop", "kreuzberg"],
+      createdAt: c.iso(-1, 19, 5),
+    }),
+    post({
+      id: "picnic-photos",
+      type: "post",
+      title: "Photos from Tempelhof",
+      body: "Kites, too much hummus, one very proud dog. Thanks for coming, neighbours.",
+      authorId: "nathaly",
+      publishedTo: ["kreuzberg"],
+      createdAt: c.iso(-7, 21),
+      reactions: { "❤️": ["aaron", "martin", "maryam"] },
+    }),
+    post({
+      id: "book-pick",
+      type: "post",
+      title: "October pick: Piranesi",
+      body: "Short, strange and perfect for dark evenings. Dinner at mine at the end of the month.",
+      authorId: "naveen",
+      publishedTo: ["book-club"],
+      createdAt: c.iso(-9, 11),
+    }),
+    post({
+      id: "welcome",
+      type: "post",
+      title: "Welcome, new members",
+      body: "Eight new faces this month. Say hi in the comments and tell us your favourite Berlin bakery.",
+      authorId: "bolu",
+      publishedTo: ["loop"],
+      createdAt: c.iso(-3, 9),
+      reactions: { "👋": ["aaron", "odette", "yetunde", "ines", "felix"] },
+    }),
+    ...dinners,
+  ];
+}
 
-const MEETING_0_DECLINED: Array<{ memberId: string; note: string }> = [
-  {
-    memberId: "cemre",
-    note: "Unfortunately I booked a weekend event in advance and I can't reschedule it.",
-  },
-  { memberId: "vki", note: "In Asia that week." },
-];
+function buildComments(now: Date): Comment[] {
+  const c = clock(now);
+  const comment = (id: string, postId: string, authorId: string, body: string, hoursAgo: number, parentId: string | null = null, reactions = {}): Comment => ({
+    id, postId, parentId, authorId, body, reactions,
+    createdAt: new Date(new Date(c.iso(0, 12)).getTime() - hoursAgo * 3_600_000).toISOString(),
+    updatedAt: null,
+  });
+  return [
+    comment("c1", "brunch-botanico", "cemre", "Saving the seat by the lemon tree.", 40, null, { "😂": ["odette", "aaron"] }),
+    comment("c2", "brunch-botanico", "odette", "It's yours. Bring the notebook.", 38, "c1"),
+    comment("c3", "brunch-botanico", "david", "Can I bring my sister? She's visiting.", 30),
+    comment("c4", "brunch-botanico", "odette", "Of course, plus-ones welcome.", 29, "c3", { "❤️": ["david"] }),
+    comment("c5", "brunch-botanico", "aaron", "I'll be ten minutes late, padel runs over.", 6),
+    comment("c6", "story-circle-33", "maryam", "Signing up to tell one this time!", 50),
+    comment("c7", "story-circle-33", "yetunde", "Yes! You're slot three.", 48, "c6"),
+    comment("c8", "padel-doubles", "kasey", "Saturday the 17th works for me.", 10),
+    comment("c9", "offer-wheel", "georgios", "Taking you up on this.", 20),
+    comment("c10", "welcome", "ines", "Hi all! Vote: Albatross bakery.", 30),
+    comment("c11", "welcome", "felix", "Hallo! Round Bakery, no contest.", 28),
+  ];
+}
 
-export const rsvps: Rsvp[] = innerMeetings.flatMap((e) =>
-  innerMembers.map((m) => {
-    const declined =
-      e.id === "meeting-0" ? MEETING_0_DECLINED.find((d) => d.memberId === m.id) : undefined;
-    if (declined) {
-      return { eventId: e.id, memberId: m.id, status: "declined" as const, note: declined.note };
-    }
-    return { eventId: e.id, memberId: m.id, status: "going" as const };
-  }),
-);
+function buildRsvps(posts: Post[], circles: Circle[], now: Date): Rsvp[] {
+  const c = clock(now);
+  const rsvp = (postId: string, memberId: string, status: Rsvp["status"] = "going"): Rsvp => ({
+    postId, memberId, status, updatedAt: c.iso(-1),
+  });
+  const dinnerRsvps = posts
+    .filter((p) => p.id.startsWith("dinner-"))
+    .flatMap((p) => {
+      const circle = circles.find((x) => p.publishedTo.includes(x.id))!;
+      return circle.memberIds.map((memberId, i) => {
+        // ic2's first two members skipped the last two dinners; one skipped three.
+        const k = Number(p.id.split("-").at(-1));
+        const missed = circle.id === "ic2" && ((i === 0 && k >= 1 && k <= 2) || (i === 1 && k <= 2));
+        return rsvp(p.id, memberId, missed || (i + k) % 9 === 8 ? "declined" : "going");
+      });
+    });
+  return [
+    ...["odette", "aaron", "cemre", "david", "vki"].map((m) => rsvp("brunch-botanico", m)),
+    rsvp("brunch-botanico", "naveen", "declined"),
+    ...["yetunde", "maryam", "nathaly", "martin", "georgios", "mateo", "yuki", "priya"].map((m) => rsvp("story-circle-33", m)),
+    rsvp("story-circle-33", "hannah", "declined"),
+    ...["georgios", "maryam", "aaron"].map((m) => rsvp("zine-night", m)),
+    ...["vki", "aaron", "david", "lukas"].map((m) => rsvp("lake-day", m)),
+    ...dinnerRsvps,
+  ];
+}
 
-export const loopPosts: LoopPost[] = [
-  {
-    id: "loop-1",
-    scope: "analog",
-    kind: "need",
-    category: "Language Help",
-    body: 'Looking for a "Walkie Talkie" partner to meet occasionally to practice German. The idea is reading a 1/2 page German text before meeting, then a short walk together explaining what you learned.',
-    authorId: "aleksandra",
-    archived: false,
-    createdAt: "2026-06-01T10:00:00.000Z",
-    notes: [{ authorId: "aaron", body: "I'd love to do this — I'm a former German teacher. Let's connect!" }],
-    helpedBy: ["aaron"],
-  },
-  {
-    id: "loop-2",
-    scope: "inner",
-    kind: "offer",
-    category: "Tech & Digital",
-    body: "Happy to help anyone set up a portfolio site or review React code.",
-    authorId: "aaron",
-    archived: false,
-    createdAt: "2026-06-05T10:00:00.000Z",
-    notes: [],
-    helpedBy: [],
-  },
-];
+function buildFeedback(now: Date): Feedback[] {
+  const c = clock(now);
+  return [
+    { id: "fb1", authorId: "odette", body: "Could the calendar show which dinners still have seats?", createdAt: c.iso(-3) },
+    { id: "fb2", authorId: "david", body: "Loving the new feed. A dark mode toggle would be nice.", createdAt: c.iso(-9) },
+  ];
+}
 
-export const wallPosts: WallPost[] = [
-  {
-    id: "wall-1",
-    ownerId: "aaron",
-    authorId: "david",
-    scope: "analog",
-    body: "Great hosting last month — looking forward to July!",
-    imageUrl: null,
-    createdAt: "2026-06-10T10:00:00.000Z",
-    likedBy: ["vki", "kasey"],
-    mentions: [],
-    replies: [
-      {
-        id: "reply-seed-1",
-        authorId: "vki",
-        body: "Seconded — that evening was lovely!",
-        createdAt: "2026-06-10T11:30:00.000Z",
-      },
-    ],
-  },
-];
+function buildActivity(now: Date): Activity[] {
+  const c = clock(now);
+  const activity = (id: string, type: Activity["type"], actorId: string, subjectId: string | null, targetRoute: string, days: number, hour: number): Activity => ({
+    id, type, actorId, subjectId, targetRoute, createdAt: c.iso(days, hour), readBy: [],
+  });
+  return [
+    activity("a1", "reply", "odette", "aaron", "/events/brunch-botanico", 0, 9),
+    activity("a2", "post_created", "martin", null, "/", -1, 19),
+    activity("a3", "comment", "kasey", "aaron", "/", -1, 8),
+    activity("a4", "member_joined", "felix", null, "/members/felix", -3, 10),
+    activity("a5", "post_created", "yetunde", null, "/events/story-circle-33", -5, 18),
+  ];
+}
 
-/** Seed notification history (newest first). All start unread (readBy: []). */
-export const activity: Activity[] = [
-  {
-    id: "act-1",
-    type: "wall_post",
-    scope: "analog",
-    actorId: "david",
-    subjectId: "aaron",
-    targetRoute: "/innercircle/members/aaron",
-    createdAt: "2026-06-17T09:30:00.000Z",
-    readBy: [],
-  },
-  {
-    id: "act-2",
-    type: "event_created",
-    scope: "inner",
-    actorId: "odette",
-    subjectId: null,
-    targetRoute: "/innercircle/event/meeting-7",
-    createdAt: "2026-06-16T14:00:00.000Z",
-    readBy: [],
-  },
-  {
-    id: "act-3",
-    type: "member_joined",
-    scope: "analog",
-    actorId: "ac-mateo-0",
-    subjectId: null,
-    targetRoute: "/innercircle/members/ac-mateo-0",
-    createdAt: "2026-06-15T11:15:00.000Z",
-    readBy: [],
-  },
-  {
-    id: "act-4",
-    type: "loop_post",
-    scope: "analog",
-    actorId: "aleksandra",
-    subjectId: null,
-    targetRoute: "/innercircle/the-loop",
-    createdAt: "2026-06-14T08:45:00.000Z",
-    readBy: [],
-  },
-  {
-    id: "act-5",
-    type: "wall_post",
-    scope: "inner",
-    actorId: "kasey",
-    subjectId: "vki",
-    targetRoute: "/innercircle/members/vki",
-    createdAt: "2026-06-13T18:20:00.000Z",
-    readBy: [],
-  },
-  {
-    id: "act-6",
-    type: "event_created",
-    scope: "inner",
-    actorId: "naveen",
-    subjectId: null,
-    targetRoute: "/innercircle/event/meeting-4",
-    createdAt: "2026-06-12T10:00:00.000Z",
-    readBy: [],
-  },
-];
+export function createSeed(now: Date = new Date()): Db {
+  const members = buildMembers(now);
+  const circles = buildCircles(members, now);
+  const posts = buildPosts(circles, now);
+  const comments = buildComments(now);
+  const counts = new Map<string, number>();
+  for (const cm of comments) counts.set(cm.postId, (counts.get(cm.postId) ?? 0) + 1);
+  const aaronPrefs: Prefs = {
+    ...defaultPrefs(CURRENT_MEMBER_ID),
+    favouritePostIds: ["story-circle-33"],
+  };
+  return {
+    members,
+    circles,
+    posts: posts.map((p) => ({ ...p, commentCount: counts.get(p.id) ?? 0 })),
+    comments,
+    rsvps: buildRsvps(posts, circles, now),
+    prefs: [aaronPrefs],
+    activity: buildActivity(now),
+    feedback: buildFeedback(now),
+    currentMemberId: CURRENT_MEMBER_ID,
+  };
+}

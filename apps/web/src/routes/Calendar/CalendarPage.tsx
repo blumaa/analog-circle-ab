@@ -1,163 +1,93 @@
-import { lazy, Suspense, useState } from "react";
-import { Plus } from "lucide-react";
-import { Fab, Header, Modal, SegmentedControl, useToast } from "@analog/ui";
-import type { EventCalendarView } from "../../components/EventCalendar";
-import { EventForm, type EventFormValues } from "../../components/EventForm";
-import { PageLoader } from "../../components/PageLoader";
-import {
-  useCreateEvent,
-  useCurrentMemberId,
-  useInnerGroup,
-  useUpdateEvent,
-} from "../../data/hooks";
-import type { EventItem, Scope } from "../../data";
-import { canCreateEvent } from "../../lib/permissions";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button, IconButton } from "@analog/ui";
+import { usePosts } from "../../data/hooks";
+import type { Post } from "../../data/types";
+import { useFeedContext } from "../../features/feed/useFeedContext";
+import { eventsByDay, eventTone, monthGrid } from "../../lib/calendar";
+import { formatMonthYear, toIsoDate } from "../../lib/dates";
+import { isGoing } from "../../lib/feed";
 import styles from "./CalendarPage.module.css";
 
-// react-big-calendar is heavy — load it only with this route.
-const EventCalendar = lazy(() =>
-  import("../../components/EventCalendar").then((m) => ({ default: m.EventCalendar })),
-);
+const WEEKDAYS = [
+  ["M", "Monday"],
+  ["T", "Tuesday"],
+  ["W", "Wednesday"],
+  ["T", "Thursday"],
+  ["F", "Friday"],
+  ["S", "Saturday"],
+  ["S", "Sunday"],
+] as const;
 
-const SCOPE_OPTIONS = [
-  { value: "analog", label: "Analog Circle" },
-  { value: "inner", label: "Inner Circle" },
-];
-
-const VIEW_OPTIONS = [
-  { value: "month", label: "Month" },
-  { value: "week", label: "Week" },
-  { value: "list", label: "List" },
-];
+const firstOfMonth = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1);
+const shiftMonth = (d: Date, by: number) => new Date(d.getFullYear(), d.getMonth() + by, 1);
 
 export function CalendarPage() {
-  const [scope, setScope] = useState<Scope>("analog");
-  const [view, setView] = useState<EventCalendarView>("month");
-  const [createOpen, setCreateOpen] = useState(false);
-  const [editEvent, setEditEvent] = useState<EventItem | null>(null);
+  const { ctx } = useFeedContext();
+  const { data: posts } = usePosts();
+  const [month, setMonth] = useState(() => firstOfMonth(new Date()));
 
-  const { data: memberId = null } = useCurrentMemberId();
-  const { data: innerGroup } = useInnerGroup(memberId);
-  const innerGroupId = innerGroup?.id ?? "";
-
-  const createEvent = useCreateEvent();
-  const updateEvent = useUpdateEvent(innerGroupId);
-  const toast = useToast();
-
-  const handleCreate = (v: EventFormValues) => {
-    createEvent.mutate(
-      {
-        scope: v.scope,
-        groupId: innerGroupId,
-        title: v.title,
-        date: v.date,
-        startTime: v.startTime,
-        endTime: v.endTime,
-        hostId: memberId,
-        creatorId: memberId ?? "",
-        address: v.address || null,
-        guideUrl: null,
-        type: "event",
-      },
-      {
-        onSuccess: () => {
-          toast.success("Event created.");
-          setCreateOpen(false);
-        },
-        onError: () => toast.error("Couldn't create the event."),
-      },
-    );
-  };
-
-  const handleEdit = (id: string, v: EventFormValues) => {
-    updateEvent.mutate(
-      {
-        id,
-        patch: {
-          title: v.title,
-          date: v.date,
-          startTime: v.startTime,
-          endTime: v.endTime,
-          address: v.address || null,
-          scope: v.scope,
-        },
-      },
-      {
-        onSuccess: () => {
-          toast.success("Event updated.");
-          setEditEvent(null);
-        },
-        onError: () => toast.error("Couldn't update the event."),
-      },
-    );
-  };
+  const byDay = ctx && posts ? eventsByDay(posts, ctx.viewerId, ctx.circles) : new Map<string, Post[]>();
+  const weeks = monthGrid(month);
+  const monthPrefix = toIsoDate(month).slice(0, 7);
+  let count = 0;
+  for (const [day, events] of byDay) if (day.startsWith(monthPrefix)) count += events.length;
 
   return (
     <div className={styles.page}>
-      <Header title="The Square" eyebrow="Community" />
-
-      <div className={styles.controls}>
-        <SegmentedControl
-          ariaLabel="Calendar scope"
-          options={SCOPE_OPTIONS}
-          value={scope}
-          onChange={(v) => setScope(v as Scope)}
-        />
-        <SegmentedControl
-          ariaLabel="Calendar view"
-          options={VIEW_OPTIONS}
-          value={view}
-          onChange={(v) => setView(v as EventCalendarView)}
-        />
-      </div>
-
-      <Suspense fallback={<PageLoader />}>
-        <EventCalendar
-          scope={scope}
-          view={view}
-          groupId={innerGroupId}
-          onCreate={handleCreate}
-          onEdit={handleEdit}
-          onRequestEdit={(ev) => setEditEvent(ev)}
-        />
-      </Suspense>
-
-      {canCreateEvent(memberId) && (
-        <Fab
-          icon={<Plus size={24} />}
-          aria-label="New event"
-          onClick={() => setCreateOpen(true)}
-        />
-      )}
-
-      <Modal
-        open={createOpen}
-        onClose={() => setCreateOpen(false)}
-        title="New event"
-      >
-        <EventForm
-          groupId={innerGroupId}
-          onSubmit={handleCreate}
-          onCancel={() => setCreateOpen(false)}
-          submitLabel="Create event"
-        />
-      </Modal>
-
-      <Modal
-        open={!!editEvent}
-        onClose={() => setEditEvent(null)}
-        title="Edit event"
-      >
-        {editEvent && (
-          <EventForm
-            groupId={innerGroupId}
-            initial={editEvent}
-            onSubmit={(v) => handleEdit(editEvent.id, v)}
-            onCancel={() => setEditEvent(null)}
-            submitLabel="Save changes"
-          />
-        )}
-      </Modal>
+      <section className={styles.card} aria-labelledby="calendar-title">
+        <div className={styles.header}>
+          <IconButton label="Previous month" size={36} icon={<ChevronLeft size={18} />} onClick={() => setMonth(shiftMonth(month, -1))} />
+          <IconButton label="Next month" size={36} icon={<ChevronRight size={18} />} onClick={() => setMonth(shiftMonth(month, 1))} />
+          <h1 id="calendar-title" className={styles.title} aria-live="polite">
+            {formatMonthYear(month)} ({count})
+          </h1>
+          <Button variant="outline" size="md" onClick={() => setMonth(firstOfMonth(new Date()))}>
+            Today
+          </Button>
+        </div>
+        <table className={styles.grid}>
+          <thead>
+            <tr>
+              {WEEKDAYS.map(([short, long]) => (
+                <th key={long} scope="col" className={styles.weekday}>
+                  <abbr title={long}>{short}</abbr>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {weeks.map((week) => (
+              <tr key={toIsoDate(week[0]!)}>
+                {week.map((day) => {
+                  const iso = toIsoDate(day);
+                  return (
+                    <td key={iso} className={styles.cell} data-outside={day.getMonth() !== month.getMonth() || undefined}>
+                      <span className={styles.dayNumber}>{day.getDate()}</span>
+                      {byDay.get(iso)?.map((post) => {
+                        const going = !!ctx && isGoing(post.id, ctx.viewerId, ctx.rsvps);
+                        return (
+                          <Link
+                            key={post.id}
+                            to={`/events/${post.id}`}
+                            className={styles.event}
+                            data-going={going}
+                            data-tone={ctx ? eventTone(post, ctx.viewerId, ctx.circles) : undefined}
+                          >
+                            <span className={styles.eventTitle}>{post.title}</span>
+                            {going ? null : <span className={styles.srOnly}> (not going)</span>}
+                          </Link>
+                        );
+                      })}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
     </div>
   );
 }

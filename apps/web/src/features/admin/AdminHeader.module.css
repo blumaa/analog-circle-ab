@@ -1,0 +1,25 @@
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.title {
+  font-family: var(--text-body-family);
+  font-size: var(--font-24);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+}
+
+.summary {
+  font-size: var(--font-13);
+  color: var(--color-muted);
+}

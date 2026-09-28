@@ -5,7 +5,7 @@
   font-weight: var(--text-eyebrow-weight);
   letter-spacing: var(--text-eyebrow-tracking);
   text-transform: uppercase; /* default: uppercase */
-  color: var(--color-text-muted);
+  color: var(--color-muted);
 }
 
 .label[data-transform="none"] {

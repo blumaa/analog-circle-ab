@@ -1,14 +1,123 @@
 .page {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  padding-top: var(--space-4);
+  padding: var(--space-4) var(--space-4) var(--space-9);
 }
 
-.controls {
+.srOnly {
+  composes: srOnly from "../../styles/a11y.module.css";
+}
+
+.card {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: var(--space-2-5);
+  padding: var(--space-3) var(--space-2) var(--space-2-5);
+  border: 1px solid var(--color-accent-card-edge);
+  border-radius: var(--radius-calendar);
+  background: var(--color-cal-card);
+}
+
+.header {
+  display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
+  gap: var(--space-2);
+  padding: 0 var(--space-1);
+}
+
+.title {
+  flex: 1;
+  font-family: var(--family-display);
+  font-size: var(--font-18);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.grid {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: var(--space-1);
+}
+
+.weekday {
+  padding-bottom: var(--space-1);
+  font-size: var(--font-11);
+  font-weight: var(--weight-semi);
+  color: var(--color-muted-2);
+}
+
+.weekday abbr {
+  text-decoration: none;
+}
+
+.cell {
+  height: 78px;
+  padding: 5px 4px;
+  vertical-align: top;
+  border: 1px solid var(--color-cal-cell-edge);
+  border-radius: var(--radius-seg);
+  background: var(--color-cal-cell);
+  overflow: hidden;
+}
+
+.cell[data-outside] {
+  opacity: 0.45;
+}
+
+.dayNumber {
+  display: block;
+  margin-bottom: 3px;
+  font-size: var(--font-11);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+}
+
+.event {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 16px;
+  margin-top: 2px;
+  padding: 0 3px;
+  border: 1px solid var(--color-accent-edge);
+  border-radius: 5px;
+  background: var(--color-accent-tint);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.event[data-going="false"] {
+  border-style: dashed;
+}
+
+.event::before {
+  content: "";
+  flex-shrink: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-cal-public);
+}
+
+.event[data-tone="myCircle"]::before {
+  background: var(--color-cal-my-circle);
+}
+
+.event[data-tone="circle"]::before {
+  background: var(--color-cal-circle);
+}
+
+.event:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 1px;
+}
+
+.eventTitle {
+  overflow: hidden;
+  font-size: 8.5px;
+  font-weight: var(--weight-semi);
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

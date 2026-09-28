@@ -1,101 +1,59 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { axe } from "jest-axe";
-import { Avatar } from "./Avatar";
+import { Avatar, avatarTone } from "./Avatar";
 
 describe("Avatar", () => {
-  describe("with src", () => {
-    it("renders an img with alt=name", () => {
-      render(<Avatar src="https://example.com/photo.jpg" name="Alice Johnson" />);
-      expect(screen.getByRole("img", { name: "Alice Johnson" })).toBeInTheDocument();
-    });
-
-    it("has no accessibility violations", async () => {
-      const { container } = render(
-        <Avatar src="https://example.com/photo.jpg" name="Alice Johnson" />,
-      );
-      expect(await axe(container)).toHaveNoViolations();
-    });
+  it("renders an img with alt=name when src given", () => {
+    render(<Avatar src="https://example.com/photo.jpg" name="Alice Johnson" />);
+    expect(screen.getByRole("img", { name: "Alice Johnson" }).tagName).toBe("IMG");
   });
 
-  describe("without src (initials fallback)", () => {
-    it("renders initials from name", () => {
-      render(<Avatar name="Alice Johnson" />);
-      expect(screen.getByText("AJ")).toBeInTheDocument();
-    });
-
-    it("renders only first initial for single-word names", () => {
-      render(<Avatar name="Alice" />);
-      expect(screen.getByText("A")).toBeInTheDocument();
-    });
-
-    it("has role=img with aria-label=name", () => {
-      render(<Avatar name="Alice Johnson" />);
-      expect(screen.getByRole("img", { name: "Alice Johnson" })).toBeInTheDocument();
-    });
-
-    it("has no accessibility violations", async () => {
-      const { container } = render(<Avatar name="Alice Johnson" />);
-      expect(await axe(container)).toHaveNoViolations();
-    });
+  it("falls back to the first initial", () => {
+    render(<Avatar name="alice Johnson" />);
+    expect(screen.getByText("A")).toBeInTheDocument();
   });
 
-  describe("with null src (initials fallback)", () => {
-    it("renders initials when src is null", () => {
-      render(<Avatar src={null} name="Bob Smith" />);
-      expect(screen.getByText("BS")).toBeInTheDocument();
-    });
+  it("falls back when src is null or empty", () => {
+    render(<Avatar src="" name="Bob" />);
+    expect(screen.getByRole("img", { name: "Bob" })).toHaveTextContent("B");
   });
 
-  it("applies size variant via data attribute", () => {
-    const { container } = render(<Avatar name="Alice Johnson" size="lg" />);
-    expect(container.firstChild).toHaveAttribute("data-size", "lg");
+  it("hides itself from assistive tech when decorative", () => {
+    const { container } = render(
+      <>
+        <Avatar name="Alice" decorative />
+        <Avatar name="Bob" src="https://example.com/b.jpg" decorative />
+      </>,
+    );
+    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    expect(container.querySelector("img")).toHaveAttribute("alt", "");
   });
 
-  it("defaults to size=md", () => {
+  it("applies numeric size", () => {
+    const { container } = render(<Avatar name="Alice" size={42} />);
+    expect(container.firstChild).toHaveAttribute("data-size", "42");
+  });
+
+  it("defaults to size 30", () => {
+    const { container } = render(<Avatar name="Alice" />);
+    expect(container.firstChild).toHaveAttribute("data-size", "30");
+  });
+
+  it("uses an explicit tone when given", () => {
+    const { container } = render(<Avatar name="Alice" tone={3} />);
+    expect(container.firstChild).toHaveAttribute("data-tone", "3");
+  });
+
+  it("derives a stable tone 1–4 from the name", () => {
+    const t = avatarTone("Maryam");
+    expect(t).toBeGreaterThanOrEqual(1);
+    expect(t).toBeLessThanOrEqual(4);
+    expect(avatarTone("Maryam")).toBe(t);
+  });
+
+  it("has no accessibility violations", async () => {
     const { container } = render(<Avatar name="Alice Johnson" />);
-    expect(container.firstChild).toHaveAttribute("data-size", "md");
-  });
-
-  describe("shape", () => {
-    it("defaults to circle", () => {
-      const { container } = render(<Avatar name="Alice Johnson" />);
-      expect(container.firstChild).toHaveAttribute("data-shape", "circle");
-    });
-
-    it("applies the rounded shape via data attribute", () => {
-      const { container } = render(<Avatar name="Alice Johnson" shape="rounded" />);
-      expect(container.firstChild).toHaveAttribute("data-shape", "rounded");
-    });
-
-    it("renders an image in rounded shape when src is provided", () => {
-      render(
-        <Avatar
-          src="https://example.com/photo.jpg"
-          name="Alice Johnson"
-          shape="rounded"
-        />,
-      );
-      expect(screen.getByRole("img", { name: "Alice Johnson" })).toBeInTheDocument();
-    });
-
-    it("renders initials fallback in rounded shape when src is null", () => {
-      render(<Avatar src={null} name="Alice Johnson" shape="rounded" />);
-      expect(screen.getByText("AJ")).toBeInTheDocument();
-    });
-
-    it("applies the aspect ratio as an inline style for rounded", () => {
-      const { container } = render(
-        <Avatar name="Alice Johnson" shape="rounded" aspect="3 / 4" />,
-      );
-      expect(container.firstChild).toHaveStyle({ aspectRatio: "3 / 4" });
-    });
-
-    it("has no accessibility violations in rounded shape", async () => {
-      const { container } = render(
-        <Avatar src={null} name="Alice Johnson" shape="rounded" />,
-      );
-      expect(await axe(container)).toHaveNoViolations();
-    });
+    expect(await axe(container)).toHaveNoViolations();
   });
 });

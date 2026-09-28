@@ -1,47 +1,45 @@
 .wrapper {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  gap: 6px;
+  min-width: 0;
 }
 
-.inputRow {
+.label {
+  color: var(--color-text-3);
+  font-size: var(--font-13);
+  font-weight: var(--weight-semi);
+}
+
+.row {
   position: relative;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  width: 100%;
 }
 
-.leftIcon {
-  position: absolute;
-  left: var(--space-3);
-  display: inline-flex;
-  align-items: center;
-  color: var(--color-text-muted);
-  pointer-events: none;
-}
-
-/* Default — members-style filled look */
 .input {
   width: 100%;
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-input-bg);
-  border: 1px solid var(--color-accent-border);
+  height: var(--size-input);
+  padding: 0 14px;
+  border: 1px solid var(--color-border-2);
   border-radius: var(--radius-input);
+  background: var(--color-bg-deep);
   color: var(--color-text);
-  font-family: var(--text-body-family);
-  font-size: var(--text-input-size);
+  font-size: var(--font-15);
   outline: none;
-  transition:
-    border-color var(--motion-fast) var(--motion-ease),
-    background-color var(--motion-fast) var(--motion-ease);
+  transition: border-color var(--motion-fast) var(--motion-ease);
 }
 
 .input[data-has-left-icon] {
-  padding-left: calc(var(--space-3) + 16px + var(--space-2));
+  padding-left: 40px;
+}
+
+.input[data-has-right-icon] {
+  padding-right: 40px;
 }
 
 .input::placeholder {
-  color: var(--color-text-faint);
+  color: var(--color-placeholder);
 }
 
 .input:focus-visible {
@@ -53,26 +51,27 @@
   cursor: not-allowed;
 }
 
-/* Bare variant — Loop search: no bg, no border, no radius box */
-.inputBare {
-  background: transparent;
-  border: none;
-  border-radius: 0;
+.leftIcon,
+.rightIcon {
+  position: absolute;
+  display: inline-flex;
+  color: var(--color-muted);
+  pointer-events: none;
 }
 
-.inputBare:focus-visible {
-  border: none;
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+.leftIcon {
+  left: 14px;
 }
 
-.labelText {
-  display: inline-block;
-  font-family: var(--text-body-family);
-  font-size: var(--font-xs);
-  font-weight: var(--weight-bold);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  margin-bottom: var(--space-1);
+.rightIcon {
+  right: 14px;
+}
+
+.input[aria-invalid="true"] {
+  border-color: var(--color-danger-edge);
+}
+
+.error {
+  color: var(--color-danger);
+  font-size: var(--font-13);
 }

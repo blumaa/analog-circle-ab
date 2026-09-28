@@ -4,11 +4,10 @@
   gap: var(--space-3);
   width: 100%;
   padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-hairline);
+  border: 1px solid var(--color-border);
   border-left-width: 3px;
   border-radius: var(--radius-card);
-  background: var(--color-surface-raised);
-  box-shadow: var(--elevation-raised);
+  background: var(--color-sheet);
   color: var(--color-text);
   animation: toast-in var(--motion-quick) var(--motion-ease) both;
 }
@@ -18,17 +17,17 @@
 }
 
 .toast[data-variant="error"] {
-  border-left-color: var(--color-error);
+  border-left-color: var(--color-danger);
 }
 
 .toast[data-variant="info"] {
-  border-left-color: var(--color-info);
+  border-left-color: var(--color-accent-text);
 }
 
 .message {
   flex: 1;
   font-family: var(--text-body-family);
-  font-size: var(--font-sm);
+  font-size: var(--font-14);
   line-height: 1.4;
 }
 
@@ -37,11 +36,11 @@
 }
 
 .toast[data-variant="error"] .message {
-  color: var(--color-error);
+  color: var(--color-danger);
 }
 
 .toast[data-variant="info"] .message {
-  color: var(--color-info);
+  color: var(--color-accent-text);
 }
 
 .dismiss {

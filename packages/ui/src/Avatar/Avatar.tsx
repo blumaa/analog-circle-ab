@@ -1,57 +1,40 @@
-import type { CSSProperties } from "react";
 import styles from "./Avatar.module.css";
 
-export type AvatarSize = "sm" | "md" | "lg";
-export type AvatarShape = "circle" | "rounded";
+export type AvatarSize = 20 | 22 | 24 | 26 | 28 | 30 | 36 | 42 | 44 | 46 | 92;
+export type AvatarTone = 1 | 2 | 3 | 4;
 
 export interface AvatarProps {
   src?: string | null;
   name: string;
   size?: AvatarSize;
-  /**
-   * 'circle' (default) — fixed circular avatar with a gold ring.
-   * 'rounded' — rectangular portrait that fills its container width with
-   * --radius-card corners (size variants are ignored for this shape).
-   */
-  shape?: AvatarShape;
-  /** Aspect ratio for the 'rounded' portrait, e.g. "1 / 1" or "3 / 4". */
-  aspect?: string;
+  /** Fill colour 1–4. Defaults to one derived from the name. */
+  tone?: AvatarTone;
   className?: string;
+  /** Set when the name is shown next to the avatar, so it isn't announced twice. */
+  decorative?: boolean;
 }
 
-function getInitials(name: string): string {
-  const words = name.trim().split(/\s+/);
-  const first = words[0]?.[0] ?? "";
-  const second = words[1]?.[0] ?? "";
-  return (first + second).toUpperCase();
+/** Stable 1–4 fill index for a name, so a member keeps one colour everywhere. */
+export function avatarTone(name: string): AvatarTone {
+  let hash = 0;
+  for (const ch of name) hash = (hash * 31 + ch.charCodeAt(0)) | 0;
+  return ((Math.abs(hash) % 4) + 1) as AvatarTone;
 }
 
-export function Avatar({
-  src,
-  name,
-  size = "md",
-  shape = "circle",
-  aspect = "1 / 1",
-  className,
-}: AvatarProps) {
-  const hasSrc = src != null && src !== "";
-  const style: CSSProperties | undefined =
-    shape === "rounded" ? { aspectRatio: aspect } : undefined;
-
+export function Avatar({ src, name, size = 30, tone, className, decorative = false }: AvatarProps) {
+  const cls = [styles.avatar, className].filter(Boolean).join(" ");
+  if (src) {
+    return (
+      <span data-size={size} className={cls}>
+        <img src={src} alt={decorative ? "" : name} className={styles.image} />
+      </span>
+    );
+  }
   return (
-    <div
-      data-size={size}
-      data-shape={shape}
-      style={style}
-      className={[styles.avatar, className].filter(Boolean).join(" ")}
-    >
-      {hasSrc ? (
-        <img src={src} alt={name} className={styles.image} />
-      ) : (
-        <span role="img" aria-label={name} className={styles.initials}>
-          {getInitials(name)}
-        </span>
-      )}
-    </div>
+    <span
+      {...(decorative ? { "aria-hidden": true } : { role: "img", "aria-label": name })}
+      data-size={size} data-tone={tone ?? avatarTone(name)} className={cls}>
+      <span aria-hidden="true">{name.trim().charAt(0).toUpperCase()}</span>
+    </span>
   );
 }

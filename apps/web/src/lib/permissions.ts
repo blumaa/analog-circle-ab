@@ -1,21 +1,32 @@
-import type { EventItem } from "../data";
+import type { Circle, Member, Post } from "../data/types";
 
-/** Any signed-in member may create events. */
-export function canCreateEvent(memberId: string | null): boolean {
-  return !!memberId;
+type Viewer = Pick<Member, "id" | "role"> | null | undefined;
+
+export function isAdmin(viewer: Viewer): boolean {
+  return viewer?.role === "admin";
 }
 
-/** Only the creator or the assigned host may edit/delete an event. */
-export function canManageEvent(event: EventItem, memberId: string | null): boolean {
-  if (!memberId) return false;
-  return event.creatorId === memberId || event.hostId === memberId;
+function isAuthor(item: { authorId: string }, viewer: Viewer): boolean {
+  return !!viewer && item.authorId === viewer.id;
 }
 
-/** A wall post can be removed by its author or by the wall owner. */
-export function canDeleteWallPost(
-  post: { authorId: string; ownerId: string },
-  memberId: string | null,
-): boolean {
-  if (!memberId) return false;
-  return post.authorId === memberId || post.ownerId === memberId;
+/** Author only. Automated birthday posts have no editable fields. */
+export function canEditPost(post: Pick<Post, "authorId" | "type">, viewer: Viewer): boolean {
+  return post.type !== "birthday" && isAuthor(post, viewer);
+}
+
+export function canDeletePost(post: Pick<Post, "authorId">, viewer: Viewer): boolean {
+  return isAuthor(post, viewer) || isAdmin(viewer);
+}
+
+export function canEditComment(comment: { authorId: string }, viewer: Viewer): boolean {
+  return isAuthor(comment, viewer);
+}
+
+export function canDeleteComment(comment: { authorId: string }, viewer: Viewer): boolean {
+  return isAuthor(comment, viewer) || isAdmin(viewer);
+}
+
+export function canEditCircle(circle: Pick<Circle, "createdBy">, viewer: Viewer): boolean {
+  return (!!viewer && circle.createdBy === viewer.id) || isAdmin(viewer);
 }

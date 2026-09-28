@@ -11,27 +11,24 @@
 import { initializeApp, applicationDefault } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
-import {
-  groups,
-  members,
-  memberships,
-  events,
-  rsvps,
-  loopPosts,
-  wallPosts,
-  activity,
-} from "../src/data/mock/fixtures";
+import { DEV_PASSWORD } from "../src/data/devAccounts";
+import { createSeed } from "../src/data/mock/fixtures";
 
 const PROJECT_ID = "the-analog-circle-ic";
-const DEV_PASSWORD = "analog-demo-pw";
 
 initializeApp({ credential: applicationDefault(), projectId: PROJECT_ID });
 const auth = getAuth();
 const db = getFirestore();
 
+/** Stores a record under its own id without repeating the id in the document. */
+const byId = <T extends { id: string }>(coll: string, rows: T[]) =>
+  rows.map(({ id, ...rest }) => ({ coll, id, data: rest as object }));
+
 async function run() {
-  // Auth users — uid === member id so the app maps auth uid → member doc.
-  for (const m of members) {
+  const seed = createSeed(new Date());
+
+  // Auth users: uid === member id, so the accounts link below is known up front.
+  for (const m of seed.members) {
     try {
       await auth.createUser({ uid: m.id, email: m.email, password: DEV_PASSWORD });
       console.log(`created auth user ${m.id}`);
@@ -45,42 +42,26 @@ async function run() {
     }
   }
 
-  const set = async (coll: string, id: string, data: object) => {
-    await db.collection(coll).doc(id).set(data);
-  };
+  const writes = [
+    ...byId("members", seed.members),
+    ...seed.members.map((m) => ({ coll: "accounts", id: m.id, data: { memberId: m.id } })),
+    ...byId("circles", seed.circles),
+    ...byId("posts", seed.posts),
+    ...byId("comments", seed.comments),
+    ...seed.rsvps.map((r) => ({ coll: "rsvps", id: `${r.postId}_${r.memberId}`, data: r })),
+    ...seed.prefs.map((p) => ({ coll: "prefs", id: p.memberId, data: p })),
+    ...byId("activity", seed.activity),
+    ...byId("feedback", seed.feedback),
+  ];
 
-  for (const m of members) {
-    const { id, ...rest } = m;
-    await set("members", id, rest);
-  }
-  for (const g of groups) {
-    const { id, ...rest } = g;
-    await set("groups", id, rest);
-  }
-  for (const ms of memberships) {
-    await set("memberships", `${ms.memberId}_${ms.groupId}`, ms);
-  }
-  for (const e of events) {
-    const { id, ...rest } = e;
-    await set("events", id, rest);
-  }
-  for (const r of rsvps) {
-    await set("rsvps", `${r.eventId}_${r.memberId}`, r);
-  }
-  for (const p of loopPosts) {
-    const { id, ...rest } = p;
-    await set("loopPosts", id, rest);
-  }
-  for (const w of wallPosts) {
-    const { id, ...rest } = w;
-    await set("wallPosts", id, rest);
-  }
-  for (const a of activity) {
-    const { id, ...rest } = a;
-    await set("activity", id, rest);
+  // Batched writes cap at 500 operations.
+  for (let i = 0; i < writes.length; i += 500) {
+    const batch = db.batch();
+    for (const w of writes.slice(i, i + 500)) batch.set(db.collection(w.coll).doc(w.id), w.data);
+    await batch.commit();
   }
 
-  console.log("Seed complete.");
+  console.log(`Seed complete: ${writes.length} documents.`);
 }
 
 run().then(

@@ -14,8 +14,8 @@
   display: block;
   width: 20px;
   height: 20px;
-  border-radius: var(--radius-full);
-  border: 2px solid var(--color-hairline);
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--color-border);
   border-top-color: var(--color-accent);
   animation: spin 0.7s var(--motion-ease) infinite;
 }

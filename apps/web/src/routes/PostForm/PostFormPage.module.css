@@ -1,0 +1,85 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-4) var(--space-9);
+}
+
+.title {
+  font-family: var(--family-display);
+  font-size: var(--font-28);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+}
+
+.fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  margin-bottom: var(--space-2);
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.error {
+  color: var(--color-danger);
+  font-size: var(--font-13);
+}
+
+.row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.titleField {
+  flex: 1.3;
+  min-width: 0;
+}
+
+.picField {
+  flex: 1;
+  min-width: 0;
+}
+
+.half {
+  flex: 1;
+  min-width: 0;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+}
+
+.guestLimit {
+  width: 118px;
+}
+
+/* Matches the Input and ImagePicker labels. */
+.fieldLabel {
+  margin-bottom: var(--space-2);
+  color: var(--color-text-3);
+  font-size: var(--font-13);
+  font-weight: var(--weight-semi);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.primary {
+  flex: 1.4;
+}

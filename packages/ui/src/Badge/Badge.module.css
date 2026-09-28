@@ -5,7 +5,7 @@
   border: 1px solid transparent;
   border-radius: var(--radius-pill);
   font-family: var(--text-body-family);
-  font-size: var(--font-xs);
+  font-size: var(--font-12);
   font-weight: var(--weight-bold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -15,43 +15,43 @@
 
 /* danger — error-tinted */
 .badge[data-variant="danger"] {
-  background: var(--color-error-soft);
-  color: var(--color-error);
+  background: var(--color-danger);
+  color: var(--color-danger);
 }
 
 /* offer — info-tinted */
 .badge[data-variant="offer"] {
-  background: var(--color-accent-glow);
-  color: var(--color-info);
+  background: var(--color-accent-tint);
+  color: var(--color-accent-text);
 }
 
 /* event — accent (gold) */
 .badge[data-variant="event"] {
-  background: var(--color-accent-glow);
+  background: var(--color-accent-tint);
   color: var(--color-accent);
 }
 
 /* accent — accent (gold) */
 .badge[data-variant="accent"] {
-  background: var(--color-accent-glow);
+  background: var(--color-accent-tint);
   color: var(--color-accent-bright);
 }
 
 /* success — green */
 .badge[data-variant="success"] {
-  background: var(--color-accent-glow);
+  background: var(--color-accent-tint);
   color: var(--color-success);
 }
 
 /* neutral — muted */
 .badge[data-variant="neutral"] {
-  background: var(--color-surface-raised);
-  color: var(--color-text-muted);
+  background: var(--color-sheet);
+  color: var(--color-muted);
 }
 
 /* rose — warm red-rose: live Loop "Need" badge */
 .badge[data-variant="rose"] {
-  background: var(--color-need-bg);
-  color: var(--color-need-ink);
+  background: var(--color-bg-deep);
+  color: var(--color-birthday);
   padding: 0 var(--space-3);
 }

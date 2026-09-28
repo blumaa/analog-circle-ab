@@ -12,30 +12,30 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const options = [
-  { value: "all", label: "All", count: 12 },
-  { value: "needs", label: "Needs", count: 4 },
-  { value: "offers", label: "Offers", count: 8 },
-  { value: "archived", label: "Archived", count: 2 },
+  { value: "any", label: "Any time" },
+  { value: "week", label: "This week" },
+  { value: "month", label: "This month" },
+  { value: "custom", label: "Custom" },
 ];
 
 export const Default: Story = {
   args: {
     options,
-    value: "all",
+    value: "week",
     onChange: () => {},
-    ariaLabel: "Filter posts",
+    ariaLabel: "Date",
   },
 };
 
 export const Interactive: Story = {
   args: {
     options,
-    value: "all",
+    value: "week",
     onChange: () => {},
-    ariaLabel: "Filter posts",
+    ariaLabel: "Date",
   },
   render: () => {
-    const [value, setValue] = useState("all");
+    const [value, setValue] = useState("week");
     return (
       <SegmentedControl
         options={options}
@@ -44,5 +44,18 @@ export const Interactive: Story = {
         ariaLabel="Filter posts"
       />
     );
+  },
+};
+
+export const Solid: Story = {
+  args: {
+    options: [
+      { value: "date", label: "I know the date" },
+      { value: "poll", label: "Let the group pick" },
+    ],
+    value: "date",
+    onChange: () => {},
+    ariaLabel: "When",
+    variant: "solid",
   },
 };

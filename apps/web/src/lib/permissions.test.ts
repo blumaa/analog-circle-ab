@@ -1,39 +1,52 @@
 import { describe, expect, it } from "vitest";
-import { canCreateEvent, canManageEvent, canDeleteWallPost } from "./permissions";
-import type { EventItem } from "../data";
+import { canDeleteComment, canEditCircle, canDeletePost, canEditComment, canEditPost, isAdmin } from "./permissions";
+import type { Member } from "../data/types";
 
-const event: EventItem = {
-  id: "e1",
-  scope: "inner",
-  groupId: "ic4",
-  title: "Meeting",
-  date: "2026-07-04",
-  startTime: "16:00",
-  endTime: "19:00",
-  hostId: "david",
-  creatorId: "aaron",
-  address: null,
-  guideUrl: null,
-  type: "meeting",
-};
+const viewer = (id: string, role: Member["role"] = "member") => ({ id, role });
+const post = { authorId: "a", type: "event" as const };
+const comment = { authorId: "a" };
 
 describe("permissions", () => {
-  it("any signed-in member can create events", () => {
-    expect(canCreateEvent("aaron")).toBe(true);
-    expect(canCreateEvent(null)).toBe(false);
+  it("isAdmin", () => {
+    expect(isAdmin(viewer("x", "admin"))).toBe(true);
+    expect(isAdmin(viewer("x"))).toBe(false);
+    expect(isAdmin(null)).toBe(false);
   });
 
-  it("creator or host can manage an event", () => {
-    expect(canManageEvent(event, "aaron")).toBe(true); // creator
-    expect(canManageEvent(event, "david")).toBe(true); // host
-    expect(canManageEvent(event, "vki")).toBe(false);
-    expect(canManageEvent(event, null)).toBe(false);
+  it("only author edits a post", () => {
+    expect(canEditPost(post, viewer("a"))).toBe(true);
+    expect(canEditPost(post, viewer("b", "admin"))).toBe(false);
+    expect(canEditPost(post, null)).toBe(false);
   });
 
-  it("wall post deletable by author or wall owner", () => {
-    const post = { authorId: "david", ownerId: "aaron" };
-    expect(canDeleteWallPost(post, "david")).toBe(true); // author
-    expect(canDeleteWallPost(post, "aaron")).toBe(true); // owner
-    expect(canDeleteWallPost(post, "vki")).toBe(false);
+  it("automated birthday posts are not editable", () => {
+    expect(canEditPost({ authorId: "a", type: "birthday" }, viewer("a"))).toBe(false);
+  });
+
+  it("author or admin deletes a post", () => {
+    expect(canDeletePost(post, viewer("a"))).toBe(true);
+    expect(canDeletePost(post, viewer("b", "admin"))).toBe(true);
+    expect(canDeletePost(post, viewer("b"))).toBe(false);
+    expect(canDeletePost(post, null)).toBe(false);
+  });
+
+  it("only author edits a comment", () => {
+    expect(canEditComment(comment, viewer("a"))).toBe(true);
+    expect(canEditComment(comment, viewer("b", "admin"))).toBe(false);
+  });
+
+  it("author or admin deletes a comment", () => {
+    expect(canDeleteComment(comment, viewer("a"))).toBe(true);
+    expect(canDeleteComment(comment, viewer("b", "admin"))).toBe(true);
+    expect(canDeleteComment(comment, viewer("b"))).toBe(false);
+  });
+});
+
+describe("canEditCircle", () => {
+  it("allows the creator and admins", () => {
+    const circle = { createdBy: "maker" };
+    expect(canEditCircle(circle, viewer("maker"))).toBe(true);
+    expect(canEditCircle(circle, viewer("x", "admin"))).toBe(true);
+    expect(canEditCircle(circle, viewer("x"))).toBe(false);
   });
 });

@@ -10,3 +10,7 @@ dist/
 storybook-static/
 
 .parity/
+
+# Design handoff (kept local)
+App redesign mockups.zip
+*.tsbuildinfo

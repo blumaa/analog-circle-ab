@@ -21,8 +21,8 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--text-body-family);
-  font-size: var(--font-md);
-  line-height: 1.55;
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-leading);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -32,6 +32,13 @@ h3 {
   font-family: var(--text-display-family);
   font-weight: var(--weight-bold);
   line-height: 1.1;
+}
+
+/* Lists with a class are layout, not prose: drop browser indentation and bullets. */
+ul[class],
+ol[class] {
+  padding: 0;
+  list-style: none;
 }
 
 img,
@@ -49,8 +56,12 @@ select {
   color: inherit;
 }
 
+p {
+  text-wrap: pretty;
+}
+
 a {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   text-decoration: none;
 }
 

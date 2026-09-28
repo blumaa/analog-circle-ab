@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
-import { Button } from "../Button/Button";
+import { IconButton } from "../IconButton/IconButton";
 import { Card, CardHeader, CardBody, CardFooter } from "../Card/Card";
 import styles from "./Modal.module.css";
 
@@ -72,15 +72,13 @@ export function Modal({ open, onClose, title, children, footer }: ModalProps) {
             <h2 id={titleId} className={styles.title}>
               {title}
             </h2>
-            <Button
+            <IconButton
               variant="ghost"
-              size="sm"
-              iconOnly
-              aria-label="Close dialog"
+              size={32}
+              label="Close dialog"
+              icon={<X size={18} />}
               onClick={onClose}
-            >
-              <X size={18} />
-            </Button>
+            />
           </CardHeader>
           <CardBody>{children}</CardBody>
           {footer && <CardFooter className={styles.footer}>{footer}</CardFooter>}

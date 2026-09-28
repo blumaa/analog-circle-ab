@@ -1,0 +1,26 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-4) var(--space-9);
+}
+
+.title {
+  color: var(--color-text);
+  font-family: var(--family-body);
+  font-size: var(--font-26);
+  font-weight: var(--weight-bold);
+  line-height: 1.2;
+}
+
+.count {
+  margin-top: var(--space-1);
+  color: var(--color-muted);
+  font-size: var(--font-13);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}

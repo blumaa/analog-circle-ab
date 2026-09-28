@@ -1,0 +1,73 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.label {
+  color: var(--color-text-3);
+  font-size: var(--font-13);
+  font-weight: var(--weight-semi);
+}
+
+.tile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: var(--size-input);
+  border: 1px dashed var(--color-accent-edge);
+  border-radius: var(--radius-input);
+  color: var(--color-accent-text);
+  font-size: var(--font-15);
+  font-weight: var(--weight-semi);
+}
+
+.tile:has(.input:focus-visible) {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Covers the tile so the whole area opens the file picker. */
+.input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.preview {
+  position: relative;
+  height: var(--size-input);
+}
+
+.preview[data-shape="round"] {
+  width: 72px;
+  height: 72px;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-input);
+  object-fit: cover;
+}
+
+.remove {
+  position: absolute;
+  top: 50%;
+  right: var(--space-2);
+  transform: translateY(-50%);
+}
+
+.preview[data-shape="round"] .image {
+  border-radius: 50%;
+}
+
+.preview[data-shape="round"] .remove {
+  top: -4px;
+  right: -4px;
+  transform: none;
+}

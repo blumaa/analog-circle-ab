@@ -1,84 +1,76 @@
 import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from "react";
+import { Check } from "lucide-react";
 import styles from "./Chip.module.css";
 
-export type ChipTone = "rose";
+/** toggle = multi-select (tint + check); single = solid gold. */
+export type ChipSelectStyle = "toggle" | "single";
 
 interface ChipCommonProps {
   selected?: boolean;
+  selectStyle?: ChipSelectStyle;
+  /** Leading icon. Replaced by a check when a toggle chip is selected. */
+  icon?: ReactNode;
   count?: number;
-  /** Optional tone override. Currently supports "rose" (Need/Offer badge style). */
-  tone?: ChipTone;
-  children: ReactNode;
+  children?: ReactNode;
   className?: string;
 }
 
 export interface ChipInteractiveProps
   extends ChipCommonProps,
     Omit<ButtonHTMLAttributes<HTMLButtonElement>, keyof ChipCommonProps> {
-  /** When true the chip renders as a non-interactive <span>. Defaults to false. */
   static?: false;
 }
 
 export interface ChipStaticProps
   extends ChipCommonProps,
     Omit<HTMLAttributes<HTMLSpanElement>, keyof ChipCommonProps> {
-  /** Render a display-only chip (no button role, no interactive semantics). */
+  /** Display-only chip, no button semantics. */
   static: true;
 }
 
 export type ChipProps = ChipInteractiveProps | ChipStaticProps;
 
-export function Chip(props: ChipProps) {
-  if (props.static) {
-    return <StaticChip {...props} />;
-  }
-  return <InteractiveChip {...props} />;
-}
-
-function StaticChip({
-  selected = false,
-  count,
-  tone,
-  className,
-  children,
-  static: _ignored,
-  ...rest
-}: ChipStaticProps) {
-  const cls = [styles.chip, className].filter(Boolean).join(" ");
+function ChipContent({ selected, selectStyle, icon, count, children }: ChipCommonProps) {
+  const lead = selected && selectStyle === "toggle" ? <Check size={13} strokeWidth={2.5} /> : icon;
   return (
-    <span
-      data-selected={selected || undefined}
-      data-tone={tone}
-      className={cls}
-      {...rest}
-    >
+    <>
+      {lead && (
+        <span className={styles.icon} aria-hidden="true">
+          {lead}
+        </span>
+      )}
       {children}
       {count !== undefined && <span className={styles.count}>{count}</span>}
-    </span>
+    </>
   );
 }
 
-function InteractiveChip({
-  selected = false,
-  count,
-  tone,
-  className,
-  children,
-  static: _ignored,
-  ...rest
-}: ChipInteractiveProps) {
-  const cls = [styles.chip, className].filter(Boolean).join(" ");
-  return (
-    <button
-      type="button"
-      aria-pressed={selected}
-      data-selected={selected || undefined}
-      data-tone={tone}
-      className={cls}
-      {...rest}
-    >
+export function Chip(props: ChipProps) {
+  const { selected = false, selectStyle = "toggle", icon, count, children, className } = props;
+  const shared = {
+    "data-selected": selected || undefined,
+    "data-select-style": selectStyle,
+    "data-has-lead": (selected && selectStyle === "toggle") || icon ? true : undefined,
+    className: [styles.chip, className].filter(Boolean).join(" "),
+  };
+  const content = (
+    <ChipContent selected={selected} selectStyle={selectStyle} icon={icon} count={count}>
       {children}
-      {count !== undefined && <span className={styles.count}>{count}</span>}
+    </ChipContent>
+  );
+
+  if (props.static) {
+    const { static: _s, selected: _a, selectStyle: _b, icon: _c, count: _d, children: _e, className: _f, ...rest } = props;
+    return (
+      <span {...rest} {...shared}>
+        {content}
+      </span>
+    );
+  }
+  const { static: _s, selected: _a, selectStyle: _b, icon: _c, count: _d, children: _e, className: _f, ...rest } = props;
+  return (
+    <button type="button" aria-pressed={selected} {...rest} {...shared}>
+      {content}
     </button>
   );
 }

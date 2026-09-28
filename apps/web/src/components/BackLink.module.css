@@ -1,0 +1,15 @@
+.back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-left: calc(-1 * var(--space-2));
+  color: var(--color-text);
+}
+
+.back:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-badge);
+}

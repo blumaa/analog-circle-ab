@@ -21,7 +21,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div className={[styles.wrapper, className].filter(Boolean).join(" ")}>
         {label && (
-          <label htmlFor={id} className={styles.labelText}>
+          <label htmlFor={id} className={styles.label}>
             {label}
           </label>
         )}

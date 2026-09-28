@@ -53,14 +53,14 @@ function ColorSwatch({ token, label }: SwatchProps) {
           height: "3.5rem",
           borderRadius: "var(--radius-md)",
           background: `var(${token})`,
-          border: "1px solid var(--alpha-hairline)",
+          border: "1px solid var(--color-border)",
         }}
       />
       <span
         style={{
           fontFamily: "var(--family-body)",
-          fontSize: "var(--font-xs)",
-          color: "var(--ivory-100)",
+          fontSize: "var(--font-12)",
+          color: "var(--color-text)",
           wordBreak: "break-all",
         }}
       >
@@ -69,8 +69,8 @@ function ColorSwatch({ token, label }: SwatchProps) {
       <span
         style={{
           fontFamily: "monospace",
-          fontSize: "var(--font-xs)",
-          color: "var(--muted-400)",
+          fontSize: "var(--font-12)",
+          color: "var(--color-muted-2)",
           wordBreak: "break-all",
         }}
       >
@@ -98,8 +98,8 @@ function SpacingRow({ token }: SpacingRowProps) {
       <span
         style={{
           fontFamily: "monospace",
-          fontSize: "var(--font-xs)",
-          color: "var(--ivory-100)",
+          fontSize: "var(--font-12)",
+          color: "var(--color-text)",
           width: "9rem",
           flexShrink: 0,
         }}
@@ -110,7 +110,7 @@ function SpacingRow({ token }: SpacingRowProps) {
         style={{
           height: "var(--space-4)",
           width: `var(${token})`,
-          background: "var(--gold-500)",
+          background: "var(--color-accent)",
           borderRadius: "2px",
           flexShrink: 0,
         }}
@@ -118,8 +118,8 @@ function SpacingRow({ token }: SpacingRowProps) {
       <span
         style={{
           fontFamily: "monospace",
-          fontSize: "var(--font-xs)",
-          color: "var(--muted-400)",
+          fontSize: "var(--font-12)",
+          color: "var(--color-muted-2)",
         }}
       >
         {value || "—"}
@@ -148,16 +148,16 @@ function RadiusBox({ token }: RadiusBoxProps) {
         style={{
           width: "4.5rem",
           height: "4.5rem",
-          background: "var(--navy-600)",
-          border: "1px solid var(--alpha-hairline)",
+          background: "var(--color-chip)",
+          border: "1px solid var(--color-border)",
           borderRadius: `var(${token})`,
         }}
       />
       <span
         style={{
           fontFamily: "monospace",
-          fontSize: "var(--font-xs)",
-          color: "var(--ivory-100)",
+          fontSize: "var(--font-12)",
+          color: "var(--color-text)",
           textAlign: "center",
         }}
       >
@@ -166,8 +166,8 @@ function RadiusBox({ token }: RadiusBoxProps) {
       <span
         style={{
           fontFamily: "monospace",
-          fontSize: "var(--font-xs)",
-          color: "var(--muted-400)",
+          fontSize: "var(--font-12)",
+          color: "var(--color-muted-2)",
         }}
       >
         {value || "—"}
@@ -195,7 +195,7 @@ function ShadowBox({ token }: ShadowBoxProps) {
         style={{
           width: "8rem",
           height: "5rem",
-          background: "var(--navy-700)",
+          background: "var(--color-surface)",
           borderRadius: "var(--radius-md)",
           boxShadow: `var(${token})`,
         }}
@@ -203,8 +203,8 @@ function ShadowBox({ token }: ShadowBoxProps) {
       <span
         style={{
           fontFamily: "monospace",
-          fontSize: "var(--font-xs)",
-          color: "var(--ivory-100)",
+          fontSize: "var(--font-12)",
+          color: "var(--color-text)",
         }}
       >
         {token}
@@ -212,8 +212,8 @@ function ShadowBox({ token }: ShadowBoxProps) {
       <span
         style={{
           fontFamily: "monospace",
-          fontSize: "var(--font-xs)",
-          color: "var(--muted-400)",
+          fontSize: "var(--font-12)",
+          color: "var(--color-muted-2)",
           wordBreak: "break-all",
           maxWidth: "12rem",
         }}
@@ -238,16 +238,16 @@ function TypographySample({ family, familyToken, sampleText }: TypographySampleP
         flexDirection: "column",
         gap: "var(--space-1)",
         padding: "var(--space-4)",
-        background: "var(--navy-700)",
+        background: "var(--color-surface)",
         borderRadius: "var(--radius-md)",
-        border: "1px solid var(--alpha-hairline)",
+        border: "1px solid var(--color-border)",
       }}
     >
       <span
         style={{
           fontFamily: `var(${familyToken})`,
-          fontSize: "var(--font-xl)",
-          color: "var(--ivory-50)",
+          fontSize: "var(--font-24)",
+          color: "var(--color-text)",
           lineHeight: 1.2,
         }}
       >
@@ -256,8 +256,8 @@ function TypographySample({ family, familyToken, sampleText }: TypographySampleP
       <span
         style={{
           fontFamily: "monospace",
-          fontSize: "var(--font-xs)",
-          color: "var(--muted-400)",
+          fontSize: "var(--font-12)",
+          color: "var(--color-muted-2)",
         }}
       >
         {familyToken} — {family}
@@ -281,14 +281,14 @@ function FontSizeRow({ token, sampleText = "The Analog Circle" }: FontSizeRowPro
         alignItems: "baseline",
         gap: "var(--space-4)",
         padding: "var(--space-2) 0",
-        borderBottom: "1px solid var(--alpha-hairline-soft)",
+        borderBottom: "1px solid var(--color-border-shell)",
       }}
     >
       <span
         style={{
           fontFamily: "monospace",
-          fontSize: "var(--font-xs)",
-          color: "var(--muted-400)",
+          fontSize: "var(--font-12)",
+          color: "var(--color-muted-2)",
           width: "10rem",
           flexShrink: 0,
         }}
@@ -300,7 +300,7 @@ function FontSizeRow({ token, sampleText = "The Analog Circle" }: FontSizeRowPro
         style={{
           fontFamily: "var(--family-body)",
           fontSize: `var(${token})`,
-          color: "var(--ivory-100)",
+          color: "var(--color-text)",
           lineHeight: 1.3,
         }}
       >
@@ -322,7 +322,7 @@ function MotionRow({ token }: MotionRowProps) {
     const el = boxRef.current;
     if (!el) return;
     el.style.transform = "translateX(120px)";
-    el.style.transition = `transform var(${token}) var(--ease-lux)`;
+    el.style.transition = `transform var(${token}) var(--motion-ease)`;
     setTimeout(() => {
       el.style.transform = "translateX(0)";
     }, 500);
@@ -347,8 +347,8 @@ function MotionRow({ token }: MotionRowProps) {
       <span
         style={{
           fontFamily: "monospace",
-          fontSize: "var(--font-xs)",
-          color: "var(--ivory-100)",
+          fontSize: "var(--font-12)",
+          color: "var(--color-text)",
           width: "9rem",
           flexShrink: 0,
         }}
@@ -358,8 +358,8 @@ function MotionRow({ token }: MotionRowProps) {
       <span
         style={{
           fontFamily: "monospace",
-          fontSize: "var(--font-xs)",
-          color: "var(--muted-400)",
+          fontSize: "var(--font-12)",
+          color: "var(--color-muted-2)",
           width: "5rem",
           flexShrink: 0,
         }}
@@ -371,15 +371,15 @@ function MotionRow({ token }: MotionRowProps) {
         style={{
           width: "2rem",
           height: "2rem",
-          background: "var(--gold-500)",
+          background: "var(--color-accent)",
           borderRadius: "var(--radius-sm)",
         }}
       />
       <span
         style={{
           fontFamily: "var(--family-body)",
-          fontSize: "var(--font-xs)",
-          color: "var(--muted-400)",
+          fontSize: "var(--font-12)",
+          color: "var(--color-muted-2)",
         }}
       >
         click to demo
@@ -407,8 +407,8 @@ function Section({ title, children }: SectionProps) {
       <h2
         style={{
           fontFamily: "var(--family-display)",
-          fontSize: "var(--font-lg)",
-          color: "var(--gold-400)",
+          fontSize: "var(--font-18)",
+          color: "var(--color-accent-text)",
           fontWeight: "var(--weight-semi)" as React.CSSProperties["fontWeight"],
           margin: "0 0 var(--space-1) 0",
           letterSpacing: "0.02em",
@@ -420,7 +420,7 @@ function Section({ title, children }: SectionProps) {
         style={{
           width: "3rem",
           height: "1px",
-          background: "var(--alpha-hairline)",
+          background: "var(--color-border)",
           marginBottom: "var(--space-5)",
         }}
       />
@@ -439,12 +439,12 @@ function Subsection({ label, children }: SubsectionProps) {
     <div style={{ marginBottom: "var(--space-5)" }}>
       <h3
         style={{
-          fontFamily: "var(--family-eyebrow)",
-          fontSize: "var(--font-eyebrow)",
-          color: "var(--muted-400)",
+          fontFamily: "var(--text-eyebrow-family)",
+          fontSize: "var(--text-eyebrow-size)",
+          color: "var(--color-muted-2)",
           fontWeight: "var(--weight-semi)" as React.CSSProperties["fontWeight"],
           textTransform: "uppercase",
-          letterSpacing: "0.12em",
+          letterSpacing: "var(--text-eyebrow-tracking)",
           margin: "0 0 var(--space-3) 0",
         }}
       >
@@ -475,278 +475,105 @@ function SwatchGrid({ children }: { children: React.ReactNode }) {
 
 const PRIMITIVE_COLOR_GROUPS: Array<{ group: string; tokens: string[] }> = [
   {
-    group: "Navy / Surface",
-    tokens: ["--navy-950", "--navy-900", "--navy-800", "--navy-700", "--navy-600"],
+    group: "Ink",
+    tokens: [
+      "--ink-950", "--ink-900", "--ink-850", "--ink-800", "--ink-750", "--ink-700", "--ink-650",
+      "--ink-600", "--ink-550", "--ink-500", "--ink-450", "--ink-400", "--ink-350",
+    ],
   },
   {
-    group: "Gold / Accent",
-    tokens: ["--gold-300", "--gold-400", "--gold-500", "--gold-600", "--gold-ink"],
+    group: "Mist",
+    tokens: [
+      "--mist-50", "--mist-100", "--mist-200", "--mist-250", "--mist-300", "--mist-400",
+      "--mist-500", "--mist-600",
+    ],
   },
   {
-    group: "Ivory / Text",
-    tokens: ["--ivory-50", "--ivory-100", "--ivory-200", "--ivory-300"],
-  },
-  {
-    group: "Muted / Neutral",
-    tokens: ["--muted-400", "--muted-500"],
+    group: "Gold",
+    tokens: [
+      "--gold-300", "--gold-400", "--gold-500", "--gold-550", "--gold-700", "--gold-750",
+      "--gold-800", "--gold-850", "--gold-900",
+    ],
   },
   {
     group: "Status",
-    tokens: [
-      "--green-200",
-      "--green-300",
-      "--green-400",
-      "--green-500",
-      "--red-300",
-      "--red-400",
-      "--blue-400",
-    ],
+    tokens: ["--green-300", "--green-700", "--green-850", "--pink-300", "--red-300", "--rose-800"],
   },
   {
-    group: "Sage (Interest)",
-    tokens: ["--sage-500", "--sage-alpha", "--sage-border"],
+    group: "Avatar",
+    tokens: ["--avatar-gold", "--avatar-green", "--avatar-lilac", "--avatar-peach"],
   },
-  {
-    group: "Rose / Pink",
-    tokens: ["--rose-300", "--rose-alpha", "--need-bg", "--need-ink", "--need-line"],
-  },
-  {
-    group: "Indigo",
-    tokens: ["--indigo-300", "--indigo-alpha"],
-  },
-  {
-    group: "Sky",
-    tokens: ["--sky-300", "--sky-alpha"],
-  },
-  {
-    group: "Alpha / Glass",
-    tokens: [
-      "--alpha-glass",
-      "--alpha-hairline",
-      "--alpha-hairline-soft",
-      "--alpha-gold-glow",
-      "--alpha-accent-55",
-      "--alpha-accent-45",
-      "--alpha-accent-25",
-      "--alpha-accent-22",
-      "--alpha-accent-15",
-      "--alpha-accent-08",
-      "--alpha-ink-88",
-      "--alpha-ink-78",
-      "--alpha-ink-62",
-      "--alpha-ink-48",
-      "--alpha-ink-16",
-      "--alpha-dark-25",
-    ],
-  },
-  {
-    group: "Soft Controls",
-    tokens: ["--control-soft-bg", "--control-soft-ink", "--control-soft-line"],
-  },
-  {
-    group: "Card Surfaces",
-    tokens: ["--member-card-bg", "--food-card-bg", "--member-media-bg"],
-  },
-  {
-    group: "WhatsApp",
-    tokens: ["--whatsapp-alpha", "--whatsapp-border"],
-  },
+  { group: "Misc", tokens: ["--rust-600", "--scrim-68"] },
 ];
 
 const SEMANTIC_COLOR_GROUPS: Array<{ group: string; tokens: string[] }> = [
   {
     group: "Surfaces",
     tokens: [
-      "--color-bg",
-      "--color-bg-deep",
-      "--color-surface-card",
-      "--color-surface-raised",
+      "--color-bg", "--color-bg-deep", "--color-bg-shell", "--color-sheet", "--color-surface",
+      "--color-surface-2", "--color-chip", "--color-segmented", "--color-track-off-sheet",
+      "--color-overlay",
+    ],
+  },
+  {
+    group: "Lines",
+    tokens: ["--color-border", "--color-border-2", "--color-border-shell", "--color-handle"],
+  },
+  {
+    group: "Gold",
+    tokens: [
+      "--color-accent", "--color-accent-text", "--color-accent-bright", "--color-wordmark",
+      "--color-accent-tint", "--color-accent-tint-strong", "--color-accent-edge",
+      "--color-tag-edge", "--color-accent-card-edge", "--color-on-accent",
     ],
   },
   {
     group: "Text",
     tokens: [
-      "--color-text-strong",
-      "--color-text",
-      "--color-text-soft",
-      "--color-text-faint",
-      "--color-text-muted",
-      "--color-text-muted-2",
-      "--color-text-heading",
-    ],
-  },
-  {
-    group: "Accent / Brand",
-    tokens: [
-      "--color-accent",
-      "--color-accent-bright",
-      "--color-accent-soft",
-      "--color-on-accent",
-      "--color-accent-glow",
-      "--color-accent-line",
-      "--color-accent-line-strong",
-      "--color-accent-line-22",
-      "--color-accent-line-15",
-      "--color-accent-surface",
-      "--color-accent-border",
-    ],
-  },
-  {
-    group: "Lines & Borders",
-    tokens: ["--color-hairline", "--color-hairline-soft"],
-  },
-  {
-    group: "Ink on Dark",
-    tokens: [
-      "--color-ink-strong",
-      "--color-ink-muted",
-      "--color-ink-faint",
-      "--color-control-line",
-      "--color-control-ink",
+      "--color-text", "--color-text-2", "--color-text-3", "--color-muted", "--color-muted-2",
+      "--color-placeholder", "--color-radio-off", "--color-knob-off",
     ],
   },
   {
     group: "Status",
     tokens: [
-      "--color-success",
-      "--color-success-bright",
-      "--color-success-soft",
-      "--color-error",
-      "--color-error-soft",
-      "--color-info",
+      "--color-success", "--color-success-track", "--color-success-edge", "--color-birthday",
+      "--color-birthday-edge", "--color-danger", "--color-danger-edge", "--color-logo",
+      "--color-focus-ring",
     ],
   },
   {
-    group: "WhatsApp",
+    group: "Avatar",
     tokens: [
-      "--color-whatsapp",
-      "--color-whatsapp-soft",
-      "--color-whatsapp-border",
-      "--color-whatsapp-ink",
+      "--color-avatar-1", "--color-avatar-2", "--color-avatar-3", "--color-avatar-4",
+      "--color-on-avatar",
     ],
-  },
-  {
-    group: "Interest Chips (Sage)",
-    tokens: [
-      "--color-interest-bg",
-      "--color-interest-border",
-      "--color-interest-ink",
-    ],
-  },
-  {
-    group: "Icon Tile Tints",
-    tokens: [
-      "--color-tile-rose",
-      "--color-tile-rose-ink",
-      "--color-tile-indigo",
-      "--color-tile-indigo-ink",
-      "--color-tile-sky",
-      "--color-tile-sky-ink",
-    ],
-  },
-  {
-    group: "Need-Rose Badge",
-    tokens: ["--color-need-bg", "--color-need-ink", "--color-need-line"],
-  },
-  {
-    group: "Soft Controls",
-    tokens: [
-      "--color-control-soft-bg",
-      "--color-control-soft-ink",
-      "--color-control-soft-line",
-    ],
-  },
-  {
-    group: "Navigation",
-    tokens: [
-      "--color-nav-inactive",
-      "--color-nav-active",
-      "--color-nav-bg",
-      "--color-nav-border",
-    ],
-  },
-  {
-    group: "Cards",
-    tokens: [
-      "--color-member-card-bg",
-      "--color-member-media-bg",
-      "--color-food-card-bg",
-      "--color-food-detail-ink",
-    ],
-  },
-  {
-    group: "Focus",
-    tokens: ["--color-focus-ring"],
-  },
-  {
-    group: "Input / Tab",
-    tokens: ["--color-input-bg", "--color-tab-inactive"],
   },
 ];
 
 const SPACING_TOKENS = [
-  "--space-1",
-  "--space-2",
-  "--space-3",
-  "--space-4",
-  "--space-5",
-  "--space-6",
-  "--space-7",
-  "--space-8",
-  "--space-9",
-  "--space-control-sm",
-  "--space-control",
+  "--space-1", "--space-1-5", "--space-2", "--space-2-5", "--space-3", "--space-3-5",
+  "--space-4", "--space-4-5", "--space-5", "--space-6", "--space-7", "--space-8", "--space-9",
 ];
 
 const RADIUS_TOKENS = [
-  "--radius-sm",
-  "--radius-md",
-  "--radius-lg",
-  "--radius-card-lg",
-  "--radius-food",
-  "--radius-pill",
-  "--radius-full",
+  "--radius-sm", "--radius-seg", "--radius-md", "--radius-lg", "--radius-xl", "--radius-2xl",
+  "--radius-3xl", "--radius-pill",
 ];
 
 const SEMANTIC_RADIUS_TOKENS = [
-  "--radius-control",
-  "--radius-input",
-  "--radius-card",
-  "--radius-tile",
+  "--radius-card", "--radius-card-hero", "--radius-list", "--radius-input", "--radius-segment",
+  "--radius-sheet", "--radius-control",
 ];
 
 const FONT_FAMILY_TOKENS: Array<{ familyToken: string; family: string; sample: string }> = [
-  {
-    familyToken: "--family-display",
-    family: "Playfair Display",
-    sample: "The Analog Circle",
-  },
-  {
-    familyToken: "--family-body",
-    family: "DM Sans",
-    sample: "Community gatherings",
-  },
-  {
-    familyToken: "--family-eyebrow",
-    family: "Crimson Pro",
-    sample: "UPCOMING EVENTS",
-  },
+  { familyToken: "--family-display", family: "Playfair Display", sample: "The Analog Circle" },
+  { familyToken: "--family-body", family: "DM Sans", sample: "Community gatherings" },
 ];
 
 const FONT_SIZE_TOKENS = [
-  "--font-tab",
-  "--font-eyebrow",
-  "--font-xs",
-  "--font-input",
-  "--font-sm",
-  "--font-md",
-  "--font-wordmark",
-  "--font-lg",
-  "--font-page-h2",
-  "--font-xl",
-  "--font-welcome-h2",
-  "--font-2xl",
-  "--font-3xl",
+  "--font-10", "--font-11", "--font-12", "--font-13", "--font-14", "--font-15", "--font-16",
+  "--font-17", "--font-18", "--font-22", "--font-24", "--font-26", "--font-28",
 ];
 
 const FONT_WEIGHT_TOKENS = [
@@ -756,16 +583,9 @@ const FONT_WEIGHT_TOKENS = [
   { token: "--weight-bold", label: "Bold (700)" },
 ];
 
-const SHADOW_TOKENS = [
-  "--shadow-soft",
-  "--shadow-lift",
-  "--shadow-card-inset",
-];
+const SHADOW_TOKENS = ["--glow-gold"];
 
-const SEMANTIC_SHADOW_TOKENS = [
-  "--elevation-card",
-  "--elevation-raised",
-];
+const SEMANTIC_SHADOW_TOKENS = ["--elevation-fab"];
 
 const MOTION_TOKENS = ["--dur-quick", "--dur-fast"];
 
@@ -786,11 +606,11 @@ function TokensPage() {
       <header style={{ marginBottom: "var(--space-7)" }}>
         <p
           style={{
-            fontFamily: "var(--family-eyebrow)",
-            fontSize: "var(--font-eyebrow)",
+            fontFamily: "var(--text-eyebrow-family)",
+            fontSize: "var(--text-eyebrow-size)",
             color: "var(--color-accent)",
             textTransform: "uppercase",
-            letterSpacing: "0.12em",
+            letterSpacing: "var(--text-eyebrow-tracking)",
             margin: "0 0 var(--space-2) 0",
           }}
         >
@@ -799,8 +619,8 @@ function TokensPage() {
         <h1
           style={{
             fontFamily: "var(--family-display)",
-            fontSize: "var(--font-2xl)",
-            color: "var(--color-text-heading)",
+            fontSize: "var(--font-28)",
+            color: "var(--color-text)",
             margin: "0 0 var(--space-3) 0",
             lineHeight: 1.1,
           }}
@@ -809,14 +629,14 @@ function TokensPage() {
         </h1>
         <p
           style={{
-            fontSize: "var(--font-sm)",
-            color: "var(--color-text-muted)",
+            fontSize: "var(--font-14)",
+            color: "var(--color-muted)",
             margin: 0,
             maxWidth: "36rem",
           }}
         >
-          Two-tier token system: <strong style={{ color: "var(--ivory-200)" }}>Primitives</strong> are
-          raw, context-free values. <strong style={{ color: "var(--ivory-200)" }}>Semantic</strong> tokens
+          Two-tier token system: <strong style={{ color: "var(--color-text-2)" }}>Primitives</strong> are
+          raw, context-free values. <strong style={{ color: "var(--color-text-2)" }}>Semantic</strong> tokens
           alias primitives to UI intent. Components consume only semantic tokens.
         </p>
       </header>
@@ -829,8 +649,8 @@ function TokensPage() {
               <p
                 style={{
                   fontFamily: "monospace",
-                  fontSize: "var(--font-xs)",
-                  color: "var(--muted-400)",
+                  fontSize: "var(--font-12)",
+                  color: "var(--color-muted-2)",
                   margin: "0 0 var(--space-3) 0",
                 }}
               >
@@ -851,8 +671,8 @@ function TokensPage() {
               <p
                 style={{
                   fontFamily: "monospace",
-                  fontSize: "var(--font-xs)",
-                  color: "var(--muted-400)",
+                  fontSize: "var(--font-12)",
+                  color: "var(--color-muted-2)",
                   margin: "0 0 var(--space-3) 0",
                 }}
               >
@@ -914,9 +734,9 @@ function TokensPage() {
           <div
             style={{
               padding: "var(--space-4)",
-              background: "var(--navy-700)",
+              background: "var(--color-surface)",
               borderRadius: "var(--radius-md)",
-              border: "1px solid var(--alpha-hairline)",
+              border: "1px solid var(--color-border)",
             }}
           >
             {FONT_SIZE_TOKENS.map((t) => (
@@ -932,9 +752,9 @@ function TokensPage() {
                 <span
                   style={{
                     fontFamily: "var(--family-body)",
-                    fontSize: "var(--font-lg)",
+                    fontSize: "var(--font-18)",
                     fontWeight: `var(${token})` as React.CSSProperties["fontWeight"],
-                    color: "var(--ivory-100)",
+                    color: "var(--color-text)",
                   }}
                 >
                   Aa
@@ -942,8 +762,8 @@ function TokensPage() {
                 <span
                   style={{
                     fontFamily: "monospace",
-                    fontSize: "var(--font-xs)",
-                    color: "var(--muted-400)",
+                    fontSize: "var(--font-12)",
+                    color: "var(--color-muted-2)",
                   }}
                 >
                   {token}
@@ -951,8 +771,8 @@ function TokensPage() {
                 <span
                   style={{
                     fontFamily: "var(--family-body)",
-                    fontSize: "var(--font-xs)",
-                    color: "var(--ivory-300)",
+                    fontSize: "var(--font-12)",
+                    color: "var(--color-text-3)",
                   }}
                 >
                   {label}
@@ -985,8 +805,8 @@ function TokensPage() {
       <Section title="Motion">
         <p
           style={{
-            fontSize: "var(--font-xs)",
-            color: "var(--muted-400)",
+            fontSize: "var(--font-12)",
+            color: "var(--color-muted-2)",
             marginBottom: "var(--space-4)",
           }}
         >
@@ -995,9 +815,9 @@ function TokensPage() {
         <div
           style={{
             padding: "var(--space-4)",
-            background: "var(--navy-700)",
+            background: "var(--color-surface)",
             borderRadius: "var(--radius-md)",
-            border: "1px solid var(--alpha-hairline)",
+            border: "1px solid var(--color-border)",
           }}
         >
           {MOTION_TOKENS.map((t) => (

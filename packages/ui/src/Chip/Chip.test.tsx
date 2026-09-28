@@ -6,93 +6,63 @@ import { Chip } from "./Chip";
 
 describe("Chip", () => {
   it("renders its label as a button", () => {
-    render(<Chip>Offers</Chip>);
-    expect(screen.getByRole("button", { name: "Offers" })).toBeInTheDocument();
-  });
-
-  it("has aria-pressed=false when unselected", () => {
-    render(<Chip>Offers</Chip>);
-    expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "false");
+    render(<Chip>My Circle</Chip>);
+    expect(screen.getByRole("button", { name: "My Circle" })).toHaveAttribute("aria-pressed", "false");
   });
 
   it("has aria-pressed=true when selected", () => {
-    render(<Chip selected>Offers</Chip>);
+    render(<Chip selected>My Circle</Chip>);
     expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("defaults to toggle select style", () => {
+    render(<Chip>Event</Chip>);
+    expect(screen.getByRole("button")).toHaveAttribute("data-select-style", "toggle");
+  });
+
+  it("shows a leading check when a toggle chip is selected", () => {
+    const { container } = render(<Chip selected>Event</Chip>);
+    expect(container.querySelector("svg")).not.toBeNull();
+    expect(screen.getByRole("button")).toHaveAttribute("data-has-lead", "true");
+  });
+
+  it("shows no check for a selected single chip", () => {
+    const { container } = render(
+      <Chip selected selectStyle="single">
+        All
+      </Chip>,
+    );
+    expect(container.querySelector("svg")).toBeNull();
   });
 
   it("calls onClick when clicked", async () => {
     const onClick = vi.fn();
-    render(<Chip onClick={onClick}>Offers</Chip>);
+    render(<Chip onClick={onClick}>Post</Chip>);
     await userEvent.click(screen.getByRole("button"));
     expect(onClick).toHaveBeenCalledOnce();
   });
 
-  it("renders count bubble when count is provided", () => {
-    render(<Chip count={5}>Offers</Chip>);
-    expect(screen.getByText("5")).toBeInTheDocument();
+  it("renders count when given", () => {
+    render(<Chip count={3}>Inner</Chip>);
+    expect(screen.getByText("3")).toBeInTheDocument();
   });
 
-  it("does not render count bubble when count is omitted", () => {
-    render(<Chip>Offers</Chip>);
-    expect(screen.queryByText(/^\d+$/)).not.toBeInTheDocument();
+  it("renders as a span when static", () => {
+    const { container } = render(<Chip static>Berlin</Chip>);
+    expect(container.firstElementChild?.tagName).toBe("SPAN");
+    expect(screen.queryByRole("button")).toBeNull();
   });
 
   it("has no accessibility violations", async () => {
-    const { container } = render(<Chip>Offers</Chip>);
-    expect(await axe(container)).toHaveNoViolations();
-  });
-
-  it("has no accessibility violations when selected with count", async () => {
     const { container } = render(
-      <Chip selected count={3}>
-        Needs
-      </Chip>,
+      <div>
+        <Chip selected>Event</Chip>
+        <Chip selectStyle="single" selected>
+          All
+        </Chip>
+        <Chip static>Berlin</Chip>
+      </div>,
     );
     expect(await axe(container)).toHaveNoViolations();
-  });
-
-  describe("static variant", () => {
-    it("renders as a <span> when static is true", () => {
-      const { container } = render(<Chip static>Hiking</Chip>);
-      expect(container.querySelector("span.chip, span[class*='chip']")).not.toBeNull();
-      expect(container.querySelector("button")).toBeNull();
-    });
-
-    it("does not have a button role when static", () => {
-      render(<Chip static>Hiking</Chip>);
-      expect(screen.queryByRole("button")).not.toBeInTheDocument();
-    });
-
-    it("has no accessibility violations when static", async () => {
-      const { container } = render(<Chip static>Hiking</Chip>);
-      expect(await axe(container)).toHaveNoViolations();
-    });
-  });
-
-  describe("rose tone", () => {
-    it("applies data-tone=rose to interactive chip", () => {
-      render(<Chip tone="rose">Need</Chip>);
-      expect(screen.getByRole("button", { name: "Need" })).toHaveAttribute("data-tone", "rose");
-    });
-
-    it("applies data-tone=rose to static chip", () => {
-      const { container } = render(<Chip static tone="rose">Offer</Chip>);
-      const span = container.querySelector("[data-tone='rose']");
-      expect(span).not.toBeNull();
-    });
-
-    it("has no accessibility violations with rose tone", async () => {
-      const { container } = render(<Chip tone="rose">Need</Chip>);
-      expect(await axe(container)).toHaveNoViolations();
-    });
-
-    it("has no accessibility violations with rose tone selected", async () => {
-      const { container } = render(
-        <Chip tone="rose" selected>
-          Need
-        </Chip>,
-      );
-      expect(await axe(container)).toHaveNoViolations();
-    });
   });
 });

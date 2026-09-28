@@ -1,93 +1,138 @@
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
-import { Spinner, useToast } from "@analog/ui";
-import {
-  useCurrentMemberId,
-  useEvents,
-  useMember,
-  useMembers,
-  useRsvps,
-  useSetRsvp,
-} from "../../data/hooks";
-import { EventCard, type SwapTarget } from "../../components/EventCard";
-import { ShareButton } from "../../components/ShareButton";
-import { formatMonthYear } from "../../lib/format";
+import { CalendarDays, Check, MapPin, Users } from "lucide-react";
+import { Avatar, AvatarStack, Button, Eyebrow, ListGroup, ListRow } from "@analog/ui";
+import { useCircles, useMe, useMembers, usePosts, useRsvps, useSetRsvp } from "../../data/hooks";
+import type { RsvpStatus } from "../../data/types";
+import { formatEventWhen } from "../../lib/dates";
+import { mapUrl, rsvpStatus, spotsLine } from "../../lib/events";
+import { isVisible } from "../../lib/feed";
+import { firstName } from "../../lib/names";
+import { postTag } from "../../lib/postLabel";
+import { DetailTopBar } from "../../features/posts/DetailTopBar";
+import { PostDiscussion } from "../../features/posts/PostDiscussion";
+import { PeopleSheet } from "../../features/members/PeopleSheet";
+import { RsvpConfirmSheet } from "../../features/posts/RsvpConfirmSheet";
+import { EmptyState } from "../../components/EmptyState";
 import styles from "./EventDetailPage.module.css";
 
 export function EventDetailPage() {
-  const { id = "" } = useParams();
-  const { data: memberId = null } = useCurrentMemberId();
-  const { data: events = [], isLoading: eventsLoading } = useEvents();
-  const event = events.find((e) => e.id === id) ?? null;
-
-  // Resolve attendees from the full member roster so every host/rsvp resolves.
-  const { data: members = [] } = useMembers("analog");
-  const { data: host = null } = useMember(event?.hostId ?? "");
-  const { data: rsvps = [] } = useRsvps(event?.id ?? "");
+  const { id } = useParams();
+  const { me } = useMe();
+  const { data: posts } = usePosts();
+  const { data: members = [] } = useMembers();
+  const { data: circles } = useCircles();
+  const { data: rsvps = [] } = useRsvps();
   const setRsvp = useSetRsvp();
-  const toast = useToast();
+  const [showGoing, setShowGoing] = useState(false);
+  const [pendingRsvp, setPendingRsvp] = useState<RsvpStatus | null>(null);
+  if (!me || !posts || !circles) return null;
 
-  if (!event) {
-    if (eventsLoading) return <Spinner label="Loading event" />;
-    return (
-      <div className={styles.page}>
-        <p className={styles.notFound}>Event not found.</p>
-      </div>
-    );
+  const post = posts.find((p) => p.id === id);
+  if (!post?.event || !isVisible(post, me.id, circles)) {
+    return <EmptyState>Event not found.</EmptyState>;
   }
 
-  const going = rsvps.filter((r) => r.status === "going").length;
-  const attendees = rsvps
-    .map((r) => {
-      const member = members.find((m) => m.id === r.memberId);
-      if (!member) return null;
-      return { member, status: r.status, note: r.note };
-    })
-    .filter((a): a is NonNullable<typeof a> => a !== null);
-
-  const swapTargets: SwapTarget[] = events
-    .filter((e) => e.id !== event.id)
-    .map((e) => {
-      const hostName = members.find((m) => m.id === e.hostId)?.name ?? "TBD";
-      return {
-        id: e.id,
-        label: `${formatMonthYear(e.date)} · hosted by ${hostName}`,
-        hostName,
-      };
-    });
+  const event = post.event;
+  const host = members.find((m) => m.id === post.authorId);
+  const goingPeople = rsvps
+    .filter((r) => r.postId === post.id && r.status === "going")
+    .flatMap((r) => members.find((m) => m.id === r.memberId) ?? []);
+  const myStatus = rsvpStatus(post.id, me.id, rsvps);
+  const spots = spotsLine(event, goingPeople.length);
+  const answer = (status: RsvpStatus) => setRsvp.mutate({ postId: post.id, memberId: me.id, status });
+  // Joining or leaving the going list is confirmed; declining while not going is not.
+  const choose = (status: RsvpStatus) =>
+    status === "going" || myStatus === "going" ? setPendingRsvp(status) : answer(status);
 
   return (
     <div className={styles.page}>
-      <div className={styles.toolbar}>
-        <Link className={styles.back} to="/innercircle/calendar">
-          <ArrowLeft aria-hidden size={16} />
-          Back to The Square
-        </Link>
-        <ShareButton title={event.title} />
+      <DetailTopBar post={post} me={me} />
+
+      {post.imageUrl && <img src={post.imageUrl} alt="" className={styles.image} />}
+
+      <header className={styles.header}>
+        <Eyebrow as="p" tone="gold">
+          {postTag(post, circles, me.id)}
+        </Eyebrow>
+        <h1 className={styles.title}>{post.title}</h1>
+        <p className={styles.host}>
+          <Avatar name={host?.name ?? "Former member"} src={host?.photoUrl} size={24} decorative />
+          <span>
+            Hosted by{" "}
+            {host ? (
+              <Link to={`/members/${host.id}`} className={styles.hostName}>
+                {firstName(host.name)}
+              </Link>
+            ) : (
+              "a former member"
+            )}
+          </span>
+        </p>
+      </header>
+
+      <ListGroup aria-label="Event details">
+        <ListRow icon={<CalendarDays size={18} />} iconStyle="plain" label={formatEventWhen(event)} />
+        {event.address && event.addressVisible && (
+          <ListRow
+            icon={<MapPin size={18} />}
+            iconStyle="plain"
+            label={event.address}
+            trailing={
+              <a href={mapUrl(event.address)} target="_blank" rel="noreferrer" className={styles.mapLink}>
+                Map
+              </a>
+            }
+          />
+        )}
+        {spots && <ListRow icon={<Users size={18} />} iconStyle="plain" label={spots} />}
+      </ListGroup>
+
+      <div className={styles.rsvp}>
+        <Button
+          size="lg"
+          variant={myStatus === "going" ? "primary" : "secondary"}
+          leftIcon={myStatus === "going" ? <Check size={18} /> : undefined}
+          aria-pressed={myStatus === "going"}
+          onClick={() => myStatus !== "going" && choose("going")}
+        >
+          Going
+        </Button>
+        <Button
+          size="lg"
+          variant={myStatus === "declined" ? "primary" : "secondary"}
+          aria-pressed={myStatus === "declined"}
+          onClick={() => myStatus !== "declined" && choose("declined")}
+        >
+          Can't make it
+        </Button>
       </div>
 
-      <EventCard
-        event={event}
-        host={host}
-        currentMemberId={memberId}
-        going={going}
-        total={members.length}
-        attendees={attendees}
-        swapTargets={swapTargets}
-        monthLabel={formatMonthYear(event.date)}
-        onRsvp={(status, note) => {
-          if (!memberId) return;
-          setRsvp.mutate(
-            { eventId: event.id, memberId, status, note },
-            {
-              onSuccess: () => toast.success("RSVP updated."),
-              onError: () => toast.error("Couldn't update your RSVP."),
-            },
-          );
-        }}
-        onProposeSwap={() => toast.success("Hosting-swap proposed.")}
-        defaultOpen
-      />
+      {goingPeople.length > 0 && (
+        <div className={styles.attendees}>
+          <AvatarStack
+            people={goingPeople.map((m) => ({ name: m.name, src: m.photoUrl }))}
+            size={30}
+            max={4}
+          />
+          <span className={styles.goingCount}>{goingPeople.length} going</span>
+          <button type="button" className={styles.seeAll} onClick={() => setShowGoing(true)}>
+            See all
+          </button>
+        </div>
+      )}
+
+      {post.body && (
+        <section className={styles.about} aria-labelledby="event-about">
+          <Eyebrow id="event-about">About</Eyebrow>
+          <p className={styles.body}>{post.body}</p>
+        </section>
+      )}
+
+      <PostDiscussion post={post} me={me} />
+
+      <RsvpConfirmSheet post={post} pending={pendingRsvp} onClose={() => setPendingRsvp(null)} onConfirm={answer} />
+      <PeopleSheet open={showGoing} onClose={() => setShowGoing(false)} title="Going" people={goingPeople} />
     </div>
   );
 }

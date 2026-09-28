@@ -1,52 +1,115 @@
 rules_version = '2';
+
+// Layout and the accounts/{uid} link are described in
+// apps/web/src/data/firebase/firebaseDataSource.ts.
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
-    function uid() { return request.auth.uid; }
+    function account() { return /databases/$(database)/documents/accounts/$(request.auth.uid); }
+    function isMember() { return signedIn() && exists(account()); }
+    /** The caller's member id. Only call after isMember(). */
+    function me() { return get(account()).data.memberId; }
+    function isAdmin() {
+      return isMember() && get(/databases/$(database)/documents/members/$(me())).data.role == 'admin';
+    }
+    function changedKeys() { return request.resource.data.diff(resource.data).affectedKeys(); }
+    function added(field) { return request.resource.data[field].toSet().difference(resource.data[field].toSet()); }
+    function removed(field) { return resource.data[field].toSet().difference(request.resource.data[field].toSet()); }
+    /** A verified Auth user whose email matches this member, before the account link exists. */
+    function canClaim(member) {
+      return signedIn() && request.auth.token.email_verified == true && member.email == request.auth.token.email;
+    }
+    function postOf(postId) { return get(/databases/$(database)/documents/posts/$(postId)).data; }
+
+    match /accounts/{uid} {
+      allow read: if (signedIn() && uid == request.auth.uid) || isAdmin();
+      // First sign-in links the Auth user to the member with the same verified email.
+      allow create: if signedIn() && uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['memberId'])
+        && canClaim(get(/databases/$(database)/documents/members/$(request.resource.data.memberId)).data);
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
 
     match /members/{memberId} {
-      allow read: if signedIn();
-      allow create, update: if signedIn() && memberId == uid();
-      allow delete: if false;
+      allow read: if isMember() || canClaim(resource.data);
+      allow create, delete: if isAdmin();
+      // Members edit their own profile but cannot change their role or sign-in email.
+      allow update: if isAdmin() || (isMember() && memberId == me()
+        && !changedKeys().hasAny(['role', 'email', 'joinedAt']));
     }
-    match /groups/{groupId} {
-      allow read: if signedIn();
-      allow write: if false;
+
+    match /circles/{circleId} {
+      allow read: if isMember();
+      allow create: if isAdmin() || (isMember()
+        && request.resource.data.type != 'inner'
+        && request.resource.data.createdBy == me()
+        && request.resource.data.memberIds == [me()]);
+      // Creators and admins edit; any member joins or leaves a non-inner circle themselves.
+      allow update: if isAdmin()
+        || (isMember() && resource.data.createdBy == me() && !changedKeys().hasAny(['type', 'createdBy', 'createdAt']))
+        || (isMember() && resource.data.type != 'inner' && changedKeys().hasOnly(['memberIds'])
+          && (added('memberIds') == [me()].toSet() || removed('memberIds') == [me()].toSet()));
+      allow delete: if isAdmin();
     }
-    match /memberships/{id} {
-      allow read: if signedIn();
-      allow write: if false;
+
+    match /posts/{postId} {
+      allow read: if isMember();
+      allow create: if isMember() && (
+        (request.resource.data.type in ['event', 'post'] && request.resource.data.authorId == me())
+        // Automated birthday posts: any client may write today's deterministic post.
+        || (request.resource.data.type == 'birthday'
+          && request.resource.data.authorId == request.resource.data.celebrantId
+          && postId.matches('birthday-' + request.resource.data.celebrantId + '-[0-9]{4}')));
+      allow update: if isAdmin()
+        || (isMember() && resource.data.authorId == me() && resource.data.type != 'birthday'
+          && !changedKeys().hasAny(['authorId', 'type', 'createdAt', 'celebrantId']))
+        // Reactions and the comment counter change on anyone's post.
+        || (isMember() && changedKeys().hasOnly(['reactions', 'commentCount']));
+      allow delete: if isAdmin() || (isMember() && resource.data.authorId == me());
     }
-    match /events/{eventId} {
-      allow read: if signedIn();
-      allow create: if signedIn() && request.resource.data.creatorId == uid();
-      allow update, delete: if signedIn() && (resource.data.creatorId == uid() || resource.data.hostId == uid());
+
+    match /comments/{commentId} {
+      allow read: if isMember();
+      allow create: if isMember() && request.resource.data.authorId == me();
+      allow update: if (isMember() && resource.data.authorId == me() && changedKeys().hasOnly(['body', 'updatedAt', 'reactions']))
+        || (isMember() && changedKeys().hasOnly(['reactions']));
+      // Deleting a comment deletes its replies; deleting a post deletes its comments.
+      allow delete: if isAdmin() || (isMember() && (
+        resource.data.authorId == me()
+        || (resource.data.parentId != null
+          && get(/databases/$(database)/documents/comments/$(resource.data.parentId)).data.authorId == me())
+        || postOf(resource.data.postId).authorId == me()));
     }
+
     match /rsvps/{rsvpId} {
-      allow read: if signedIn();
-      allow create, update, delete: if signedIn() && request.resource.data.memberId == uid();
+      allow read: if isMember();
+      allow create, update: if isMember() && request.resource.data.memberId == me()
+        && rsvpId == request.resource.data.postId + '_' + me();
+      allow delete: if isAdmin() || (isMember() && (
+        resource.data.memberId == me() || postOf(resource.data.postId).authorId == me()));
     }
-    match /loopPosts/{postId} {
-      allow read: if signedIn();
-      allow create: if signedIn() && request.resource.data.authorId == uid();
-      // Any member can add a "note"/helped-by (addLoopNote); author can archive.
-      allow update: if signedIn();
-      allow delete: if signedIn() && resource.data.authorId == uid();
+
+    match /prefs/{memberId} {
+      // Private: settings and favourites are the member's alone.
+      allow read: if isMember() && memberId == me();
+      allow create, update: if isMember() && memberId == me() && request.resource.data.memberId == me();
+      allow delete: if isAdmin();
     }
-    match /wallPosts/{postId} {
-      allow read: if signedIn();
-      allow create: if signedIn() && request.resource.data.authorId == uid();
-      allow delete: if signedIn() && (resource.data.authorId == uid() || resource.data.ownerId == uid());
-      // Any member can like/unlike (toggleWallPostLike updates likedBy)
-      // or append a reply (addWallPostReply updates replies) — both use update.
-      allow update: if signedIn();
+
+    match /feedback/{feedbackId} {
+      allow read, delete: if isAdmin();
+      allow create: if isMember() && request.resource.data.authorId == me()
+        && request.resource.data.keys().hasOnly(['authorId', 'body', 'createdAt'])
+        && request.resource.data.body is string && request.resource.data.body.size() > 0;
+      allow update: if false;
     }
-    match /activity/{id} {
-      allow read: if signedIn();
-      // Appended on actions (wall/event/loop) + seeded via Admin SDK.
-      allow create: if signedIn();
-      // markActivityRead toggles readBy for the current user.
-      allow update: if signedIn();
+
+    match /activity/{activityId} {
+      allow read: if isMember();
+      allow create: if isAdmin() || (isMember() && request.resource.data.actorId == me());
+      // Members only mark activity read for themselves.
+      allow update: if isMember() && changedKeys().hasOnly(['readBy']) && added('readBy').hasOnly([me()]);
       allow delete: if false;
     }
   }

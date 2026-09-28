@@ -37,6 +37,17 @@ describe("SegmentedControl", () => {
     expect(screen.getByText("4")).toBeInTheDocument();
   });
 
+  it("defaults to tint variant and switches to solid", () => {
+    const { rerender } = render(
+      <SegmentedControl options={[{ value: "a", label: "A" }]} value="a" onChange={() => {}} ariaLabel="When" />,
+    );
+    expect(screen.getByRole("group")).toHaveAttribute("data-variant", "tint");
+    rerender(
+      <SegmentedControl options={[{ value: "a", label: "A" }]} value="a" onChange={() => {}} ariaLabel="When" variant="solid" />,
+    );
+    expect(screen.getByRole("group")).toHaveAttribute("data-variant", "solid");
+  });
+
   it("renders as a group with ariaLabel", () => {
     render(
       <SegmentedControl

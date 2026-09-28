@@ -1,0 +1,199 @@
+.card {
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3-5) var(--space-3-5) var(--space-3);
+}
+
+.titleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2-5);
+}
+
+.title {
+  color: var(--color-text);
+  font-family: var(--text-body-family);
+  font-size: var(--font-16);
+  font-weight: var(--weight-bold);
+  flex: 1;
+  min-width: 0;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.titleLink {
+  color: inherit;
+}
+
+/* Tags give way to the title: they shrink and truncate past 60% of the row. */
+.tags {
+  display: flex;
+  min-width: 0;
+  max-width: 60%;
+  align-items: center;
+  gap: var(--space-1-5);
+}
+
+.pin {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-small-button);
+  background: var(--color-accent-tint);
+  color: var(--color-accent-text);
+}
+
+.byline {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  color: var(--color-text-3);
+  font-size: var(--font-13);
+}
+
+.split {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-3);
+}
+
+.text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.when {
+  color: var(--color-accent-text);
+  font-size: var(--font-13);
+  font-weight: var(--weight-medium);
+}
+
+.description {
+  color: var(--color-text-2);
+  font-size: var(--font-14);
+  line-height: 1.45;
+}
+
+.birthday {
+  flex: 1;
+  color: var(--color-accent-text);
+  font-family: var(--text-display-family);
+  font-size: var(--font-22);
+  font-style: italic;
+  font-weight: var(--weight-bold);
+}
+
+.thumbLink {
+  flex-shrink: 0;
+}
+
+.thumb {
+  flex-shrink: 0;
+  width: 84px;
+  height: 72px;
+  border-radius: var(--radius-input);
+  object-fit: cover;
+}
+
+.rsvp {
+  flex-shrink: 0;
+  height: 34px;
+  padding: 0 var(--space-3-5);
+  border: 1px solid var(--color-accent-edge);
+  border-radius: var(--radius-control);
+  background: var(--color-accent-tint);
+  color: var(--color-accent-bright);
+  font-size: var(--font-13);
+  font-weight: var(--weight-bold);
+  cursor: pointer;
+}
+
+.rsvpRow {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-shrink: 0;
+  height: var(--size-footer-pill);
+  padding: 0 var(--space-2-5);
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-text-2);
+  font-size: var(--font-12);
+  font-weight: var(--weight-medium);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.emoji {
+  letter-spacing: 1px;
+}
+
+.pill[data-open] {
+  border-color: var(--color-accent-edge);
+  background: var(--color-accent-tint);
+  color: var(--color-accent-bright);
+}
+
+.going {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text-3);
+  font: inherit;
+  font-size: var(--font-12);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.going:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-control);
+}
+
+.spacer {
+  flex: 1;
+}
+
+.picker {
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+}
+
+.comments {
+  padding: var(--space-3) var(--space-3-5);
+  border-top: 1px solid var(--color-border);
+}

@@ -1,54 +1,54 @@
 .group {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  display: flex;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--radius-input);
+  background: var(--color-segmented);
+}
+
+.group[data-surface="bg"] {
+  background: var(--color-bg);
 }
 
 .option {
   display: inline-flex;
+  flex: 1;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-accent-line-18);
-  border-radius: var(--radius-pill);
+  justify-content: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 var(--space-2);
+  border: 0;
+  border-radius: var(--radius-segment);
   background: transparent;
-  color: var(--color-text-muted);
+  color: var(--color-muted);
   font-family: var(--text-body-family);
-  font-size: 0.88rem;
-  font-weight: var(--weight-medium);
+  font-size: var(--font-13);
+  font-weight: var(--weight-semi);
+  white-space: nowrap;
   cursor: pointer;
   transition:
     background-color var(--motion-fast) var(--motion-ease),
-    border-color var(--motion-fast) var(--motion-ease),
     color var(--motion-fast) var(--motion-ease);
 }
 
-.option:hover:not(:disabled) {
-  border-color: var(--color-accent-line-42);
-  color: var(--color-text);
+.option[data-selected] {
+  background: var(--color-accent-tint-strong);
+  color: var(--color-accent-bright);
 }
 
-.option[data-selected] {
-  border: 1px solid var(--color-accent-line-42);
-  background: var(--color-accent-glow);
-  color: var(--color-accent);
+.group[data-variant="solid"] .option[data-selected] {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
   font-weight: var(--weight-bold);
 }
 
-.count {
+.icon {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 var(--space-1);
-  border-radius: var(--radius-full);
-  background: var(--color-hairline-soft);
-  color: var(--color-text-muted);
-  font-size: var(--font-xs);
 }
 
-.option[data-selected] .count {
-  background: var(--color-accent-soft);
-  color: var(--color-accent);
+.count {
+  opacity: 0.75;
+  font-weight: var(--weight-medium);
 }

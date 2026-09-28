@@ -1,0 +1,28 @@
+.tag {
+  display: inline-block;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 4px 8px;
+  border: 1px solid var(--color-tag-edge);
+  border-radius: var(--radius-control);
+  color: var(--color-accent-text);
+  font-family: var(--text-body-family);
+  font-size: var(--text-tag-size);
+  font-weight: var(--weight-semi);
+  letter-spacing: var(--text-tag-tracking);
+  line-height: 1.2;
+  text-transform: uppercase;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tag[data-tone="green"] {
+  border-color: var(--color-success-edge);
+  color: var(--color-success);
+}
+
+.tag[data-tone="pink"] {
+  border-color: var(--color-birthday-edge);
+  color: var(--color-birthday);
+}

@@ -6,12 +6,16 @@ import {
   doc,
   getDoc,
   getDocs,
+  increment,
   query,
+  runTransaction,
   setDoc,
   updateDoc,
   where,
   writeBatch,
+  type DocumentReference,
   type Firestore,
+  type QueryDocumentSnapshot,
 } from "firebase/firestore";
 import {
   isSignInWithEmailLink,
@@ -20,298 +24,353 @@ import {
   signInWithEmailLink,
   signOut as fbSignOut,
   type Auth,
+  type User,
 } from "firebase/auth";
-import { auth, db } from "../../lib/firebase";
+import { getDownloadURL, ref as storageRef, uploadBytes } from "firebase/storage";
+import { auth, db, storage } from "../../lib/firebase";
+import { addMemberToCircle } from "../../lib/circles";
+import { birthdayPostsDue } from "../../lib/birthday";
+import { defaultPrefs } from "../../lib/prefs";
+import { toggleReaction } from "../../lib/reactions";
 import type { DataSource } from "../dataSource";
-import type {
-  Activity,
-  EventItem,
-  Group,
-  LoopPost,
-  Member,
-  Rsvp,
-  RsvpStatus,
-  Scope,
-  WallPost,
-  WallReply,
-} from "../types";
+import { assertPublishable, buildPost, byNewest, feedbackBody, commentActivity, isSelfAddressed, postRoute, replyParentId, type ActivityInput } from "../backendRules";
+import { DEV_PASSWORD, devEmail } from "../devAccounts";
+import type { Activity, Circle, Comment, Feedback, Member, Post, Prefs, Reactions, Rsvp } from "../types";
 
-/** Deterministic credentials for the seeded demo persona (dev-bypass sign-in only). */
-const DEV_PASSWORD = "analog-demo-pw";
-const DEMO_EMAIL = "blumaa@gmail.com"; // Aaron — seeded with uid "aaron"
+/**
+ * Firestore layout (one top-level collection per entity):
+ *   members/{memberId}          Member without id
+ *   accounts/{authUid}          { memberId } — links a Firebase Auth user to a member
+ *   circles/{circleId}          Circle without id
+ *   posts/{postId}              Post without id
+ *   comments/{commentId}        Comment without id
+ *   rsvps/{postId}_{memberId}   Rsvp
+ *   prefs/{memberId}            Prefs
+ *   activity/{activityId}       Activity without id
+ *   feedback/{feedbackId}       Feedback without id
+ *
+ * Members are created by admins before they ever sign in, so a member id is
+ * not an Auth uid. The first sign-in claims the member whose email matches the
+ * Auth user and records that in accounts/{uid}; security rules resolve the
+ * caller's member id through that document.
+ */
+
 const EMAIL_LINK_KEY = "analog:emailForSignIn";
+/** Firestore caps a batched write at 500 operations. */
+const BATCH_LIMIT = 500;
 
-const all = async <T>(d: Firestore, name: string): Promise<T[]> => {
-  const snap = await getDocs(collection(d, name));
-  return snap.docs.map((s) => ({ id: s.id, ...s.data() }) as T);
-};
+const now = () => new Date().toISOString();
 
-/** Append a fresh, unread activity record. */
-const addActivity = (
-  d: Firestore,
-  input: Omit<Activity, "id" | "createdAt" | "readBy">,
-): Promise<void> => {
-  const ref = doc(collection(d, "activity"));
-  return setDoc(ref, { ...input, createdAt: new Date().toISOString(), readBy: [] });
-};
+function fromDoc<T extends { id: string }>(snap: QueryDocumentSnapshot): T {
+  return { id: snap.id, ...snap.data() } as T;
+}
+
+/** Drops the id so it is not stored twice (it is the document id). */
+function withoutId<T extends { id: string }>(value: T): Omit<T, "id"> {
+  const { id: _id, ...rest } = value;
+  return rest;
+}
+
+const rsvpId = (postId: string, memberId: string) => `${postId}_${memberId}`;
 
 export function createFirebaseDataSource(): DataSource {
   const a: Auth = auth();
   const d: Firestore = db();
 
-  const currentUid = () => a.currentUser?.uid ?? null;
+  const list = async <T extends { id: string }>(name: string): Promise<T[]> =>
+    (await getDocs(collection(d, name))).docs.map((s) => fromDoc<T>(s));
+
+  const listWhere = async <T extends { id: string }>(name: string, field: string, value: unknown): Promise<T[]> =>
+    (await getDocs(query(collection(d, name), where(field, "==", value)))).docs.map((s) => fromDoc<T>(s));
+
+  const getOne = async <T extends { id: string }>(name: string, id: string): Promise<T> => {
+    const s = await getDoc(doc(d, name, id));
+    if (!s.exists()) throw new Error(`${name}/${id} not found`);
+    return { id: s.id, ...s.data() } as T;
+  };
+
+  /** Deletes the documents in chunks that fit one batched write each. */
+  const deleteAll = async (refs: DocumentReference[]): Promise<void> => {
+    for (let i = 0; i < refs.length; i += BATCH_LIMIT) {
+      const batch = writeBatch(d);
+      for (const r of refs.slice(i, i + BATCH_LIMIT)) batch.delete(r);
+      await batch.commit();
+    }
+  };
+
+  const refsWhere = async (name: string, field: string, value: unknown) =>
+    (await getDocs(query(collection(d, name), where(field, "==", value)))).docs.map((s) => s.ref);
+
+  const log = async (input: ActivityInput): Promise<void> => {
+    if (isSelfAddressed(input)) return;
+    await setDoc(doc(collection(d, "activity")), { ...input, createdAt: now(), readBy: [] });
+  };
+
+  /** Toggles one reaction inside a transaction so concurrent taps do not overwrite each other. */
+  const toggleReactionOn = (target: DocumentReference, memberId: string, emoji: string) =>
+    runTransaction(d, async (t) => {
+      const s = await t.get(target);
+      if (!s.exists()) throw new Error(`${target.path} not found`);
+      const reactions = (s.data().reactions as Reactions | undefined) ?? {};
+      t.update(target, { reactions: toggleReaction(reactions, emoji, memberId) });
+    });
+
+  /** Finds the member for an Auth user, claiming it by email on first sign-in. */
+  const memberIdFor = async (user: User): Promise<string | null> => {
+    const account = await getDoc(doc(d, "accounts", user.uid));
+    if (account.exists()) return account.data().memberId as string;
+    const email = user.email?.toLowerCase();
+    const match = email ? (await listWhere<Member>("members", "email", email))[0] : undefined;
+    if (!match) return null;
+    await setDoc(doc(d, "accounts", user.uid), { memberId: match.id });
+    return match.id;
+  };
+
+  const completeEmailLink = async (): Promise<void> => {
+    if (!isSignInWithEmailLink(a, window.location.href)) return;
+    // The email is saved when the link is requested; a link opened on another
+    // device has to ask for it again.
+    const email =
+      window.localStorage.getItem(EMAIL_LINK_KEY) ||
+      window.prompt("Confirm the email you used to request the sign-in link") ||
+      "";
+    if (!email) return;
+    await signInWithEmailLink(a, email, window.location.href);
+    window.localStorage.removeItem(EMAIL_LINK_KEY);
+    // Strip the one-time link parameters from the URL.
+    window.history.replaceState({}, "", window.location.pathname);
+  };
 
   return {
+    // Auth
     async getCurrentMemberId() {
-      // Firebase restores a persisted session asynchronously after page load —
-      // wait for that before reading currentUser, or a reload bounces to login.
+      // Firebase restores a persisted session after page load; wait for it so
+      // a reload does not bounce to the login page.
       await a.authStateReady();
-      // Complete a magic-link sign-in if we landed on the callback URL.
-      if (isSignInWithEmailLink(a, window.location.href)) {
-        // Prefer the email saved when the link was requested; fall back to a
-        // prompt when the link is opened on a different device/browser.
-        const email =
-          window.localStorage.getItem(EMAIL_LINK_KEY) ||
-          window.prompt("Confirm the email you used to request the sign-in link") ||
-          "";
-        if (email) {
-          await signInWithEmailLink(a, email, window.location.href);
-          window.localStorage.removeItem(EMAIL_LINK_KEY);
-          // Strip the one-time link params from the URL.
-          window.history.replaceState({}, "", window.location.pathname);
-        }
-      }
-      return currentUid();
+      await completeEmailLink();
+      const user = a.currentUser;
+      if (!user) return null;
+      const memberId = await memberIdFor(user);
+      // A valid email that belongs to no member is not a member session.
+      if (!memberId) await fbSignOut(a);
+      return memberId;
     },
     async signInWithEmail(email) {
-      window.localStorage.setItem(EMAIL_LINK_KEY, email);
-      await sendSignInLinkToEmail(a, email, {
-        url: `${window.location.origin}/innercircle/dashboard`,
-        handleCodeInApp: true,
-      });
+      const normalized = email.trim().toLowerCase();
+      window.localStorage.setItem(EMAIL_LINK_KEY, normalized);
+      await sendSignInLinkToEmail(a, normalized, { url: window.location.origin, handleCodeInApp: true });
     },
-    async devSignInAs(_memberId) {
-      // Dev bypass: sign in as the seeded demo persona (rules block reading
-      // member docs pre-auth, so we use a fixed demo credential).
-      await signInWithEmailAndPassword(a, DEMO_EMAIL, DEV_PASSWORD);
+    async devSignInAs(memberId) {
+      // Seeded Auth users share one password; see scripts/seed.ts.
+      await signInWithEmailAndPassword(a, devEmail(memberId), DEV_PASSWORD);
     },
     async signOut() {
       await fbSignOut(a);
     },
 
-    async listMembers(scope?: Scope, groupId?: string) {
-      if (scope === "inner" && groupId) {
-        const ms = await getDocs(
-          query(collection(d, "memberships"), where("groupId", "==", groupId)),
-        );
-        const ids = new Set(ms.docs.map((s) => s.data().memberId as string));
-        const members = await all<Member>(d, "members");
-        return members.filter((m) => ids.has(m.id));
-      }
-      return all<Member>(d, "members");
-    },
+    // Members
+    listMembers: () => list<Member>("members"),
     async getMember(id) {
       const s = await getDoc(doc(d, "members", id));
       return s.exists() ? ({ id: s.id, ...s.data() } as Member) : null;
     },
-    async updateMember(id, patch) {
-      await updateDoc(doc(d, "members", id), patch);
-      const s = await getDoc(doc(d, "members", id));
-      return { id: s.id, ...s.data() } as Member;
-    },
-    listGroups: () => all<Group>(d, "groups"),
-    async getInnerGroupForMember(memberId) {
-      const ms = await getDocs(
-        query(collection(d, "memberships"), where("memberId", "==", memberId)),
-      );
-      const first = ms.docs[0];
-      if (!first) return null;
-      const g = await getDoc(doc(d, "groups", first.data().groupId as string));
-      return g.exists() ? ({ id: g.id, ...g.data() } as Group) : null;
-    },
-
-    async listEvents(groupId?: string) {
-      const events = await all<EventItem>(d, "events");
-      const list = groupId ? events.filter((e) => e.groupId === groupId) : events;
-      return list.sort((x, y) => x.date.localeCompare(y.date));
-    },
-    async createEvent(input) {
-      const ref = doc(collection(d, "events"));
-      const ev = { ...input, id: ref.id };
-      await setDoc(ref, input);
-      await addActivity(d, {
-        type: "event_created",
-        scope: input.scope,
-        actorId: input.creatorId,
-        subjectId: null,
-        targetRoute: `/innercircle/event/${ev.id}`,
-      });
-      return ev;
-    },
-    async updateEvent(id, patch) {
-      await updateDoc(doc(d, "events", id), patch);
-      const s = await getDoc(doc(d, "events", id));
-      return { id: s.id, ...s.data() } as EventItem;
-    },
-    async deleteEvent(id) {
-      await deleteDoc(doc(d, "events", id));
-    },
-
-    async listRsvps(eventId) {
-      const snap = await getDocs(
-        query(collection(d, "rsvps"), where("eventId", "==", eventId)),
-      );
-      return snap.docs.map((s) => s.data() as Rsvp);
-    },
-    async setRsvp(eventId, memberId, status: RsvpStatus, note?: string | null) {
-      // Going back to "going" clears any stale decline/maybe reason.
-      const rsvp: Rsvp = {
-        eventId,
-        memberId,
-        status,
-        note: status === "going" ? null : (note ?? null),
-      };
-      await setDoc(doc(d, "rsvps", `${eventId}_${memberId}`), rsvp);
-      return rsvp;
-    },
-
-    async listLoopPosts() {
-      const posts = await all<LoopPost>(d, "loopPosts");
-      return posts.sort((x, y) => y.createdAt.localeCompare(x.createdAt));
-    },
-    async createLoopPost(input) {
-      const ref = doc(collection(d, "loopPosts"));
-      const stored = { ...input, createdAt: new Date().toISOString(), notes: input.notes ?? [], helpedBy: input.helpedBy ?? [] };
-      await setDoc(ref, stored);
-      await addActivity(d, {
-        type: "loop_post",
-        scope: input.scope,
-        actorId: input.authorId,
-        subjectId: null,
-        targetRoute: `/innercircle/the-loop`,
-      });
-      return { ...stored, id: ref.id };
-    },
-    async archiveLoopPost(id) {
-      await updateDoc(doc(d, "loopPosts", id), { archived: true });
-    },
-    async addLoopNote(postId, authorId, body) {
-      const ref = doc(d, "loopPosts", postId);
-      await updateDoc(ref, {
-        notes: arrayUnion({ authorId, body }),
-        helpedBy: arrayUnion(authorId),
-      });
-      const s = await getDoc(ref);
-      return { id: s.id, ...s.data() } as LoopPost;
-    },
-
-    async listWallPosts(ownerId) {
-      const snap = await getDocs(
-        query(collection(d, "wallPosts"), where("ownerId", "==", ownerId)),
-      );
-      return snap.docs
-        .map((s) => {
-          const data = s.data();
-          // Back-compat: documents written before replies/mentions existed won't have these fields.
-          return {
-            id: s.id,
-            ...data,
-            replies: data["replies"] ?? [],
-            mentions: data["mentions"] ?? [],
-          } as WallPost;
-        })
-        .sort((x, y) => y.createdAt.localeCompare(x.createdAt));
-    },
-    async createWallPost(input) {
-      const ref = doc(collection(d, "wallPosts"));
-      const now = new Date().toISOString();
-      const post: WallPost = {
+    async createMember(input) {
+      const ref = doc(collection(d, "members"));
+      const member: Member = {
         ...input,
+        email: input.email.trim().toLowerCase(),
         id: ref.id,
-        createdAt: now,
-        likedBy: input.likedBy ?? [],
-        replies: input.replies ?? [],
-        mentions: input.mentions ?? [],
+        joinedAt: now(),
+        birthdayPost: true,
       };
-      await setDoc(ref, { ...input, createdAt: now, likedBy: post.likedBy, mentions: post.mentions });
-      await addActivity(d, {
-        type: "wall_post",
-        scope: input.scope,
-        actorId: input.authorId,
-        subjectId: input.ownerId,
-        targetRoute: `/innercircle/members/${input.ownerId}`,
+      await setDoc(ref, withoutId(member));
+      await log({ type: "member_joined", actorId: member.id, subjectId: null, targetRoute: `/members/${member.id}` });
+      return member;
+    },
+    async updateMember(id, patch) {
+      const { id: _id, ...rest } = patch;
+      await updateDoc(doc(d, "members", id), rest);
+      return getOne<Member>("members", id);
+    },
+    async deleteMember(id) {
+      const circles = await getDocs(query(collection(d, "circles"), where("memberIds", "array-contains", id)));
+      const batch = writeBatch(d);
+      for (const c of circles.docs) batch.update(c.ref, { memberIds: arrayRemove(id) });
+      batch.delete(doc(d, "members", id));
+      batch.delete(doc(d, "prefs", id));
+      await batch.commit();
+      await deleteAll([...(await refsWhere("rsvps", "memberId", id)), ...(await refsWhere("accounts", "memberId", id))]);
+    },
+
+    // Circles
+    listCircles: () => list<Circle>("circles"),
+    async createCircle(input) {
+      const ref = doc(collection(d, "circles"));
+      const circle: Circle = { ...input, id: ref.id, createdAt: now(), memberIds: [input.createdBy] };
+      await setDoc(ref, withoutId(circle));
+      return circle;
+    },
+    async updateCircle(id, patch) {
+      await updateDoc(doc(d, "circles", id), patch);
+      return getOne<Circle>("circles", id);
+    },
+    async deleteCircle(id) {
+      await deleteDoc(doc(d, "circles", id));
+    },
+    async addCircleMember(circleId, memberId) {
+      const before = await list<Circle>("circles");
+      const after = addMemberToCircle(before, circleId, memberId);
+      const batch = writeBatch(d);
+      after.forEach((c, i) => {
+        if (c !== before[i]) batch.update(doc(d, "circles", c.id), { memberIds: c.memberIds });
       });
-      // One "mention" activity per tagged member, skipping self-tags.
-      for (const mentionedId of post.mentions) {
-        if (mentionedId === input.authorId) continue;
-        await addActivity(d, {
-          type: "mention",
-          scope: input.scope,
-          actorId: input.authorId,
-          subjectId: mentionedId,
-          targetRoute: `/innercircle/members/${input.ownerId}`,
-        });
-      }
+      await batch.commit();
+    },
+    async removeCircleMember(circleId, memberId) {
+      await updateDoc(doc(d, "circles", circleId), { memberIds: arrayRemove(memberId) });
+    },
+
+    // Posts
+    async listPosts() {
+      const [posts, members] = await Promise.all([list<Post>("posts"), list<Member>("members")]);
+      const due = birthdayPostsDue(members, new Set(posts.map((p) => p.id)), new Date());
+      // Deterministic ids make this idempotent when several clients race.
+      await Promise.all(due.map((p) => setDoc(doc(d, "posts", p.id), withoutId(p))));
+      return [...posts, ...due];
+    },
+    async createPost(input) {
+      assertPublishable(await list<Circle>("circles"), input.authorId, input.publishedTo);
+      const ref = doc(collection(d, "posts"));
+      const post = buildPost(input, ref.id, now());
+      await setDoc(ref, withoutId(post));
+      await log({ type: "post_created", actorId: post.authorId, subjectId: null, targetRoute: postRoute(post) });
       return post;
     },
-    async deleteWallPost(id) {
-      await deleteDoc(doc(d, "wallPosts", id));
+    async updatePost(id, patch) {
+      if (patch.publishedTo) {
+        const [post, circles] = await Promise.all([getOne<Post>("posts", id), list<Circle>("circles")]);
+        assertPublishable(circles, post.authorId, patch.publishedTo, post.publishedTo);
+      }
+      await updateDoc(doc(d, "posts", id), { ...patch, updatedAt: now() });
+      return getOne<Post>("posts", id);
     },
-    async toggleWallPostLike(postId, memberId) {
-      const ref = doc(d, "wallPosts", postId);
-      const current = await getDoc(ref);
-      const likedBy = (current.data()?.likedBy as string[] | undefined) ?? [];
-      await updateDoc(ref, {
-        likedBy: likedBy.includes(memberId) ? arrayRemove(memberId) : arrayUnion(memberId),
-      });
-      const s = await getDoc(ref);
-      const data = s.data();
-      return { id: s.id, ...data, replies: data?.["replies"] ?? [], mentions: data?.["mentions"] ?? [] } as WallPost;
+    async deletePost(id) {
+      await deleteAll([
+        ...(await refsWhere("comments", "postId", id)),
+        ...(await refsWhere("rsvps", "postId", id)),
+        doc(d, "posts", id),
+      ]);
     },
-    async addWallPostReply(postId, authorId, body, mentions = []) {
-      const ref = doc(d, "wallPosts", postId);
-      // arrayUnion appends an object element; Firestore preserves insertion order.
-      const reply: WallReply = {
-        id: `reply-${Date.now().toString(36)}`,
+    async setPostPinned(id, pinned) {
+      await updateDoc(doc(d, "posts", id), { pinned });
+      return getOne<Post>("posts", id);
+    },
+    togglePostReaction: (postId, memberId, emoji) => toggleReactionOn(doc(d, "posts", postId), memberId, emoji),
+
+    // Comments
+    listAllComments: () => list<Comment>("comments"),
+    async listComments(postId) {
+      const comments = await listWhere<Comment>("comments", "postId", postId);
+      return comments.toSorted((x, y) => x.createdAt.localeCompare(y.createdAt));
+    },
+    async addComment(postId, authorId, body, parentId) {
+      const post = await getOne<Post>("posts", postId);
+      const parent = parentId ? await getOne<Comment>("comments", parentId) : null;
+      const ref = doc(collection(d, "comments"));
+      const comment: Comment = {
+        id: ref.id,
+        postId,
+        parentId: replyParentId(parent),
         authorId,
         body,
-        createdAt: new Date().toISOString(),
-        mentions,
+        createdAt: now(),
+        updatedAt: null,
+        reactions: {},
       };
-      await updateDoc(ref, { replies: arrayUnion(reply) });
-      // Fetch the post's scope to construct the correct targetRoute for mention activities.
-      const s = await getDoc(ref);
-      const data = s.data();
-      const postScope = (data?.["scope"] as WallPost["scope"] | undefined) ?? "analog";
-      const postOwnerId = (data?.["ownerId"] as string | undefined) ?? "";
-      // One "mention" activity per tagged member, skipping self-tags.
-      for (const mentionedId of mentions) {
-        if (mentionedId === authorId) continue;
-        await addActivity(d, {
-          type: "mention",
-          scope: postScope,
-          actorId: authorId,
-          subjectId: mentionedId,
-          targetRoute: `/innercircle/members/${postOwnerId}`,
-        });
-      }
-      return { id: s.id, ...data, replies: data?.["replies"] ?? [], mentions: data?.["mentions"] ?? [] } as WallPost;
+      const batch = writeBatch(d);
+      batch.set(ref, withoutId(comment));
+      batch.update(doc(d, "posts", postId), { commentCount: increment(1) });
+      await batch.commit();
+      await log(commentActivity(post, parent, authorId));
+      return comment;
+    },
+    async updateComment(id, body) {
+      await updateDoc(doc(d, "comments", id), { body, updatedAt: now() });
+      return getOne<Comment>("comments", id);
+    },
+    async deleteComment(id) {
+      const comment = await getOne<Comment>("comments", id);
+      const replies = await refsWhere("comments", "parentId", id);
+      const batch = writeBatch(d);
+      batch.delete(doc(d, "comments", id));
+      for (const r of replies) batch.delete(r);
+      batch.update(doc(d, "posts", comment.postId), { commentCount: increment(-(replies.length + 1)) });
+      await batch.commit();
+    },
+    toggleCommentReaction: (commentId, memberId, emoji) =>
+      toggleReactionOn(doc(d, "comments", commentId), memberId, emoji),
+
+    // RSVPs
+    async listRsvps() {
+      return (await getDocs(collection(d, "rsvps"))).docs.map((s) => s.data() as Rsvp);
+    },
+    async setRsvp(postId, memberId, status) {
+      const rsvp: Rsvp = { postId, memberId, status, updatedAt: now() };
+      await setDoc(doc(d, "rsvps", rsvpId(postId, memberId)), rsvp);
     },
 
+    // Prefs
+    async getPrefs(memberId) {
+      const s = await getDoc(doc(d, "prefs", memberId));
+      return s.exists() ? ({ ...defaultPrefs(memberId), ...s.data(), memberId } as Prefs) : defaultPrefs(memberId);
+    },
+    async updatePrefs(memberId, patch) {
+      const s = await getDoc(doc(d, "prefs", memberId));
+      const current = s.exists() ? ({ ...defaultPrefs(memberId), ...s.data() } as Prefs) : defaultPrefs(memberId);
+      const next: Prefs = { ...current, ...patch, memberId };
+      await setDoc(doc(d, "prefs", memberId), next);
+      return next;
+    },
+
+    // Notifications
     async listActivity() {
-      const items = await all<Activity>(d, "activity");
-      return items.sort((x, y) => y.createdAt.localeCompare(x.createdAt));
+      return byNewest(await list<Activity>("activity"));
     },
     async markActivityRead(id, memberId) {
       await updateDoc(doc(d, "activity", id), { readBy: arrayUnion(memberId) });
     },
     async markAllActivityRead(memberId) {
-      const snap = await getDocs(collection(d, "activity"));
-      const batch = writeBatch(d);
-      for (const s of snap.docs) {
-        batch.update(s.ref, { readBy: arrayUnion(memberId) });
+      const unread = (await getDocs(collection(d, "activity"))).docs.filter(
+        (s) => !((s.data().readBy as string[] | undefined) ?? []).includes(memberId),
+      );
+      for (let i = 0; i < unread.length; i += BATCH_LIMIT) {
+        const batch = writeBatch(d);
+        for (const s of unread.slice(i, i + BATCH_LIMIT)) batch.update(s.ref, { readBy: arrayUnion(memberId) });
+        await batch.commit();
       }
-      await batch.commit();
+    },
+
+    // Feedback
+    async sendFeedback(authorId, body) {
+      const ref = doc(collection(d, "feedback"));
+      const feedback: Feedback = { id: ref.id, authorId, body: feedbackBody(body), createdAt: now() };
+      await setDoc(ref, withoutId(feedback));
+      return feedback;
+    },
+    async listFeedback() {
+      return byNewest(await list<Feedback>("feedback"));
+    },
+    async deleteFeedback(id) {
+      await deleteDoc(doc(d, "feedback", id));
+    },
+
+    // Images
+    async uploadImage(file) {
+      const uid = a.currentUser?.uid;
+      if (!uid) throw new Error("Sign in to upload images");
+      const target = storageRef(storage(), `images/${uid}/${crypto.randomUUID()}-${file.name}`);
+      await uploadBytes(target, file, { contentType: file.type });
+      return getDownloadURL(target);
     },
   };
 }

@@ -22,8 +22,7 @@
  * sets) raises specificity above Card's own `.card` rule regardless of CSS order.
  */
 .card[data-variant] {
-  background: var(--color-surface-raised);
-  box-shadow: var(--elevation-raised);
+  background: var(--color-sheet);
 }
 
 .header {
@@ -36,9 +35,9 @@
 .title {
   margin: 0;
   font-family: var(--text-display-family);
-  font-size: var(--font-lg);
+  font-size: var(--font-18);
   font-weight: var(--weight-regular);
-  color: var(--color-text-strong);
+  color: var(--color-text);
 }
 
 .footer {

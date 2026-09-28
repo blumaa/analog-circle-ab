@@ -16,12 +16,12 @@
   /* Right padding leaves room for the chevron. */
   padding: var(--space-3) calc(var(--space-3) + 16px + var(--space-2)) var(--space-3)
     var(--space-4);
-  background: var(--color-input-bg);
-  border: 1px solid var(--color-accent-border);
+  background: var(--color-bg-deep);
+  border: 1px solid var(--color-accent-edge);
   border-radius: var(--radius-input);
   color: var(--color-text);
   font-family: var(--text-body-family);
-  font-size: var(--text-input-size);
+  font-size: var(--font-15);
   outline: none;
   cursor: pointer;
   /* Strip the native chevron so the lucide one is the single source of truth. */
@@ -32,7 +32,7 @@
 }
 
 .select[data-placeholder] {
-  color: var(--color-text-faint);
+  color: var(--color-text-3);
 }
 
 .select:focus-visible {
@@ -47,17 +47,17 @@
 .chevron {
   position: absolute;
   right: var(--space-3);
-  color: var(--color-text-muted);
+  color: var(--color-muted);
   pointer-events: none;
 }
 
 .labelText {
   display: inline-block;
   font-family: var(--text-body-family);
-  font-size: var(--font-xs);
+  font-size: var(--font-12);
   font-weight: var(--weight-bold);
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--color-text-muted);
+  color: var(--color-muted);
   margin-bottom: var(--space-1);
 }

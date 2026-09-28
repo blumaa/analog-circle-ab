@@ -1,120 +1,142 @@
-/** Visibility tier shared by all user-generated content. */
-export type Scope = "analog" | "inner";
-
-export type GroupType = "analog" | "inner";
+export type Role = "member" | "admin";
 
 export interface Member {
   id: string;
   name: string;
   email: string;
   photoUrl: string | null;
-  from: string | null;
   bio: string | null;
-  interests: string[];
-  dietary: string | null;
+  phone: string | null;
   whatsappUrl: string | null;
-  homeAddress: string | null;
-  location: { lat: number; lng: number } | null;
-  /** True for the signed-in demo persona (real data); others are fictional. */
-  isReal?: boolean;
+  /** Profile URL (Instagram, LinkedIn, ...). */
+  social: string | null;
+  /** ISO date (YYYY-MM-DD). Year may be a placeholder; month + day drive the birthday post. */
+  birthday: string | null;
+  role: Role;
+  /** ISO timestamp. */
+  joinedAt: string;
+  /** Opt-in to the automated birthday feed post. Public so every client can decide which birthday posts to create. */
+  birthdayPost: boolean;
 }
 
-export interface Group {
+export type CircleType = "inner" | "interest" | "location";
+
+export interface Circle {
   id: string;
-  type: GroupType;
+  type: CircleType;
   name: string;
-  /** Inner circles reference their parent Analog group. */
-  parentId: string | null;
+  description: string;
+  /** Inner Circle number ("IC4"). Null for interest/location circles. */
+  number: number | null;
+  imageUrl: string | null;
+  createdBy: string;
+  createdAt: string;
+  memberIds: string[];
 }
 
-export interface Membership {
-  memberId: string;
-  groupId: string;
-}
+/** Built-in feeds plus any circle id. */
+export type PublishTarget = "square" | "loop" | (string & {});
 
-export type EventType = "meeting" | "one-on-one" | "event";
+/** event and post come from the New form; birthday is automated; offer/need are display-only. */
+export type PostType = "event" | "post" | "birthday" | "offer" | "need";
 
-export interface EventItem {
-  id: string;
-  scope: Scope;
-  groupId: string;
-  title: string;
-  /** ISO date (YYYY-MM-DD). */
-  date: string;
-  startTime: string;
-  endTime: string;
-  hostId: string | null;
-  creatorId: string;
+export interface EventDetails {
+  /** ISO date. Null when the group picks the date. */
+  date: string | null;
+  startTime: string | null;
+  endTime: string | null;
   address: string | null;
-  guideUrl: string | null;
-  type: EventType;
+  addressVisible: boolean;
+  canBringFriend: boolean;
+  guestLimit: number | null;
 }
 
-export type RsvpStatus = "going" | "maybe" | "declined";
+/** emoji to member ids who reacted with it. */
+export type Reactions = Record<string, string[]>;
 
-export interface Rsvp {
-  eventId: string;
-  memberId: string;
-  status: RsvpStatus;
-  note?: string | null;
-}
-
-export type LoopKind = "need" | "offer";
-
-export interface LoopPost {
+export interface Post {
   id: string;
-  scope: Scope;
-  kind: LoopKind;
-  category: string;
-  body: string;
-  authorId: string;
-  archived: boolean;
-  createdAt: string;
-  notes: { authorId: string; body: string }[];
-  helpedBy: string[];
-}
-
-export interface WallReply {
-  id: string;
-  authorId: string;
-  body: string;
-  createdAt: string;
-  /** Member ids explicitly tagged in the reply body. */
-  mentions?: string[];
-}
-
-export interface WallPost {
-  id: string;
-  /** Whose wall this post lives on. */
-  ownerId: string;
-  authorId: string;
-  /** analog = public to the Analog Circle; inner = private to the owner's inner circle. */
-  scope: Scope;
+  type: PostType;
+  title: string;
   body: string;
   imageUrl: string | null;
+  authorId: string;
+  publishedTo: PublishTarget[];
   createdAt: string;
-  /** Member ids who have liked this post. */
-  likedBy: string[];
-  /** Threaded replies on this post. */
-  replies: WallReply[];
-  /** Member ids explicitly tagged in the post body. */
-  mentions: string[];
+  updatedAt: string | null;
+  pinned: boolean;
+  reactions: Reactions;
+  commentCount: number;
+  event: EventDetails | null;
+  /** Birthday posts: who is celebrated. */
+  celebrantId: string | null;
 }
 
-export type ActivityType = "wall_post" | "event_created" | "member_joined" | "loop_post" | "mention";
+export type PostInput = Pick<
+  Post,
+  "type" | "title" | "body" | "imageUrl" | "authorId" | "publishedTo" | "event"
+>;
+
+export interface Comment {
+  id: string;
+  postId: string;
+  /** Null for top-level comments. Replies never nest further. */
+  parentId: string | null;
+  authorId: string;
+  body: string;
+  createdAt: string;
+  updatedAt: string | null;
+  reactions: Reactions;
+}
+
+export type RsvpStatus = "going" | "declined";
+
+export interface Rsvp {
+  postId: string;
+  memberId: string;
+  status: RsvpStatus;
+  updatedAt: string;
+}
+
+export type NotificationChannel = "both" | "push" | "email";
+
+export type NotificationKey =
+  | "dinnerReminders"
+  | "dinnerFeedback"
+  | "newExperience"
+  | "experienceReminders"
+  | "experienceComments"
+  | "commentReplies"
+  | "experienceFeedback"
+  | "createdExperienceActivity"
+  | "newLoopPost";
+
+/** Private to its member: nobody else may read or write it. */
+export interface Prefs {
+  memberId: string;
+  channel: NotificationChannel;
+  notifications: Record<NotificationKey, boolean>;
+  favouritePostIds: string[];
+}
+
+/** A note a member sends from the menu. Only admins read it. */
+export interface Feedback {
+  id: string;
+  authorId: string;
+  body: string;
+  createdAt: string;
+}
+
+export type ActivityType = "post_created" | "comment" | "reply" | "member_joined";
 
 /** A community activity record powering the notifications feed. */
 export interface Activity {
   id: string;
   type: ActivityType;
-  scope: Scope;
-  /** Who performed the action. */
   actorId: string;
-  /** The member the activity is about/involves (e.g. wall owner); null if none. */
+  /** The member the activity is addressed to; null = everyone who can see the target. */
   subjectId: string | null;
-  /** Where clicking the notification navigates. */
   targetRoute: string;
   createdAt: string;
-  /** Member ids who have read this activity. */
   readBy: string[];
 }

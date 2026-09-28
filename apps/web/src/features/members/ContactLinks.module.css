@@ -1,0 +1,6 @@
+.links {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: var(--space-1);
+}

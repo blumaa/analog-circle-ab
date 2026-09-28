@@ -1,0 +1,148 @@
+.srOnly {
+  composes: srOnly from "../../styles/a11y.module.css";
+}
+
+.muted {
+  color: var(--color-muted);
+  font-size: var(--font-13);
+  line-height: 1.45;
+}
+
+/* Padded card for the tree and each metrics section. */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+
+.tree {
+  align-items: center;
+  gap: var(--space-1-5);
+  text-align: center;
+}
+
+.treeAge {
+  margin-top: var(--space-2);
+  color: var(--color-text-2);
+  font-size: var(--font-15);
+}
+
+.title {
+  margin-top: var(--space-2);
+  font-size: var(--font-26);
+  font-weight: var(--weight-bold);
+}
+
+.week {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3-5) var(--space-3-5) 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-deep);
+  text-align: center;
+  overflow: hidden;
+}
+
+.weekTitle,
+.cardTitle {
+  font-family: var(--family-display);
+  font-size: var(--font-20);
+  font-weight: var(--weight-bold);
+  color: var(--color-accent);
+}
+
+.subTitle {
+  font-size: var(--font-15);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+}
+
+.divided {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: var(--space-2) calc(-1 * var(--space-3-5)) 0;
+}
+
+.grid > * {
+  border-top: 1px solid var(--color-border);
+}
+
+.grid > :nth-child(odd) {
+  border-right: 1px solid var(--color-border);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1-5);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2-5);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 56px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-list);
+  background: var(--color-bg-deep);
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.row > :first-child {
+  flex: 1;
+  color: var(--color-accent);
+  font-family: var(--family-display);
+  font-size: var(--font-18);
+  font-weight: var(--weight-bold);
+}
+
+.row:hover {
+  border-color: var(--color-accent-edge);
+  background: var(--color-accent-tint);
+}
+
+.row:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.count {
+  font-weight: var(--weight-bold);
+}
+
+.missed {
+  display: flex;
+  flex-direction: column;
+}
+
+.missedRow {
+  display: flex;
+  justify-content: space-between;
+  min-height: 40px;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-size: var(--font-14);
+}

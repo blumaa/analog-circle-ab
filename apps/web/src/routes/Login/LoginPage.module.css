@@ -1,68 +1,71 @@
-.shell {
+.page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-6);
+  width: 100%;
+  max-width: var(--layout-max);
   min-height: 100dvh;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4);
   background: var(--color-bg);
-  display: flex;
-  flex-direction: column;
-}
-
-.head {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-5) var(--space-4);
-  border-bottom: 1px solid var(--color-hairline-soft);
 }
 
 .brand {
-  font-family: var(--text-wordmark-family);
-  font-weight: var(--weight-bold);
-  font-size: var(--font-lg);
-  color: var(--color-accent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
 }
 
-.sub {
-  font-size: var(--font-xs);
+.logo {
+  width: 72px;
+  height: 72px;
+}
+
+.wordmark {
+  color: var(--color-wordmark);
+  font-family: var(--family-display);
+  font-size: var(--font-26);
+  font-weight: var(--weight-bold);
+}
+
+.city {
+  padding: 2px var(--space-2);
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--radius-control);
+  color: var(--color-muted);
+  font-size: var(--font-10);
+  font-weight: var(--weight-semi);
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--color-text-muted);
-}
-
-.center {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-4);
 }
 
 .card {
-  width: 100%;
-  max-width: 520px;
-}
-
-.cardBody {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
 }
 
 .title {
-  font-family: var(--text-display-family);
-  font-size: var(--font-xl);
-  color: var(--color-text-strong);
+  color: var(--color-text);
+  font-family: var(--family-display);
+  font-size: var(--font-22);
+  font-weight: var(--weight-bold);
 }
 
 .lede {
-  color: var(--color-text-soft);
+  color: var(--color-muted);
+  font-size: var(--font-14);
   line-height: 1.5;
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-}
-
-.dev {
-  align-self: flex-start;
+  gap: var(--space-2-5);
 }

@@ -30,13 +30,13 @@ function PushDemo() {
   const toast = useToast();
   return (
     <div style={{ display: "flex", gap: 8 }}>
-      <Button variant="success" onClick={() => toast.success("Success toast!")}>
+      <Button variant="primary" onClick={() => toast.success("Success toast!")}>
         Success
       </Button>
       <Button variant="danger" onClick={() => toast.error("Error toast!")}>
         Error
       </Button>
-      <Button variant="ghost" onClick={() => toast.info("Info toast!")}>
+      <Button variant="secondary" onClick={() => toast.info("Info toast!")}>
         Info
       </Button>
     </div>

@@ -1,8 +1,7 @@
 .card {
-  border: 1px solid var(--color-hairline);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
-  background: var(--color-surface-card);
-  box-shadow: var(--elevation-card);
+  background: var(--color-surface);
   overflow: hidden;
   transition:
     border-color var(--motion-fast) var(--motion-ease),
@@ -11,22 +10,22 @@
 
 /* active — faint border with a gold left accent (matches live) */
 .card[data-variant="active"] {
-  border-color: var(--color-hairline);
-  border-left: 3px solid var(--color-accent-line);
+  border-color: var(--color-border);
+  border-left: 3px solid var(--color-accent-edge);
 }
 
 /* accent — green-tinted border with subtle glow */
 .card[data-variant="accent"] {
   border-color: var(--color-success);
   box-shadow:
-    var(--elevation-card),
+    none,
     0 0 0 1px var(--color-success);
 }
 
 /* ── Sections ── */
 .header {
   padding: var(--space-4) var(--space-5);
-  border-bottom: 1px solid var(--color-hairline);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .body {
@@ -39,5 +38,5 @@
 
 .footer {
   padding: var(--space-4) var(--space-5);
-  border-top: 1px solid var(--color-hairline);
+  border-top: 1px solid var(--color-border);
 }

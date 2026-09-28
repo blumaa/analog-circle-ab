@@ -1,41 +1,30 @@
 import type { Activity, Member } from "../data/types";
+import { firstName } from "./names";
 
-/**
- * Builds the human-readable sentence for an Activity record.
- * SSOT: used by NotificationItem and WallPostCard (activity mode).
- */
-export function activityText(
-  activity: Activity,
-  members: Member[],
-  currentMemberId: string,
-): string {
+/** Sentence for one notification. SSOT for the notifications sheet. */
+export function activityText(activity: Activity, members: Member[], viewerId: string): string {
   const actor = members.find((m) => m.id === activity.actorId);
-  const actorName = actor?.name ?? "Someone";
-
+  const name = actor ? firstName(actor.name) : "Someone";
+  const yours = activity.subjectId === viewerId;
   switch (activity.type) {
-    case "wall_post": {
-      if (activity.subjectId === currentMemberId) {
-        return `${actorName} wrote on your wall`;
-      }
-      const subject = members.find((m) => m.id === activity.subjectId);
-      const subjectName = subject?.name ?? "a member";
-      return `${actorName} wrote on ${subjectName}’s wall`;
-    }
-    case "event_created":
-      return `${actorName} created an event`;
+    case "post_created":
+      return `${name} shared a new post`;
+    case "comment":
+      return yours ? `${name} commented on your post` : `${name} commented on a post`;
+    case "reply":
+      return yours ? `${name} replied to your comment` : `${name} replied to a comment`;
     case "member_joined":
-      return `${actorName} joined the ${
-        activity.scope === "inner" ? "Inner Circle" : "Analog Circle"
-      }`;
-    case "loop_post":
-      return `${actorName} posted to The Loop`;
-    case "mention": {
-      if (activity.subjectId === currentMemberId) {
-        return `${actorName} tagged you in a post`;
-      }
-      const subject = members.find((m) => m.id === activity.subjectId);
-      const subjectName = subject?.name ?? "a member";
-      return `${actorName} tagged ${subjectName} in a post`;
-    }
+      return `${name} joined The Analog Circle`;
   }
+}
+
+/** Activity this viewer should see: addressed to them or to everyone, never their own. */
+export function activityFor(activity: Activity[], viewerId: string): Activity[] {
+  return activity.filter(
+    (a) => a.actorId !== viewerId && (a.subjectId === null || a.subjectId === viewerId),
+  );
+}
+
+export function unreadCount(activity: Activity[], viewerId: string): number {
+  return activityFor(activity, viewerId).filter((a) => !a.readBy.includes(viewerId)).length;
 }

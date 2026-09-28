@@ -1,66 +1,85 @@
 import type {
   Activity,
-  EventItem,
-  Group,
-  LoopPost,
+  Circle,
+  Comment,
+  Feedback,
   Member,
+  Post,
+  PostInput,
+  Prefs,
   Rsvp,
   RsvpStatus,
-  Scope,
-  WallPost,
 } from "./types";
 
+export type MemberInput = Omit<Member, "id" | "joinedAt" | "birthdayPost">;
+export type CircleInput = Omit<Circle, "id" | "createdAt" | "memberIds">;
+
 /**
- * The swappable backend seam. The app talks only to this interface.
- * Slices 0–4 use the localStorage mock; the backend slice swaps in Firebase.
+ * Swappable backend seam. App talks only to this interface.
+ * Mock (localStorage) by default; Firebase when VITE_BACKEND=firebase.
  */
 export interface DataSource {
-  // Auth / session
+  // Auth
   getCurrentMemberId(): Promise<string | null>;
   signInWithEmail(email: string): Promise<void>;
   devSignInAs(memberId: string): Promise<void>;
   signOut(): Promise<void>;
 
-  // Members & groups
-  listMembers(scope?: Scope, groupId?: string): Promise<Member[]>;
+  // Members
+  listMembers(): Promise<Member[]>;
   getMember(id: string): Promise<Member | null>;
+  createMember(input: MemberInput): Promise<Member>;
   updateMember(id: string, patch: Partial<Member>): Promise<Member>;
-  listGroups(): Promise<Group[]>;
-  getInnerGroupForMember(memberId: string): Promise<Group | null>;
+  deleteMember(id: string): Promise<void>;
 
-  // Events
-  listEvents(groupId?: string): Promise<EventItem[]>;
-  createEvent(input: Omit<EventItem, "id">): Promise<EventItem>;
-  updateEvent(id: string, patch: Partial<EventItem>): Promise<EventItem>;
-  deleteEvent(id: string): Promise<void>;
+  // Circles
+  listCircles(): Promise<Circle[]>;
+  createCircle(input: CircleInput): Promise<Circle>;
+  updateCircle(id: string, patch: Partial<CircleInput>): Promise<Circle>;
+  deleteCircle(id: string): Promise<void>;
+  /** Adding to an inner circle removes the member from any other inner circle. */
+  addCircleMember(circleId: string, memberId: string): Promise<void>;
+  removeCircleMember(circleId: string, memberId: string): Promise<void>;
+
+  // Posts. listPosts also creates any due birthday posts.
+  listPosts(): Promise<Post[]>;
+  createPost(input: PostInput): Promise<Post>;
+  updatePost(id: string, patch: Partial<PostInput>): Promise<Post>;
+  deletePost(id: string): Promise<void>;
+  /** Admins only. Pinning does not mark the post edited. */
+  setPostPinned(id: string, pinned: boolean): Promise<Post>;
+  togglePostReaction(postId: string, memberId: string, emoji: string): Promise<void>;
+
+  // Comments
+  listComments(postId: string): Promise<Comment[]>;
+  /** Every comment, for search. */
+  listAllComments(): Promise<Comment[]>;
+  addComment(postId: string, authorId: string, body: string, parentId: string | null): Promise<Comment>;
+  updateComment(id: string, body: string): Promise<Comment>;
+  /** Deleting a top-level comment deletes its replies. */
+  deleteComment(id: string): Promise<void>;
+  toggleCommentReaction(commentId: string, memberId: string, emoji: string): Promise<void>;
 
   // RSVPs
-  listRsvps(eventId: string): Promise<Rsvp[]>;
-  setRsvp(
-    eventId: string,
-    memberId: string,
-    status: RsvpStatus,
-    note?: string | null,
-  ): Promise<Rsvp>;
+  listRsvps(): Promise<Rsvp[]>;
+  setRsvp(postId: string, memberId: string, status: RsvpStatus): Promise<void>;
 
-  // The Loop
-  listLoopPosts(): Promise<LoopPost[]>;
-  createLoopPost(input: Omit<LoopPost, "id" | "createdAt">): Promise<LoopPost>;
-  archiveLoopPost(id: string): Promise<void>;
-  addLoopNote(postId: string, authorId: string, body: string): Promise<LoopPost>;
+  // Prefs (settings, favourites). Only the signed-in member's own.
+  getPrefs(memberId: string): Promise<Prefs>;
+  updatePrefs(memberId: string, patch: Partial<Omit<Prefs, "memberId">>): Promise<Prefs>;
 
-  // Profile wall
-  listWallPosts(ownerId: string): Promise<WallPost[]>;
-  createWallPost(input: Omit<WallPost, "id" | "createdAt">): Promise<WallPost>;
-  deleteWallPost(id: string): Promise<void>;
-  /** Toggle a member's like on a wall post; returns the updated post. */
-  toggleWallPostLike(postId: string, memberId: string): Promise<WallPost>;
-
-  /** Append a reply to a wall post; returns the updated post. */
-  addWallPostReply(postId: string, authorId: string, body: string, mentions?: string[]): Promise<WallPost>;
-
-  // Activity / notifications
+  // Notifications
   listActivity(): Promise<Activity[]>;
   markActivityRead(id: string, memberId: string): Promise<void>;
   markAllActivityRead(memberId: string): Promise<void>;
+
+  // Feedback. Any member sends; only admins list and delete.
+  sendFeedback(authorId: string, body: string): Promise<Feedback>;
+  /** Newest first. */
+  listFeedback(): Promise<Feedback[]>;
+  deleteFeedback(id: string): Promise<void>;
+
+  // Images
+  /** Stores an uploaded image and returns a URL to show it. */
+  uploadImage(file: File): Promise<string>;
 }

@@ -1,0 +1,6 @@
+.loader {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  min-height: 50dvh;
+}

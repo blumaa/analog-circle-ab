@@ -1,52 +1,42 @@
 .button {
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
+  gap: 6px;
+  height: var(--size-toolbar);
+  padding: 0 14px;
   border: 1px solid transparent;
   border-radius: var(--radius-control);
   font-family: var(--text-body-family);
+  font-size: var(--font-13);
   font-weight: var(--weight-semi);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  white-space: nowrap;
+  text-decoration: none;
   cursor: pointer;
   transition:
     background-color var(--motion-fast) var(--motion-ease),
     border-color var(--motion-fast) var(--motion-ease),
-    color var(--motion-fast) var(--motion-ease),
-    opacity var(--motion-fast) var(--motion-ease);
-}
-
-.button[data-size="md"] {
-  padding: var(--space-3) var(--space-5);
-  font-size: var(--font-sm);
+    filter var(--motion-fast) var(--motion-ease);
 }
 
 .button[data-size="sm"] {
-  padding: var(--space-2) var(--space-4);
-  font-size: var(--font-xs);
+  height: var(--size-chip);
+  padding: 0 var(--space-3);
+}
+
+.button[data-size="lg"] {
+  height: var(--size-cta);
+  padding: 0 var(--space-5);
+  font-size: var(--font-15);
 }
 
 .button[data-full-width] {
   width: 100%;
 }
 
-/* non-pill: rounded rect (sign-out style) — overrides the pill default radius */
-.button[data-pill="false"] {
-  border-radius: var(--radius-md);
-}
-
-/* icon-only: square, circular */
-.button[data-icon-only] {
-  padding: 0;
-  width: var(--size-icon-button);
-  height: var(--size-icon-button);
-  border-radius: var(--radius-full);
-}
-
-.button[data-icon-only][data-size="sm"] {
-  width: var(--size-icon-button-sm);
-  height: var(--size-icon-button-sm);
+.button:active:not(:disabled) {
+  filter: brightness(1.12);
 }
 
 .button:disabled {
@@ -54,91 +44,42 @@
   cursor: not-allowed;
 }
 
-/* primary — filled brand */
 .button[data-variant="primary"] {
   background: var(--color-accent);
   color: var(--color-on-accent);
-}
-.button[data-variant="primary"]:hover:not(:disabled) {
-  background: var(--color-accent-bright);
+  font-weight: var(--weight-bold);
 }
 
-/* secondary — filled neutral surface */
+.button[data-variant="primary"]:active:not(:disabled) {
+  filter: none;
+  background: var(--color-accent-text);
+}
+
 .button[data-variant="secondary"] {
-  background: var(--color-surface-raised);
-  color: var(--color-text);
-  border-color: var(--color-hairline);
-}
-.button[data-variant="secondary"]:hover:not(:disabled) {
-  border-color: var(--color-accent);
+  border-color: var(--color-border-2);
+  background: var(--color-chip);
+  color: var(--color-text-2);
 }
 
-/* outline — ghost gold: bright gold text, ~45% gold border, pill radius (matches live "Add to The Loop") */
 .button[data-variant="outline"] {
+  border-color: var(--color-border-2);
   background: transparent;
-  border-color: var(--color-accent-line-strong);
+  color: var(--color-text-2);
+}
+
+.button[data-variant="tint"] {
+  border-color: var(--color-accent-edge);
+  background: var(--color-accent-tint);
   color: var(--color-accent-bright);
-  font-size: 0.92rem;
-}
-.button[data-variant="outline"]:hover:not(:disabled) {
-  background: var(--color-accent-glow);
-  border-color: var(--color-accent-bright);
+  font-weight: var(--weight-bold);
 }
 
-/* ghost — subtle hairline (white-alpha, matches live) */
-.button[data-variant="ghost"] {
-  background: transparent;
-  border-color: var(--color-control-line);
-  color: var(--color-control-ink);
-}
-.button[data-variant="ghost"]:hover:not(:disabled) {
-  border-color: var(--color-accent);
-  color: var(--color-text);
-}
-
-/* success — green outlined */
-.button[data-variant="success"] {
-  background: transparent;
-  border-color: var(--color-success);
-  color: var(--color-success);
-}
-.button[data-variant="success"]:hover:not(:disabled) {
-  background: var(--color-success-soft);
-}
-
-/* danger — red outlined */
 .button[data-variant="danger"] {
+  border-color: var(--color-danger-edge);
   background: transparent;
-  border-color: var(--color-error);
-  color: var(--color-error);
-}
-.button[data-variant="danger"]:hover:not(:disabled) {
-  background: var(--color-error-soft);
-}
-
-/* soft — neutral frosted: for calendar action buttons ("Download .ics") */
-.button[data-variant="soft"] {
-  background: var(--color-control-soft-bg);
-  border-color: var(--color-control-soft-line);
-  color: var(--color-control-soft-ink);
-  font-size: 0.72rem;
-}
-.button[data-variant="soft"]:hover:not(:disabled) {
-  background: var(--color-surface-raised);
-}
-
-/* whatsapp — green outlined matching live site */
-.button[data-variant="whatsapp"] {
-  background: var(--color-whatsapp-soft);
-  border-color: var(--color-whatsapp-border);
-  color: var(--color-whatsapp-ink);
-}
-.button[data-variant="whatsapp"]:hover:not(:disabled) {
-  background: var(--color-success-soft);
-  opacity: 0.9;
+  color: var(--color-danger);
 }
 
 .icon {
   display: inline-flex;
-  align-items: center;
 }

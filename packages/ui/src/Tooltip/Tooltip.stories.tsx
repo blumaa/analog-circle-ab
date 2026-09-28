@@ -27,6 +27,6 @@ export const RichContent: Story = {
         <span>Kasey</span>
       </div>
     ),
-    children: <Button variant="ghost">Show likers</Button>,
+    children: <Button variant="secondary">Show likers</Button>,
   },
 };

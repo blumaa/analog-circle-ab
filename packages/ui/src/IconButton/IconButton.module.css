@@ -1,0 +1,78 @@
+.button {
+  --icon-button-size: var(--size-icon-button);
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-button-size);
+  height: var(--icon-button-size);
+  padding: 0;
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--radius-control);
+  background: var(--color-chip);
+  color: var(--color-text-2);
+  text-decoration: none;
+  cursor: pointer;
+  transition: filter var(--motion-quick) var(--motion-ease), background-color var(--motion-quick) var(--motion-ease);
+}
+
+.button:active:not(:disabled) {
+  filter: brightness(1.12);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button[data-size="22"] { --icon-button-size: 22px; }
+.button[data-size="26"] { --icon-button-size: 26px; }
+.button[data-size="28"] { --icon-button-size: 28px; }
+.button[data-size="30"] { --icon-button-size: 30px; }
+.button[data-size="32"] { --icon-button-size: 32px; }
+.button[data-size="36"] { --icon-button-size: 36px; }
+.button[data-size="38"] { --icon-button-size: 38px; }
+.button[data-size="40"] { --icon-button-size: 40px; }
+
+.button[data-shape="square"] {
+  border-radius: var(--radius-segment);
+}
+
+.button[data-shape="square"][data-size="28"] {
+  border-radius: var(--radius-small-button);
+}
+
+.button[data-variant="tint"],
+.button[data-pressed] {
+  border-color: var(--color-accent-edge);
+  background: var(--color-accent-tint);
+  color: var(--color-accent-text);
+}
+
+.button[data-variant="ghost"] {
+  border-color: transparent;
+  background: transparent;
+  color: var(--color-muted);
+}
+
+.button[data-variant="ghost"][data-pressed] {
+  border-color: transparent;
+  background: transparent;
+  color: var(--color-accent-text);
+}
+
+.button[data-variant="danger"] {
+  border-color: var(--color-danger-edge);
+  background: transparent;
+  color: var(--color-danger);
+}
+
+.button[data-variant="gold"] {
+  border-color: transparent;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.icon {
+  display: inline-flex;
+}

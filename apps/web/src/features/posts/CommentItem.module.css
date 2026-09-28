@@ -1,0 +1,91 @@
+.item,
+.compact {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.item[data-reply],
+.compact[data-reply] {
+  margin-left: 34px;
+}
+
+.main,
+.compactBody {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-1-5);
+  min-width: 0;
+}
+
+.bubble {
+  padding: var(--space-2) var(--space-2-5);
+  border-radius: 4px 14px 14px 14px;
+  background: var(--color-surface-2);
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.name {
+  color: var(--color-text);
+  font-size: var(--font-12);
+  font-weight: var(--weight-bold);
+}
+
+.compact .name {
+  font-size: var(--font-13);
+}
+
+.time {
+  color: var(--color-muted-2);
+  font-size: var(--font-11);
+}
+
+.text {
+  color: var(--color-text-2);
+  font-size: var(--font-13);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-muted-2);
+  font-size: var(--font-11);
+  font-weight: var(--weight-medium);
+}
+
+.link {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-3);
+  font-size: var(--font-11);
+  font-weight: var(--weight-semi);
+  cursor: pointer;
+}
+
+.editForm {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.editInput {
+  flex: 1;
+  min-width: 0;
+  height: 30px;
+  padding: 0 var(--space-2-5);
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--radius-input);
+  background: var(--color-bg-deep);
+  color: var(--color-text);
+  font-size: var(--font-13);
+}

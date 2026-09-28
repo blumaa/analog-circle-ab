@@ -1,79 +1,61 @@
+import { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "jest-axe";
-import { Search } from "lucide-react";
 import { Input } from "./Input";
 
 describe("Input", () => {
   it("renders a textbox", () => {
-    render(<Input aria-label="Search" />);
-    expect(screen.getByRole("textbox")).toBeInTheDocument();
+    render(<Input aria-label="Title" />);
+    expect(screen.getByRole("textbox", { name: "Title" })).toBeInTheDocument();
   });
 
-  it("forwards placeholder and type props", () => {
-    render(<Input aria-label="Email" placeholder="you@example.com" type="email" />);
+  it("forwards placeholder and type", () => {
+    render(<Input aria-label="Email" type="email" placeholder="you@example.com" />);
     const input = screen.getByRole("textbox");
-    expect(input).toHaveAttribute("placeholder", "you@example.com");
     expect(input).toHaveAttribute("type", "email");
+    expect(input).toHaveAttribute("placeholder", "you@example.com");
   });
 
   it("calls onChange when the user types", async () => {
     const onChange = vi.fn();
-    render(<Input aria-label="Search" onChange={onChange} />);
-    await userEvent.type(screen.getByRole("textbox"), "hello");
+    render(<Input aria-label="Title" onChange={onChange} />);
+    await userEvent.type(screen.getByRole("textbox"), "a");
     expect(onChange).toHaveBeenCalled();
   });
 
-  it("renders leftIcon when provided", () => {
-    render(<Input aria-label="Search" leftIcon={<Search data-testid="icon" size={16} />} />);
-    expect(screen.getByTestId("icon")).toBeInTheDocument();
-    expect(screen.getByRole("textbox")).toBeInTheDocument();
-  });
-
-  it("defaults to filled variant", () => {
-    render(<Input aria-label="Search" />);
+  it("marks icon slots", () => {
+    render(<Input aria-label="Where" leftIcon={<span>L</span>} rightIcon={<span>R</span>} />);
     const input = screen.getByRole("textbox");
-    // filled variant has no data-variant attribute — the variant is applied via CSS class
-    expect(input).toBeInTheDocument();
+    expect(input).toHaveAttribute("data-has-left-icon", "true");
+    expect(input).toHaveAttribute("data-has-right-icon", "true");
   });
 
-  it("renders bare variant without error", () => {
-    render(<Input aria-label="Search" variant="bare" />);
-    expect(screen.getByRole("textbox")).toBeInTheDocument();
+  it("associates the label with the input", () => {
+    render(<Input label="Title" />);
+    expect(screen.getByLabelText("Title")).toBe(screen.getByRole("textbox"));
+  });
+
+  it("forwards ref", () => {
+    const ref = createRef<HTMLInputElement>();
+    render(<Input ref={ref} aria-label="Title" />);
+    expect(ref.current).toBeInstanceOf(HTMLInputElement);
   });
 
   it("has no accessibility violations", async () => {
-    const { container } = render(<Input aria-label="Search query" />);
+    const { container } = render(<Input label="Title" rightIcon={<span>R</span>} />);
     expect(await axe(container)).toHaveNoViolations();
   });
-
-  it("has no accessibility violations with leftIcon", async () => {
-    const { container } = render(
-      <Input aria-label="Search query" leftIcon={<Search size={16} />} />,
-    );
-    expect(await axe(container)).toHaveNoViolations();
+  it("describes an error and marks the field invalid", () => {
+    render(<Input label="Title" error="Give it a name." />);
+    const input = screen.getByLabelText("Title");
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(input).toHaveAccessibleDescription("Give it a name.");
   });
 
-  it("has no accessibility violations with bare variant", async () => {
-    const { container } = render(<Input aria-label="Search query" variant="bare" />);
-    expect(await axe(container)).toHaveNoViolations();
-  });
-
-  it("renders a label element when label prop is provided", () => {
-    render(<Input label="Search query" />);
-    expect(screen.getByText("Search query").tagName).toBe("LABEL");
-  });
-
-  it("associates the label with the input via htmlFor/id", () => {
-    render(<Input label="Email address" />);
-    const label = screen.getByText("Email address");
-    const input = screen.getByRole("textbox");
-    expect(label).toHaveAttribute("for", input.id);
-  });
-
-  it("has no accessibility violations with label", async () => {
-    const { container } = render(<Input label="Email address" />);
-    expect(await axe(container)).toHaveNoViolations();
+  it("is valid without an error", () => {
+    render(<Input label="Title" />);
+    expect(screen.getByLabelText("Title")).not.toHaveAttribute("aria-invalid");
   });
 });

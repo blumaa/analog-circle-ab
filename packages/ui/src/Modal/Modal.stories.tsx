@@ -22,7 +22,7 @@ export const Open: Story = {
     children: <p>Pick a meeting to swap with.</p>,
     footer: (
       <>
-        <Button variant="ghost">Cancel</Button>
+        <Button variant="secondary">Cancel</Button>
         <Button variant="primary">Send</Button>
       </>
     ),
@@ -45,7 +45,7 @@ export const Interactive: Story = {
             onClose={() => setOpen(false)}
             footer={
               <>
-                <Button variant="ghost" onClick={() => setOpen(false)}>
+                <Button variant="secondary" onClick={() => setOpen(false)}>
                   Cancel
                 </Button>
                 <Button variant="primary" onClick={() => setOpen(false)}>

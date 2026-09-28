@@ -1,6 +1,7 @@
 import { initializeApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
+import { getStorage, type FirebaseStorage } from "firebase/storage";
 
 const config = {
   apiKey: import.meta.env.VITE_FB_API_KEY as string,
@@ -14,6 +15,7 @@ const config = {
 let app: FirebaseApp | null = null;
 let authInstance: Auth | null = null;
 let dbInstance: Firestore | null = null;
+let storageInstance: FirebaseStorage | null = null;
 
 function getApp(): FirebaseApp {
   if (!app) app = initializeApp(config);
@@ -28,4 +30,9 @@ export function auth(): Auth {
 export function db(): Firestore {
   if (!dbInstance) dbInstance = getFirestore(getApp());
   return dbInstance;
+}
+
+export function storage(): FirebaseStorage {
+  if (!storageInstance) storageInstance = getStorage(getApp());
+  return storageInstance;
 }

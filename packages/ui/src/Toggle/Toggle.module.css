@@ -1,0 +1,46 @@
+.toggle {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  width: var(--size-toggle-width);
+  height: var(--size-toggle-height);
+  padding: 0 3px;
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--radius-control);
+  background: var(--color-bg);
+  cursor: pointer;
+  transition: background-color var(--motion-fast) var(--motion-ease), border-color var(--motion-fast) var(--motion-ease);
+}
+
+.toggle[data-on-sheet] {
+  background: var(--color-track-off-sheet);
+}
+
+.knob {
+  width: var(--size-toggle-knob);
+  height: var(--size-toggle-knob);
+  border-radius: var(--radius-control);
+  background: var(--color-knob-off);
+  transition: transform var(--motion-fast) var(--motion-ease), background-color var(--motion-fast) var(--motion-ease);
+}
+
+.toggle[data-on] {
+  background: var(--color-accent-tint-strong);
+  border-color: var(--color-accent-edge);
+}
+
+.toggle[data-on] .knob {
+  background: var(--color-accent-bright);
+  transform: translateX(calc(var(--size-toggle-width) - var(--size-toggle-knob) - 8px));
+}
+
+.toggle[data-locked] {
+  justify-content: center;
+  background: var(--color-success-track);
+  border-color: var(--color-success-edge);
+  cursor: default;
+}
+
+.shield {
+  color: var(--color-success);
+}

@@ -6,6 +6,6 @@
 
 .value {
   color: var(--color-text);
-  font-size: var(--font-md);
+  font-size: var(--font-16);
   line-height: 1.5;
 }

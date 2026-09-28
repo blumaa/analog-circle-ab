@@ -1,0 +1,206 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-3) var(--space-4) var(--space-9);
+}
+
+.srOnly {
+  composes: srOnly from "../../styles/a11y.module.css";
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.topActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2-5);
+  padding: var(--space-4) var(--space-4) var(--space-5);
+  border: 1px solid var(--color-accent-card-edge);
+  border-radius: var(--radius-card-hero);
+  background: var(--color-surface);
+  text-align: center;
+}
+
+.name {
+  color: var(--color-text);
+  font-family: var(--family-display);
+  font-size: var(--font-28);
+  font-weight: var(--weight-bold);
+  line-height: 1.15;
+}
+
+.description {
+  color: var(--color-text-2);
+  font-size: var(--font-15);
+  line-height: 1.5;
+}
+
+.meta {
+  color: var(--color-muted);
+  font-size: var(--font-13);
+}
+
+.heroActions {
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  gap: var(--space-2-5);
+  width: 100%;
+  margin-top: var(--space-1-5);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.seeAll {
+  padding: var(--space-1);
+  border: 0;
+  background: none;
+  color: var(--color-accent-text);
+  font: inherit;
+  font-size: var(--font-13);
+  font-weight: var(--weight-semi);
+  cursor: pointer;
+}
+
+.members {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0 calc(-1 * var(--space-4));
+  padding: 0 var(--space-4);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.member {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  width: 52px;
+  color: var(--color-text-2);
+  text-decoration: none;
+}
+
+.memberName {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: var(--font-11);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.events {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.event {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+
+.dateBlock {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 52px;
+  border-radius: var(--radius-badge);
+  background: var(--color-accent-tint);
+}
+
+.weekday {
+  color: var(--color-accent-text);
+  font-size: var(--font-10);
+  font-weight: var(--weight-semi);
+  letter-spacing: var(--text-tag-tracking);
+  text-transform: uppercase;
+}
+
+.dayNumber {
+  color: var(--color-text);
+  font-family: var(--family-display);
+  font-size: var(--font-18);
+  font-weight: var(--weight-bold);
+}
+
+.eventMain {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.eventTitle {
+  color: var(--color-text);
+  font-size: var(--font-15);
+  font-weight: var(--weight-bold);
+  line-height: 1.3;
+  text-decoration: none;
+}
+
+.eventMeta {
+  color: var(--color-muted);
+  font-size: var(--font-13);
+}
+
+.rsvp,
+.going {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1-5) var(--space-3);
+  border: 1px solid var(--color-accent-edge);
+  border-radius: var(--radius-control);
+  background: var(--color-accent-tint);
+  color: var(--color-accent-text);
+  font-size: var(--font-13);
+  font-weight: var(--weight-semi);
+  text-decoration: none;
+}
+
+.going {
+  border-color: transparent;
+  background: none;
+}
+
+.seeAll:focus-visible,
+.member:focus-visible,
+.eventTitle:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-badge);
+}

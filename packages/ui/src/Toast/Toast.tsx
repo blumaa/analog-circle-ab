@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { Button } from "../Button/Button";
+import { IconButton } from "../IconButton/IconButton";
 import styles from "./Toast.module.css";
 
 export type ToastVariant = "success" | "error" | "info";
@@ -25,16 +25,14 @@ export function Toast({ variant, message, onDismiss }: ToastProps) {
       className={styles.toast}
     >
       <span className={styles.message}>{message}</span>
-      <Button
+      <IconButton
         variant="ghost"
-        size="sm"
-        iconOnly
-        aria-label="Dismiss"
+        size={28}
+        label="Dismiss"
+        icon={<X size={16} />}
         onClick={onDismiss}
         className={styles.dismiss}
-      >
-        <X size={16} />
-      </Button>
+      />
     </div>
   );
 }

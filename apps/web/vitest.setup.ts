@@ -7,4 +7,6 @@ expect.extend(toHaveNoViolations);
 
 afterEach(() => {
   cleanup();
+  // The mock data source persists to localStorage; reset it so tests stay isolated.
+  localStorage.clear();
 });

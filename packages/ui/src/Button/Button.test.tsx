@@ -3,124 +3,88 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "jest-axe";
-import { Button } from "./Button";
+import { Button, ButtonLink } from "./Button";
 
 describe("Button", () => {
   it("renders its label", () => {
-    render(<Button>Email sign-in link</Button>);
-    expect(screen.getByRole("button", { name: "Email sign-in link" })).toBeInTheDocument();
+    render(<Button>Create</Button>);
+    expect(screen.getByRole("button", { name: "Create" })).toBeInTheDocument();
   });
 
   it("calls onClick when pressed", async () => {
     const onClick = vi.fn();
-    render(<Button onClick={onClick}>Go</Button>);
-    await userEvent.click(screen.getByRole("button", { name: "Go" }));
+    render(<Button onClick={onClick}>Create</Button>);
+    await userEvent.click(screen.getByRole("button"));
     expect(onClick).toHaveBeenCalledOnce();
   });
 
   it("does not fire onClick when disabled", async () => {
     const onClick = vi.fn();
     render(
-      <Button onClick={onClick} disabled>
-        Go
+      <Button disabled onClick={onClick}>
+        Create
       </Button>,
     );
-    await userEvent.click(screen.getByRole("button", { name: "Go" }));
+    await userEvent.click(screen.getByRole("button"));
     expect(onClick).not.toHaveBeenCalled();
   });
 
-  it("applies the variant as a data attribute", () => {
-    render(<Button variant="danger">Delete</Button>);
-    expect(screen.getByRole("button", { name: "Delete" })).toHaveAttribute(
-      "data-variant",
-      "danger",
-    );
+  it("defaults to primary md", () => {
+    render(<Button>Create</Button>);
+    const btn = screen.getByRole("button");
+    expect(btn).toHaveAttribute("data-variant", "primary");
+    expect(btn).toHaveAttribute("data-size", "md");
   });
 
-  it("iconOnly renders an accessible icon button via aria-label", () => {
+  it.each(["secondary", "outline", "tint", "danger"] as const)("applies %s variant", (variant) => {
+    render(<Button variant={variant}>Go</Button>);
+    expect(screen.getByRole("button")).toHaveAttribute("data-variant", variant);
+  });
+
+  it("applies lg size and full width", () => {
     render(
-      <Button iconOnly aria-label="Open menu" variant="outline">
-        ☰
+      <Button size="lg" fullWidth>
+        Apply
       </Button>,
     );
-    const btn = screen.getByRole("button", { name: "Open menu" });
-    expect(btn).toBeInTheDocument();
-    expect(btn).toHaveAttribute("data-icon-only");
+    const btn = screen.getByRole("button");
+    expect(btn).toHaveAttribute("data-size", "lg");
+    expect(btn).toHaveAttribute("data-full-width", "true");
   });
 
-  it("forwards ref to the underlying button element", () => {
+  it("forwards ref", () => {
     const ref = createRef<HTMLButtonElement>();
-    render(<Button ref={ref}>Click me</Button>);
-    expect(ref.current).not.toBeNull();
-    expect(ref.current?.tagName).toBe("BUTTON");
-  });
-
-  it("applies the whatsapp variant as a data attribute", () => {
-    render(<Button variant="whatsapp">WhatsApp</Button>);
-    expect(screen.getByRole("button", { name: "WhatsApp" })).toHaveAttribute(
-      "data-variant",
-      "whatsapp",
-    );
+    render(<Button ref={ref}>Go</Button>);
+    expect(ref.current).toBeInstanceOf(HTMLButtonElement);
   });
 
   it("has no accessibility violations", async () => {
-    const { container } = render(<Button>Accessible</Button>);
+    const { container } = render(<Button leftIcon={<span>+</span>}>New circle</Button>);
     expect(await axe(container)).toHaveNoViolations();
   });
+});
 
-  it("has no accessibility violations for iconOnly", async () => {
+describe("ButtonLink", () => {
+  it("renders a link with the button look", async () => {
     const { container } = render(
-      <Button iconOnly aria-label="Close" variant="ghost">
-        ✕
-      </Button>,
+      <ButtonLink href="/members/ada" variant="tint" size="sm">
+        More details
+      </ButtonLink>,
     );
+    const link = screen.getByRole("link", { name: "More details" });
+    expect(link).toHaveAttribute("href", "/members/ada");
+    expect(link).toHaveAttribute("data-variant", "tint");
+    expect(link).toHaveAttribute("data-size", "sm");
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  it("has no accessibility violations for whatsapp variant", async () => {
-    const { container } = render(<Button variant="whatsapp">Join WhatsApp</Button>);
-    expect(await axe(container)).toHaveNoViolations();
-  });
-
-  it("applies the outline variant as a data attribute", () => {
-    render(<Button variant="outline">Add to The Loop</Button>);
-    expect(screen.getByRole("button", { name: "Add to The Loop" })).toHaveAttribute(
-      "data-variant",
-      "outline",
+  it("renders a custom link component", () => {
+    const Custom = ({ to, ...rest }: { to: string; children?: React.ReactNode; className?: string }) => <a href={to} {...rest} />;
+    render(
+      <ButtonLink as={Custom} to="/x">
+        Go
+      </ButtonLink>,
     );
-  });
-
-  it("applies the soft variant as a data attribute", () => {
-    render(<Button variant="soft">Download .ics</Button>);
-    expect(screen.getByRole("button", { name: "Download .ics" })).toHaveAttribute(
-      "data-variant",
-      "soft",
-    );
-  });
-
-  it("has no accessibility violations for outline variant", async () => {
-    const { container } = render(<Button variant="outline">Add to The Loop</Button>);
-    expect(await axe(container)).toHaveNoViolations();
-  });
-
-  it("has no accessibility violations for soft variant", async () => {
-    const { container } = render(<Button variant="soft">Download .ics</Button>);
-    expect(await axe(container)).toHaveNoViolations();
-  });
-
-  it("defaults to pill=true (no data-pill attribute)", () => {
-    render(<Button>Default</Button>);
-    const btn = screen.getByRole("button", { name: "Default" });
-    expect(btn).not.toHaveAttribute("data-pill");
-  });
-
-  it("sets data-pill=false when pill={false}", () => {
-    render(<Button pill={false}>Sign out</Button>);
-    expect(screen.getByRole("button", { name: "Sign out" })).toHaveAttribute("data-pill", "false");
-  });
-
-  it("has no accessibility violations for pill=false", async () => {
-    const { container } = render(<Button pill={false}>Sign out</Button>);
-    expect(await axe(container)).toHaveNoViolations();
+    expect(screen.getByRole("link", { name: "Go" })).toHaveAttribute("href", "/x");
   });
 });

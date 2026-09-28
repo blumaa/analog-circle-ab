@@ -13,7 +13,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    icon: <Plus size={24} />,
+    icon: <Plus size={26} strokeWidth={2.25} />,
     "aria-label": "New event",
   },
 };

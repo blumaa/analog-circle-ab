@@ -1,0 +1,39 @@
+.stack {
+  --stack-overlap: -7px;
+  --stack-ring: var(--color-surface-2);
+  display: inline-flex;
+  align-items: center;
+}
+
+.stack[data-size="30"] {
+  --stack-overlap: -9px;
+  --stack-ring: var(--color-bg);
+}
+
+.item {
+  box-shadow: 0 0 0 2px var(--stack-ring);
+}
+
+.item + .item {
+  margin-left: var(--stack-overlap);
+}
+
+.more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  min-width: 30px;
+  padding: 0 6px;
+  border-radius: var(--radius-control);
+  background: var(--color-chip);
+  color: var(--color-text-2);
+  font-size: var(--font-11);
+  font-weight: var(--weight-bold);
+}
+
+.stack[data-size="22"] .more {
+  height: 22px;
+  min-width: 22px;
+  font-size: var(--font-10);
+}

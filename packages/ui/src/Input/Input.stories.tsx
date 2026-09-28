@@ -1,25 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Search } from "lucide-react";
+import { Calendar, MapPin } from "lucide-react";
 import { Input } from "./Input";
 
 const meta = {
   title: "Primitives/Input",
   component: Input,
   tags: ["autodocs"],
-  args: { "aria-label": "Search" },
+  args: { label: "Title", placeholder: "Give it a name" },
 } satisfies Meta<typeof Input>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = { args: { placeholder: "Search…" } };
-export const WithLeftIcon: Story = {
-  args: { placeholder: "Search…", leftIcon: <Search size={16} /> },
-};
-export const Disabled: Story = { args: { placeholder: "Disabled", disabled: true } };
-export const WithValue: Story = { args: { value: "analog.circle", readOnly: true } };
-
-/** Bare variant — Loop search: no background, no border, no radius box */
-export const Bare: Story = {
-  args: { placeholder: "Search loops…", variant: "bare", leftIcon: <Search size={16} /> },
-};
+export const Default: Story = {};
+export const LeftIcon: Story = { args: { label: "Where", placeholder: "Address or venue", leftIcon: <MapPin size={16} /> } };
+export const RightIcon: Story = { args: { label: "Date", placeholder: "DD/MM/YYYY", rightIcon: <Calendar size={16} /> } };

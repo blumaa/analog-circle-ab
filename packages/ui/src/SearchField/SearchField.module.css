@@ -1,0 +1,39 @@
+.field {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+}
+
+.input {
+  width: 100%;
+  height: var(--size-toolbar);
+  padding: 0 36px 0 var(--space-3);
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--radius-input);
+  background: var(--color-bg-deep);
+  color: var(--color-text);
+  font-size: var(--font-14);
+  appearance: none;
+}
+
+.input::placeholder {
+  color: var(--color-placeholder);
+}
+
+.input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.input:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.icon {
+  position: absolute;
+  right: var(--space-3);
+  color: var(--color-muted);
+  pointer-events: none;
+}

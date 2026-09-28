@@ -1,0 +1,22 @@
+.eyebrow {
+  margin: 0;
+  padding: 0;
+  color: var(--color-muted);
+  font-family: var(--text-eyebrow-family);
+  font-size: var(--text-eyebrow-size);
+  font-weight: var(--text-eyebrow-weight);
+  letter-spacing: var(--text-eyebrow-tracking);
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+/* Page kickers ("EVENT · THE SQUARE", "ADMIN") are set in the body face. */
+.eyebrow[data-tone="gold"] {
+  color: var(--color-accent-text);
+  font-family: var(--text-body-family);
+}
+
+.eyebrow[data-size="10"] {
+  font-size: var(--font-10);
+  letter-spacing: 0.18em;
+}

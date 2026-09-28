@@ -1,0 +1,91 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--size-app-bar);
+  padding: 0 var(--space-4);
+  border-bottom: 1px solid var(--color-border-shell);
+  background: var(--color-bg-shell);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.logo {
+  width: 34px;
+  height: 34px;
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.wordmark {
+  color: var(--color-wordmark);
+  font-family: var(--text-display-family);
+  font-size: var(--text-wordmark-size);
+  font-weight: var(--weight-bold);
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.city {
+  align-self: flex-start;
+  padding: 2px var(--space-2);
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--radius-control);
+  color: var(--color-muted);
+  font-size: var(--font-10);
+  font-weight: var(--weight-semi);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2-5);
+  color: var(--color-text-2);
+}
+
+.bell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.dot {
+  position: absolute;
+  top: 0;
+  right: 1px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--color-bg-shell);
+  border-radius: 50%;
+  background: var(--color-accent-bright);
+}
+
+.me {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  color: var(--color-text);
+}
+
+.name {
+  font-size: var(--font-14);
+  font-weight: var(--weight-medium);
+}
